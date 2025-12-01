@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import com.sooscode.sooscode_api.application.auth.dto.*;
-import com.sooscode.sooscode_api.application.auth.service.AuthService;
+import com.sooscode.sooscode_api.application.auth.service.AuthServiceImpl;
 import com.sooscode.sooscode_api.application.auth.service.GoogleAuthService;
-import com.sooscode.sooscode_api.domain.user.dto.RegisterRequest;
+import com.sooscode.sooscode_api.application.auth.dto.RegisterRequest;
 
 import java.net.URI;
 
@@ -16,7 +16,7 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthService authService;
+    private final AuthServiceImpl authService;
     private final GoogleAuthService googleAuthService;
 
     // 로컬 로그인

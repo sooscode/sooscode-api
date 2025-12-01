@@ -3,7 +3,7 @@ package com.sooscode.sooscode_api.infra.user;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
-import com.sooscode.sooscode_api.application.user.entity.User;
+import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
 
 @Service

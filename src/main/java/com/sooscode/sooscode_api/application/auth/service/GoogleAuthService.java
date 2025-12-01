@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 import com.sooscode.sooscode_api.application.auth.dto.*;
 import com.sooscode.sooscode_api.global.config.GoogleOAuthConfig;
 import com.sooscode.sooscode_api.global.jwt.JwtUtil;
-import com.sooscode.sooscode_api.application.user.entity.User;
+import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.enums.UserRole;
 import com.sooscode.sooscode_api.domain.user.enums.UserStatus;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
