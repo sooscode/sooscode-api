@@ -1,7 +1,7 @@
 package com.sooscode.sooscode_api.domain.code;
 
 
-import com.sooscode.sooscode_api.application.user.entity.User;
+import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
 import jakarta.persistence.*;
 import lombok.*;

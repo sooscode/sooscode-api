@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.domain.user.dto;
+package com.sooscode.sooscode_api.application.auth.dto;
 
 import lombok.Data;
 

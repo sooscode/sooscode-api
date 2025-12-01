@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.application.user.entity;
+package com.sooscode.sooscode_api.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
