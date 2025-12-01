@@ -1,17 +1,14 @@
 package com.sooscode.sooscode_api.application.auth.service;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.sooscode.sooscode_api.application.auth.dto.LoginRequest;
-import com.sooscode.sooscode_api.application.auth.dto.LoginResponse;
+import com.sooscode.sooscode_api.application.auth.dto.*;
 import com.sooscode.sooscode_api.domain.user.dto.RegisterRequest;
-import com.sooscode.sooscode_api.domain.user.entity.User;
+import com.sooscode.sooscode_api.application.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
 import com.sooscode.sooscode_api.domain.user.service.UserService;
 import com.sooscode.sooscode_api.global.jwt.JwtUtil;
-
 
 @RequiredArgsConstructor
 @Service
@@ -22,8 +19,9 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final UserService userService;
 
-    // 로그인
+    // 로컬 로그인 로직
     public LoginResponse loginUser(LoginRequest request) {
+
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 이메일입니다."));
 
@@ -41,5 +39,4 @@ public class AuthService {
     public String registerUser(RegisterRequest request) {
         return userService.register(request);
     }
-
 }

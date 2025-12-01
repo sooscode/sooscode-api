@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.domain.user.entity;
+package com.sooscode.sooscode_api.application.auth.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

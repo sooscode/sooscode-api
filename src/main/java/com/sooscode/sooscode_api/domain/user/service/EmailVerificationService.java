@@ -3,7 +3,7 @@ package com.sooscode.sooscode_api.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import com.sooscode.sooscode_api.domain.user.entity.EmailCode;
+import com.sooscode.sooscode_api.application.auth.entity.EmailCode;
 import com.sooscode.sooscode_api.domain.user.repository.EmailCodeRepository;
 
 import java.time.LocalDateTime;
