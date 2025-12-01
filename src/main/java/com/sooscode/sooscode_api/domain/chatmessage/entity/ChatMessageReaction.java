@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.domain.chat.entity;
+package com.sooscode.sooscode_api.domain.chatmessage.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

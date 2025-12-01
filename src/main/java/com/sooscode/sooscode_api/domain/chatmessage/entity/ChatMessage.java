@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.domain.chat.entity;
+package com.sooscode.sooscode_api.domain.chatmessage.entity;
 
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;

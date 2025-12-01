@@ -1,6 +1,6 @@
-package com.sooscode.sooscode_api.domain.chat.repository;
+package com.sooscode.sooscode_api.domain.chatmessage.repository;
 
-import com.sooscode.sooscode_api.domain.chat.entity.ChatMessageReaction;
+import com.sooscode.sooscode_api.domain.chatmessage.entity.ChatMessageReaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

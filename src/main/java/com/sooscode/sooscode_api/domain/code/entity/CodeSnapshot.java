@@ -1,8 +1,8 @@
 package com.sooscode.sooscode_api.domain.code.entity;
 
 
-import com.sooscode.sooscode_api.application.user.entity.User;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
+import com.sooscode.sooscode_api.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
