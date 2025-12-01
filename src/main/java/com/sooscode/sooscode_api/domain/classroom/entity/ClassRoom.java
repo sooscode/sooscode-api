@@ -1,5 +1,6 @@
 package com.sooscode.sooscode_api.domain.classroom.entity;
 
+import com.sooscode.sooscode_api.domain.file.SooFile;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -28,7 +29,7 @@ public class ClassRoom {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "file_id")
-    private File file;
+    private SooFile file;
 
     @Column(name = "max_students")
     @Builder.Default

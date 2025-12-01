@@ -1,5 +1,14 @@
 package com.sooscode.sooscode_api.domain.code;
 
+
+import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
+import com.sooscode.sooscode_api.domain.user.entity.User;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "code_snapshot")
 @Getter

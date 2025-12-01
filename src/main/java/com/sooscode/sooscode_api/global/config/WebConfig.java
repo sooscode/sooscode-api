@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.application.chatting.config;
+package com.sooscode.sooscode_api.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
