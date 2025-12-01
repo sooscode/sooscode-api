@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.domain.code;
+package com.sooscode.sooscode_api.domain.snapshot;
 
 
 import com.sooscode.sooscode_api.application.user.entity.User;
