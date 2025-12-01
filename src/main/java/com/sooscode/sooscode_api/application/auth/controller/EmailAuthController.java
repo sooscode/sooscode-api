@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.domain.user.controller;
+package com.sooscode.sooscode_api.application.auth.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

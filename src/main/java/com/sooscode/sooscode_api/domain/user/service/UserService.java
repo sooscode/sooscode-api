@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import com.sooscode.sooscode_api.application.auth.dto.LoginRequest;
 import com.sooscode.sooscode_api.application.auth.dto.LoginResponse;
 import com.sooscode.sooscode_api.domain.user.dto.RegisterRequest;
-import com.sooscode.sooscode_api.domain.user.entity.User;
+import com.sooscode.sooscode_api.application.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.enums.UserRole;
 import com.sooscode.sooscode_api.domain.user.enums.UserStatus;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;

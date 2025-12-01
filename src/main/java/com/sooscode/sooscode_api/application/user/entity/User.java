@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.domain.user.entity;
+package com.sooscode.sooscode_api.application.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
 
     @Id

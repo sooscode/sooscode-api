@@ -1,17 +1,18 @@
 package com.sooscode.sooscode_api.application.auth.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import com.sooscode.sooscode_api.application.auth.dto.GoogleOAuthToken;
-import com.sooscode.sooscode_api.application.auth.dto.GoogleUserInfo;
+import com.sooscode.sooscode_api.application.auth.dto.*;
 import com.sooscode.sooscode_api.global.config.GoogleOAuthConfig;
+import com.sooscode.sooscode_api.global.jwt.JwtUtil;
+import com.sooscode.sooscode_api.application.user.entity.User;
+import com.sooscode.sooscode_api.domain.user.enums.UserRole;
+import com.sooscode.sooscode_api.domain.user.enums.UserStatus;
+import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -19,15 +20,42 @@ public class GoogleAuthService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final GoogleOAuthConfig googleOAuthConfig;
+    private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
-    // code → token
-    public GoogleOAuthToken getAccessToken(String code) {
+    // Google 로그인 URL 생성
+    public String buildGoogleLoginUrl() {
+        return "https://accounts.google.com/o/oauth2/v2/auth" +
+                "?client_id=" + googleOAuthConfig.getClientId() +
+                "&redirect_uri=" + googleOAuthConfig.getRedirectUri() +
+                "&response_type=code" +
+                "&scope=openid%20email%20profile" +
+                "&access_type=offline";
+    }
+
+    // Google Callback 처리 (AccessToken + RefreshToken 발급)
+    public LoginResponse processGoogleCallback(String code) {
+
+        GoogleOAuthToken tokenResponse = getAccessToken(code);
+        GoogleUserInfo userInfo = getUserInfo(tokenResponse.access_token());
+
+        String email = userInfo.email();
+
+        // 기존유저 or 신규유저 생성
+        User user = userRepository.findByEmail(email)
+                .orElseGet(() -> userRepository.save(createGoogleUser(userInfo)));
+
+        // jwt 토큰 발급
+        String accessToken = jwtUtil.generateAccessToken(user.getEmail());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
+
+        return new LoginResponse(accessToken, refreshToken);
+    }
+
+    // code → oauth token
+    private GoogleOAuthToken getAccessToken(String code) {
 
         String url = "https://oauth2.googleapis.com/token";
-
-        System.out.println(">>> GOOGLE client_id = " + googleOAuthConfig.getClientId());
-        System.out.println(">>> GOOGLE redirect_uri = " + googleOAuthConfig.getRedirectUri());
-
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", code);
@@ -42,10 +70,10 @@ public class GoogleAuthService {
         HttpEntity<?> request = new HttpEntity<>(params, headers);
 
         return restTemplate.postForObject(url, request, GoogleOAuthToken.class);
-
     }
 
-    public GoogleUserInfo getUserInfo(String accessToken) {
+    // access-token → user info
+    private GoogleUserInfo getUserInfo(String accessToken) {
         String url = "https://www.googleapis.com/oauth2/v2/userinfo";
 
         HttpHeaders headers = new HttpHeaders();
@@ -55,5 +83,17 @@ public class GoogleAuthService {
 
         return restTemplate.exchange(url, HttpMethod.GET, request, GoogleUserInfo.class)
                 .getBody();
+    }
+
+    // 신규 유저 생성
+    private User createGoogleUser(GoogleUserInfo info) {
+        User newUser = new User();
+        newUser.setEmail(info.email());
+        newUser.setPassword("GOOGLE_USER");
+        newUser.setName(info.name());
+        newUser.setProvider("google");
+        newUser.setRole(UserRole.STUDENT);
+        newUser.setStatus(UserStatus.ACTIVE);
+        return newUser;
     }
 }
