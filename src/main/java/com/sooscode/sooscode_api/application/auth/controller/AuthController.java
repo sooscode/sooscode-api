@@ -8,7 +8,6 @@ import com.sooscode.sooscode_api.application.auth.dto.*;
 import com.sooscode.sooscode_api.application.auth.service.AuthServiceImpl;
 import com.sooscode.sooscode_api.application.auth.service.GoogleAuthService;
 import com.sooscode.sooscode_api.application.auth.dto.RegisterRequest;
-
 import java.net.URI;
 
 @RestController
@@ -21,14 +20,24 @@ public class AuthController {
 
     // 로컬 로그인
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(
+    public ResponseEntity<Void> login(
             @RequestBody LoginRequest request,
             HttpServletResponse response
     ) {
         LoginResponse tokens = authService.loginUser(request);
 
+
+        // AccessToken → 일반 쿠키 (JS 접근 가능)
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", tokens.getAccessToken())
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .sameSite("Lax")
+                .maxAge(30 * 60)
+                .build();
+
         // RefreshToken -> HttpOnly Cookie
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", tokens.getRefreshToken())
+        ResponseCookie refreshCookie  = ResponseCookie.from("refreshToken", tokens.getRefreshToken())
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
@@ -36,9 +45,10 @@ public class AuthController {
                 .maxAge(7 * 24 * 60 * 60)
                 .build();
 
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
-        return ResponseEntity.ok(new TokenResponse(tokens.getAccessToken()));
+        return ResponseEntity.ok().build();
     }
 
     // Google 로그인 URL로 redirect
@@ -56,8 +66,15 @@ public class AuthController {
     ) {
         LoginResponse tokens = googleAuthService.processGoogleCallback(code);
 
-        // RefreshToken -> Cookie 저장
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", tokens.getRefreshToken())
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", tokens.getAccessToken())
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .sameSite("Lax")
+                .maxAge(30 * 60)
+                .build();
+
+        ResponseCookie refreshCookie  = ResponseCookie.from("refreshToken", tokens.getRefreshToken())
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
@@ -65,10 +82,11 @@ public class AuthController {
                 .maxAge(7 * 24 * 60 * 60)
                 .build();
 
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create("http://localhost:5173?accessToken=" + tokens.getAccessToken()))
+                .location(URI.create("http://localhost:5173"))
                 .build();
     }
 
@@ -76,7 +94,7 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
 
-        ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
+        ResponseCookie deleteAccessCookie = ResponseCookie.from("accessToken","")
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
@@ -84,7 +102,16 @@ public class AuthController {
                 .maxAge(0)
                 .build();
 
-        response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
+        ResponseCookie deleteRefreshCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .sameSite("Lax")
+                .maxAge(0)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, deleteAccessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, deleteRefreshCookie.toString());
         return ResponseEntity.ok().build();
     }
 

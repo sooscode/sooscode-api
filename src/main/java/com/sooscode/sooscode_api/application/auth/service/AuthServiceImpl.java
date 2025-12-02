@@ -24,22 +24,16 @@ public class AuthServiceImpl {
     // 로그인
     public LoginResponse loginUser(LoginRequest loginRequest) {
 
-        // 이메일로 유저 조회
         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 이메일 입니다."));
 
-        // 비밀번호 검증
         if(!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
 
-        // 토큰 발급
-        String accessToken = jwtUtil.generateAccessToken(user.getEmail());
-        String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
+        String accessToken = jwtUtil.generateAccessToken(user);
+        String refreshToken = jwtUtil.generateRefreshToken(user);
 
-        //RT
-
-        // 응답 DTO로 묶어서 반환
         return new LoginResponse(
                 accessToken,
                 refreshToken
