@@ -9,7 +9,6 @@ import com.sooscode.sooscode_api.application.auth.dto.*;
 import com.sooscode.sooscode_api.application.auth.dto.RegisterRequest;
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
-import com.sooscode.sooscode_api.domain.user.service.UserService;
 import com.sooscode.sooscode_api.global.jwt.JwtUtil;
 
 @RequiredArgsConstructor
