@@ -23,7 +23,7 @@ public class ChatMessage {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = true)
-    @com.fasterxml.jackson.annotation.JsonIgnore   // ✅ 이거 추가
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,4 +37,14 @@ public class ChatMessage {
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    // ChatMessage 엔티티 내부
+    public static ChatMessage of(User user, ClassRoom classRoom, String content) {
+        return ChatMessage.builder()
+                .user(user)
+                .classRoom(classRoom)
+                .content(content)
+                .build();
+    }
+
 }
