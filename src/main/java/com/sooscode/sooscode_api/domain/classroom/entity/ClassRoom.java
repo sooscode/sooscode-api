@@ -1,6 +1,8 @@
 package com.sooscode.sooscode_api.domain.classroom.entity;
 
-import com.sooscode.sooscode_api.domain.file.SooFile;
+import com.sooscode.sooscode_api.domain.classroom.enums.ClassMode;
+import com.sooscode.sooscode_api.domain.classroom.enums.ClassStatus;
+import com.sooscode.sooscode_api.domain.file.entity.SooFile;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -21,6 +23,9 @@ public class ClassRoom {
     @Column(name = "class_id")
     private Long classId;
 
+    @Column(name = "is_online", nullable = false)
+    private boolean isOnline;
+
     @Column(name = "title", length = 255, nullable = false)
     private String title;
 
@@ -30,10 +35,6 @@ public class ClassRoom {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "file_id")
     private SooFile file;
-
-    @Column(name = "max_students")
-    @Builder.Default
-    private Integer maxStudents = 30;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -57,11 +58,50 @@ public class ClassRoom {
     @Column(name = "ended_at", nullable = false)
     private LocalDateTime endedAt;
 
-    public enum ClassStatus {
-        UPCOMING, ONGOING, FINISHED
+    // ===== 비즈니스 로직 (상태 확인만, 예외 던지지 않음) =====
+
+    /**
+     * 온라인 클래스인지 확인
+     */
+    public boolean isOnlineClass() {
+        return this.isOnline;
     }
 
-    public enum ClassMode {
-        READ, FREE, QUIZ
+    /**
+     * 클래스가 시작되었는지 확인
+     */
+    public boolean isStarted() {
+        return LocalDateTime.now().isAfter(this.startedAt) ||
+                LocalDateTime.now().isEqual(this.startedAt);
+    }
+
+    /**
+     * 클래스가 종료되었는지 확인
+     */
+    public boolean isEnded() {
+        return LocalDateTime.now().isAfter(this.endedAt);
+    }
+
+    /**
+     * 현재 접속 가능한지 확인 (단순 boolean 반환)
+     */
+    public boolean isAccessible() {
+        return this.isOnline && isStarted() && !isEnded();
+    }
+
+    // ===== Setter 대신 의미있는 메서드 =====
+
+    /**
+     * 클래스 상태 변경
+     */
+    public void updateStatus(ClassStatus newStatus) {
+        this.status = newStatus;
+    }
+
+    /**
+     * 클래스 모드 변경
+     */
+    public void updateMode(ClassMode newMode) {
+        this.mode = newMode;
     }
 }

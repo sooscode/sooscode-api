@@ -1,7 +1,7 @@
 package com.sooscode.sooscode_api.domain.user.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.sooscode.sooscode_api.application.auth.entity.EmailCode;
+import com.sooscode.sooscode_api.domain.user.entity.EmailCode;
 import java.util.Optional;
 
 public interface EmailCodeRepository extends JpaRepository<EmailCode, Long> {

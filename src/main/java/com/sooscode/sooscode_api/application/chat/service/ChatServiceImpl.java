@@ -3,8 +3,6 @@ package com.sooscode.sooscode_api.application.chat.service;
 import com.sooscode.sooscode_api.application.chat.dto.ChatHistoryResponse;
 import com.sooscode.sooscode_api.application.chat.dto.ChatSaveRequest;
 import com.sooscode.sooscode_api.domain.chatmessage.entity.ChatMessage;
-import com.sooscode.sooscode_api.domain.chatmessage.repository.ChatMessageRepository;
-import com.sooscode.sooscode_api.domain.chatmessage.service.ChatMessageService;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
 import com.sooscode.sooscode_api.domain.classroom.repository.ClassRoomRepository;
 import lombok.RequiredArgsConstructor;
