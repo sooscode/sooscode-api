@@ -41,13 +41,11 @@ public class GoogleAuthService {
 
         String email = userInfo.email();
 
-        // 기존유저 or 신규유저 생성
         User user = userRepository.findByEmail(email)
                 .orElseGet(() -> userRepository.save(createGoogleUser(userInfo)));
 
-        // jwt 토큰 발급
-        String accessToken = jwtUtil.generateAccessToken(user.getEmail());
-        String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
+        String accessToken = jwtUtil.generateAccessToken(user);
+        String refreshToken = jwtUtil.generateRefreshToken(user);
 
         return new LoginResponse(accessToken, refreshToken);
     }
@@ -82,7 +80,7 @@ public class GoogleAuthService {
         HttpEntity<?> request = new HttpEntity<>(headers);
 
         return restTemplate.exchange(url, HttpMethod.GET, request, GoogleUserInfo.class)
-                .getBody();
+            .getBody();
     }
 
     // 신규 유저 생성
