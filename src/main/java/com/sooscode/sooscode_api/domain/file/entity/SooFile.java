@@ -1,6 +1,7 @@
 package com.sooscode.sooscode_api.domain.file.entity;
 
 
+import com.sooscode.sooscode_api.domain.file.enums.FileType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -35,7 +36,12 @@ public class SooFile {
     @Column(name = "type", length = 50, nullable = false)
     private String type;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "file_type", length = 30, nullable = false)
+    private FileType fileType;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
 }
