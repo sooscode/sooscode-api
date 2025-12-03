@@ -1,8 +1,15 @@
 package com.sooscode.sooscode_api.application.auth.controller;
 
+import com.sooscode.sooscode_api.application.auth.util.CookieUtil;
+import com.sooscode.sooscode_api.domain.user.entity.EmailCode;
+import com.sooscode.sooscode_api.domain.user.entity.User;
+import com.sooscode.sooscode_api.global.user.CustomUserDetails;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import com.sooscode.sooscode_api.application.auth.dto.*;
 import com.sooscode.sooscode_api.application.auth.service.AuthServiceImpl;
@@ -20,104 +27,104 @@ public class AuthController {
 
     // 로컬 로그인
     @PostMapping("/login")
-    public ResponseEntity<Void> login(
+    public ResponseEntity<ApiResponse> login(
             @RequestBody LoginRequest request,
             HttpServletResponse response
     ) {
-        LoginResponse tokens = authService.loginUser(request);
+        LoginResponse data = authService.loginUser(request);
 
+        // 쿠키 굽기
+        CookieUtil.addTokenCookies(response, data);
 
-        // AccessToken → 일반 쿠키 (JS 접근 가능)
-        ResponseCookie accessCookie = ResponseCookie.from("accessToken", tokens.getAccessToken())
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .sameSite("Lax")
-                .maxAge(30 * 60)
-                .build();
+        // JSON body 응답
+        ApiResponse responseBody = new ApiResponse(true, "로그인 성공", data);
 
-        // RefreshToken -> HttpOnly Cookie
-        ResponseCookie refreshCookie  = ResponseCookie.from("refreshToken", tokens.getRefreshToken())
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .sameSite("Lax")
-                .maxAge(7 * 24 * 60 * 60)
-                .build();
-
-        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
-
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(responseBody);
     }
 
-    // Google 로그인 URL로 redirect
-    @GetMapping("/google/login")
-    public void googleLogin(HttpServletResponse response) throws Exception {
-        String url = googleAuthService.buildGoogleLoginUrl();
-        response.sendRedirect(url);
-    }
-
-    // Google OAuth Callback
-    @GetMapping("/google/callback")
-    public ResponseEntity<?> googleCallback(
-            @RequestParam("code") String code,
-            HttpServletResponse response
-    ) {
-        LoginResponse tokens = googleAuthService.processGoogleCallback(code);
-
-        ResponseCookie accessCookie = ResponseCookie.from("accessToken", tokens.getAccessToken())
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .sameSite("Lax")
-                .maxAge(30 * 60)
-                .build();
-
-        ResponseCookie refreshCookie  = ResponseCookie.from("refreshToken", tokens.getRefreshToken())
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .sameSite("Lax")
-                .maxAge(7 * 24 * 60 * 60)
-                .build();
-
-        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
-
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create("http://localhost:5173"))
-                .build();
-    }
 
     // 로그아웃
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
+    public ResponseEntity<ApiResponse> logout(HttpServletResponse response) {
 
-        ResponseCookie deleteAccessCookie = ResponseCookie.from("accessToken","")
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .sameSite("Lax")
-                .maxAge(0)
-                .build();
+       CookieUtil.deleteTokenCookies(response, null);
 
-        ResponseCookie deleteRefreshCookie = ResponseCookie.from("refreshToken", "")
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .sameSite("Lax")
-                .maxAge(0)
-                .build();
+       ApiResponse responseBody = new ApiResponse(true, "로그아웃 성공", null);
 
-        response.addHeader(HttpHeaders.SET_COOKIE, deleteAccessCookie.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, deleteRefreshCookie.toString());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(responseBody);
     }
 
     // 회원가입
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(authService.registerUser(request));
+    public ResponseEntity<ApiResponse> register(@RequestBody RegisterRequest request) {
+
+        RegisterResponse data = authService.registerUser(request);
+
+        ApiResponse responseBody = new ApiResponse(true, "회원가입 성공", data);
+
+        return ResponseEntity.ok(responseBody);
+    }
+
+    // 이메일 중복 검사
+    @GetMapping("/check-email")
+    public ResponseEntity<ApiResponse> checkEmail(@RequestParam String email) {
+
+        boolean isDuplicate = authService.isDuplicateEmail(email);
+
+        if (isDuplicate) {
+            return ResponseEntity.ok(new ApiResponse(false, "이미 사용 중인 이메일입니다.", null));
+        }
+
+        return ResponseEntity.ok(new ApiResponse(true, "사용 가능한 이메일입니다.", null));
+    }
+
+    // 이메일 인증 코드 요청
+    @PostMapping("/email/send")
+    public ResponseEntity<ApiResponse> sendVerificationCode(@RequestBody EmailRequest request) {
+        authService.sendVerificationCode(request.getEmail());
+        return ResponseEntity.ok(new ApiResponse(true, "인증 코드가 이메일로 전송되었습니다.", null));
+    }
+
+    // 이메일 인증 코드 검증
+    @PostMapping("/email/verify")
+    public ResponseEntity<ApiResponse> verifyEmailCode(@RequestBody EmailVerifyRequest request) {
+        boolean result = authService.verifyEmailCode(request.getEmail(), request.getCode());
+
+        if (!result) {
+            return ResponseEntity.ok(new ApiResponse(false, "인증 코드가 일치하지 않습니다.", null));
+        }
+
+        return ResponseEntity.ok(new ApiResponse(true, "이메일 인증이 완료되었습니다.", null));
+    }
+
+//    // Google 로그인 URL로 redirect
+//    @GetMapping("/google/login")
+//    public void googleLogin(HttpServletResponse response) throws Exception {
+//        String url = googleAuthService.buildGoogleLoginUrl();
+//        response.sendRedirect(url);
+//    }
+//
+//    // Google OAuth Callback
+//    @GetMapping("/google/callback")
+//    public ResponseEntity<?> googleCallback(
+//            @RequestParam("code") String code,
+//            HttpServletResponse response
+//    ) {
+//
+//        LoginResponse data = authService.loginUser(code);
+//
+//        CookieUtil.addTokenCookies(response, data);
+//
+//        return ResponseEntity.status(HttpStatus.FOUND)
+//                .location(URI.create("http://localhost:5173"))
+//                .build();
+//    }
+
+
+    // 현재 로그인된 유저 정보 테스트
+    @GetMapping("/me")
+    public String me(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        User user = userDetails.getUser();
+        return user.getEmail();
     }
 }

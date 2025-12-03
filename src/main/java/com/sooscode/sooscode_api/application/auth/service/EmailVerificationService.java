@@ -28,7 +28,7 @@ public class EmailVerificationService {
             return false;
         }
 
-        dbCode.setVerified(true);
+        dbCode.setIsVerified(true);
         emailCodeRepository.save(dbCode);
 
         return true;

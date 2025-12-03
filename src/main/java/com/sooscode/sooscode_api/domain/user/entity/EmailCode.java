@@ -17,7 +17,7 @@ public class EmailCode {
 
     private String email;
     private String code;
-    private Boolean verified;
+    private Boolean isVerified;
     private LocalDateTime createdAt;
     private LocalDateTime expiresAt;
 }

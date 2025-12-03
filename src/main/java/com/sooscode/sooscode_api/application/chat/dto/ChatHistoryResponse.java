@@ -17,7 +17,7 @@ public class ChatHistoryResponse {
     public static ChatHistoryResponse from(ChatMessage message) {
         return new ChatHistoryResponse(
                 message.getChatId(),
-                message.getUser() != null ? message.getUser().getUser_id() : null,
+                message.getUser() != null ? message.getUser().getUserId() : null,
                 message.getClassRoom().getClassId(),
                 message.getContent(),
                 message.getCreatedAt()
