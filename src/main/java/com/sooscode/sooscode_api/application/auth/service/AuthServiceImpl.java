@@ -40,9 +40,9 @@ public class AuthServiceImpl {
     }
 
     // 회원가입
-    public String registerUser(RegisterRequest request) {
+    public ApiResponse registerUser(RegisterRequest request) {
         if (userService.existsByEmail(request.getEmail())) {
-            return "이미 존재하는 이메일입니다.";
+            return new ApiResponse(false, "이미 존재하는 이메일입니다.");
         }
 
         User user = new User();
@@ -53,8 +53,8 @@ public class AuthServiceImpl {
         user.setRole(UserRole.STUDENT);
         user.setStatus(UserStatus.ACTIVE);
 
-        User newUser = userService.saveUser(user);
+        userService.saveUser(user);
 
-        return "회원가입 완료!";
+        return new ApiResponse(true, "회원가입 완료!");
     }
 }

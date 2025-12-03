@@ -20,21 +20,22 @@ public class AuthController {
 
     // 로컬 로그인
     @PostMapping("/login")
-    public ResponseEntity<Void> login(
+    //public ResponseEntity<Void> login(
+    public ResponseEntity<TokenResponse> login(
             @RequestBody LoginRequest request,
             HttpServletResponse response
     ) {
         LoginResponse tokens = authService.loginUser(request);
 
 
-        // AccessToken → 일반 쿠키 (JS 접근 가능)
-        ResponseCookie accessCookie = ResponseCookie.from("accessToken", tokens.getAccessToken())
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .sameSite("Lax")
-                .maxAge(30 * 60)
-                .build();
+//        // AccessToken → HttpOnly Cookie
+//        ResponseCookie accessCookie = ResponseCookie.from("accessToken", tokens.getAccessToken())
+//                .httpOnly(true)
+//                .secure(false)
+//                .path("/")
+//                .sameSite("Lax")
+//                .maxAge(30 * 60)
+//                .build();
 
         // RefreshToken -> HttpOnly Cookie
         ResponseCookie refreshCookie  = ResponseCookie.from("refreshToken", tokens.getRefreshToken())
@@ -45,10 +46,12 @@ public class AuthController {
                 .maxAge(7 * 24 * 60 * 60)
                 .build();
 
-        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        //response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
-        return ResponseEntity.ok().build();
+        //return ResponseEntity.ok().build();
+
+        return ResponseEntity.ok(new TokenResponse(tokens.getAccessToken()));
     }
 
     // Google 로그인 URL로 redirect
@@ -66,13 +69,15 @@ public class AuthController {
     ) {
         LoginResponse tokens = googleAuthService.processGoogleCallback(code);
 
-        ResponseCookie accessCookie = ResponseCookie.from("accessToken", tokens.getAccessToken())
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .sameSite("Lax")
-                .maxAge(30 * 60)
-                .build();
+//        ResponseCookie accessCookie = ResponseCookie.from("accessToken", tokens.getAccessToken())
+//                .httpOnly(true)
+//                .secure(false)
+//                .path("/")
+//                .sameSite("Lax")
+//                .maxAge(30 * 60)
+//                .build();
+
+        //response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
 
         ResponseCookie refreshCookie  = ResponseCookie.from("refreshToken", tokens.getRefreshToken())
                 .httpOnly(true)
@@ -81,26 +86,30 @@ public class AuthController {
                 .sameSite("Lax")
                 .maxAge(7 * 24 * 60 * 60)
                 .build();
-
-        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create("http://localhost:5173"))
-                .build();
+
+        return ResponseEntity
+                .accepted()
+                .body(new TokenResponse(tokens.getAccessToken()));
+
+
+//        return ResponseEntity.status(HttpStatus.FOUND)
+//                .location(URI.create("http://localhost:5173"))
+//                .build();
     }
 
     // 로그아웃
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
 
-        ResponseCookie deleteAccessCookie = ResponseCookie.from("accessToken","")
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .sameSite("Lax")
-                .maxAge(0)
-                .build();
+//        ResponseCookie deleteAccessCookie = ResponseCookie.from("accessToken","")
+//                .httpOnly(true)
+//                .secure(false)
+//                .path("/")
+//                .sameSite("Lax")
+//                .maxAge(0)
+//                .build();
 
         ResponseCookie deleteRefreshCookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
@@ -110,14 +119,27 @@ public class AuthController {
                 .maxAge(0)
                 .build();
 
-        response.addHeader(HttpHeaders.SET_COOKIE, deleteAccessCookie.toString());
+        //response.addHeader(HttpHeaders.SET_COOKIE, deleteAccessCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, deleteRefreshCookie.toString());
         return ResponseEntity.ok().build();
     }
 
     // 회원가입
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(authService.registerUser(request));
+    public ResponseEntity<ApiResponse> register(@RequestBody RegisterRequest request) {
+
+        ApiResponse response = authService.registerUser(request);
+
+        if (!response.isSuccess()) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(response);
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+
+        //return ResponseEntity.ok(authService.registerUser(request));
     }
 }
