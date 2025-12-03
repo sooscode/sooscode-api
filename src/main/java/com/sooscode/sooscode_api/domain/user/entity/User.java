@@ -16,8 +16,8 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
-    private Long user_id;
+    @Column(nullable = false, name = "user_id")
+    private Long userId;
 
     @Column(nullable = false)
     private String email;
@@ -42,5 +42,7 @@ public class User {
 
     @Column(insertable = false)
     private LocalDateTime updated_at;
+
+    private String file;
 }
 
