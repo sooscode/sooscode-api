@@ -57,6 +57,7 @@ public enum ErrorCode {
     CODE_EXECUTION_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "CODE_002", "코드 실행 시간이 초과되었습니다"),
     CODE_SECURITY_VIOLATION(HttpStatus.BAD_REQUEST, "CODE_003", "보안상 제한된 코드입니다"),
     CODE_RUNTIME_ERROR(HttpStatus.BAD_REQUEST, "CODE_004", "코드 실행 중 오류가 발생했습니다"),
+    CODE_SERVER_CONNECTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "CODE_005", "컴파일 서버가 응답하지 않습니다"),
 
     // ===== 스냅샷 =====
     SNAPSHOT_NOT_FOUND(HttpStatus.NOT_FOUND, "SNAPSHOT_001", "스냅샷을 찾을 수 없습니다"),
