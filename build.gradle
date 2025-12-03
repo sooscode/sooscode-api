@@ -55,6 +55,9 @@ dependencies {
     //implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     // env
     implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+    /* AWS S3 의존성 추가 */
+    implementation platform('software.amazon.awssdk:bom:2.20.26')
+    implementation 'software.amazon.awssdk:s3'
 }
 
 tasks.named('test') {
