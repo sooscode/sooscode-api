@@ -25,14 +25,18 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker(brokerPrefix);
+        config.enableSimpleBroker("/topic","/queue");
         config.setApplicationDestinationPrefixes(applicationPrefix);
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint(endpoint)
-                .setAllowedOrigins(allowedOrigins)
+                .setAllowedOriginPatterns("*")
                 .withSockJS();
+
+        // Raw WebSocket 엔드포인트 (Apidog/테스트 도구용)
+        registry.addEndpoint("/ws-raw")
+                .setAllowedOriginPatterns("*");
     }
 }
