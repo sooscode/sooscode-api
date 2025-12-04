@@ -1,32 +1,32 @@
-//package com.sooscode.sooscode_api.application.classroom.service;
-//
-//import com.sooscode.sooscode_api.domain.file.entity.SooFile;
-//import com.sooscode.sooscode_api.domain.user.entity.User;
-//import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
-//import com.sooscode.sooscode_api.global.exception.CustomException;
-//import com.sooscode.sooscode_api.global.exception.ErrorCode;
-//import com.sooscode.sooscode_api.infra.file.S3FileService;
-//import jakarta.persistence.EntityManager;
-//
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.stereotype.Service;
-//import org.springframework.transaction.annotation.Transactional;
-//import org.springframework.web.multipart.MultipartFile;
-//
-//import java.io.IOException;
-//
-///**
-// *  user에 File 아이디 추가후 로직 검증 예정
-// */
-//@Service
-//@RequiredArgsConstructor
-//@Transactional
-//public class TestServiceImpl {
-//
-//    private final UserRepository userRepository;
-//    private final S3FileService fileService;
-//    private final EntityManager entityManager;
-//
+package com.sooscode.sooscode_api.application.classroom.service;
+
+import com.sooscode.sooscode_api.domain.file.entity.SooFile;
+import com.sooscode.sooscode_api.domain.user.entity.User;
+import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
+import com.sooscode.sooscode_api.global.exception.CustomException;
+import com.sooscode.sooscode_api.global.exception.ErrorCode;
+import com.sooscode.sooscode_api.infra.file.S3FileService;
+import jakarta.persistence.EntityManager;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+
+/**
+ *  user에 File 아이디 추가후 로직 검증 예정
+ */
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class TestServiceImpl {
+
+    private final UserRepository userRepository;
+    private final S3FileService fileService;
+    private final EntityManager entityManager;
+
 //    public void updateProfileImage(Long userId, MultipartFile photo) throws IOException {
 //
 //        // 1. 유저 조회
@@ -70,4 +70,6 @@
 //            }
 //        }
 //    }
-//}
+
+
+}
