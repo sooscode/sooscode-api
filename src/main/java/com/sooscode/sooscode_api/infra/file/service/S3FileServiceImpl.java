@@ -1,9 +1,10 @@
-package com.sooscode.sooscode_api.infra.file;
+package com.sooscode.sooscode_api.infra.file.service;
 
 
 import com.sooscode.sooscode_api.domain.file.entity.SooFile;
 import com.sooscode.sooscode_api.domain.file.enums.FileType;
 import com.sooscode.sooscode_api.domain.file.repository.SooFileRepository;
+import com.sooscode.sooscode_api.infra.file.S3FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
