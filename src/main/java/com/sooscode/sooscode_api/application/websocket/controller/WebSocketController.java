@@ -1,7 +1,7 @@
 //package com.sooscode.sooscode_api.application.websocket.controller;
 //
 //import com.sooscode.sooscode_api.application.websocket.dto.ChatMessageDto;
-//import com.sooscode.sooscode_api.application.websocket.dto.CodeShareDto;
+//import com.sooscode.sooscode_api.application.code.dto.CodeShareDto;
 //import lombok.RequiredArgsConstructor;
 //import lombok.extern.slf4j.Slf4j;
 //import org.springframework.messaging.handler.annotation.DestinationVariable;

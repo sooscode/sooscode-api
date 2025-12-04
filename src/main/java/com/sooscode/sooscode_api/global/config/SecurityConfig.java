@@ -49,6 +49,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/ws/**", "/ws-raw/**").permitAll()  // WebSocket 경로 허용
                         .requestMatchers(
                                 "/api/auth/login",
                                 "/api/auth/register",
@@ -72,10 +73,12 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of(
-                "http://localhost:5173",
-                "https://main.d2ezaukds7yg62.amplifyapp.com"
-        ));
+//        config.setAllowedOrigins(List.of(
+//                "http://localhost:5173",
+//                "https://main.d2ezaukds7yg62.amplifyapp.com"
+//        ));
+        config.setAllowedOriginPatterns(List.of("*"));
+
         config.setAllowedMethods(List.of("*"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

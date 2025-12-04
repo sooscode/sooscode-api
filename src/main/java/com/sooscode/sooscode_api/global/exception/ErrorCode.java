@@ -71,7 +71,10 @@ public enum ErrorCode {
 
     // ===== LiveKit =====
     LIVEKIT_TOKEN_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "LIVEKIT_001", "LiveKit 토큰 생성에 실패했습니다"),
-    LIVEKIT_CONNECTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "LIVEKIT_002", "LiveKit 연결에 실패했습니다");
+    LIVEKIT_CONNECTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "LIVEKIT_002", "LiveKit 연결에 실패했습니다"),
+
+    // ===== LiveKit =====
+    PARTICIPANT_NOT_FOUND(HttpStatus.NOT_FOUND, "PARTICIPANT_001", "참가자를 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String code;

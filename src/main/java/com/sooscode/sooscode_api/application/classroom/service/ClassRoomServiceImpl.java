@@ -1,12 +1,16 @@
 package com.sooscode.sooscode_api.application.classroom.service;
 
 import com.sooscode.sooscode_api.application.classroom.dto.*;
+import com.sooscode.sooscode_api.domain.classroom.entity.ClassParticipant;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
 import com.sooscode.sooscode_api.domain.classroom.enums.ClassMode;
 import com.sooscode.sooscode_api.domain.classroom.enums.ClassStatus;
+import com.sooscode.sooscode_api.domain.classroom.repository.ClassParticipantRepository;
 import com.sooscode.sooscode_api.domain.classroom.repository.ClassRoomRepository;
 import com.sooscode.sooscode_api.domain.file.entity.SooFile;
 import com.sooscode.sooscode_api.domain.file.repository.SooFileRepository;
+import com.sooscode.sooscode_api.domain.snapshot.entity.CodeSnapshot;
+import com.sooscode.sooscode_api.domain.snapshot.repository.CodeSnapshotRepository;
 import com.sooscode.sooscode_api.global.exception.CustomException;
 import com.sooscode.sooscode_api.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +30,9 @@ import java.util.stream.Collectors;
 public class ClassRoomServiceImpl implements ClassRoomService {
     private final ClassRoomRepository classRoomRepository;
     private final SooFileRepository sooFileRepository;
+    private final ClassParticipantRepository classParticipantRepository;
+    private final CodeSnapshotRepository codeSnapshotRepository;
+
     /**
      * Class의 정보를 조회
      */
@@ -59,10 +68,46 @@ public class ClassRoomServiceImpl implements ClassRoomService {
         return classRoomRepository.save(classRoom);
     }
 
-    @Override
-    public List<ClassParticipantResponse> getClassStudents(Long classId) {
-        return List.of();
-    }
+//    @Override
+//    public ClassDetailResponse getTeacherClassDetail(Long classId, LocalDate date) {
+//        if(date == null){
+//            date = LocalDate.now();
+//        }
+//
+//        ClassRoom classRoom = classRoomRepository
+//                .findByClassId(classId)
+//                .orElseThrow(() -> new CustomException(ErrorCode.CLASS_NOT_FOUND));
+//
+//        ClassInfoResponse info = ClassInfoResponse.from(classRoom);
+//
+//        List<ClassParticipantResponse> participants =
+//                classParticipantRepository.findByClassRoom_ClassId(classId)
+//                        .stream()
+//                        .map(ClassParticipantResponse::from)
+//                        .toList();
+//
+//        List<SnapshotResponse> snapshots =
+//                codeSnapshotRepository.findByClassIdAndCreatedAtBetween(
+//                        classId,
+//                        date.atStartOfDay(),
+//                        date.atTime(LocalTime.MAX)
+//                ).stream().map(SnapshotResponse::from)
+//                        .toList();
+//
+//        List<FileResponse> fileList =
+//                sooFileRepository.findByClassIdAndCreatedAtBetween(
+//                        classId,
+//                        date.atStartOfDay(),
+//                        date.atTime(LocalTime.MAX)
+//                ).stream().map(FileResponse::from).toList();
+//        return ClassDetailResponse.builder()
+//                .info(info)
+//                .participants(participants)
+//                .snapshots(snapshots)
+//                .fileList(fileList)
+//                .build();
+//    }
+
 //
 //    /**
 //     * 모든 클래스 조회

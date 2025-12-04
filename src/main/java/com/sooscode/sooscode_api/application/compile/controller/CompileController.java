@@ -16,13 +16,15 @@ public class CompileController {
 
     private final CompileService compileService;
 
+    /**
+     *  post 코드 실행 run 요청  result 반환
+     **/
     @PostMapping("/run")
-    public ResponseEntity<CompileRunResponse> run(@Valid @RequestBody CompileRunRequest request) {
-        return ResponseEntity.ok(compileService.runCode(request));
-    }
+    public ResponseEntity<CompileResultResponse> run(@Valid @RequestBody CompileRunRequest request) {
+        CompileResultResponse result = compileService.runCode(request.getCode());
 
-    @GetMapping("/results/{jobId}")
-    public ResponseEntity<CompileResultResponse> getResult(@PathVariable String jobId) {
-        return ResponseEntity.ok(compileService.getCompileResult(jobId));
+
+
+        return ResponseEntity.ok(result);
     }
 }

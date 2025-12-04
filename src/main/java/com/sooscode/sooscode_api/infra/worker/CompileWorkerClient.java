@@ -23,10 +23,13 @@ public class CompileWorkerClient {
 
     @Value("${compile.worker-url}")
     private String workerUrl;
+
     /**
      * [POST] 워커에게 실행 요청
      */
     public CompileRunResponse requestCompile(String code) {
+
+
         String targetUrl = workerUrl + "/api/compile/run";
 
         Map<String, String> requestBody = new HashMap<>();
