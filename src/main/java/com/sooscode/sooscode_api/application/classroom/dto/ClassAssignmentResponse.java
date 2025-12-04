@@ -18,12 +18,12 @@ public class ClassAssignmentResponse {
     private Long classId;
     private LocalDateTime createdAt;
 
-//    public static ClassAssignmentResponse from(ClassAssignment entity) {
-//        return ClassAssignmentResponse.builder()
-//                .classAssignmentId(entity.getClassAssignmentId())
-//                .userId(entity.getUser().getUserId())
-//                .classId(entity.getClassRoom().getClassId())
-//                .createdAt(entity.getCreatedAt())
-//                .build();
-//    }
+    public static ClassAssignmentResponse from(ClassAssignment entity) {
+        return ClassAssignmentResponse.builder()
+                .classAssignmentId(entity.getClassAssignmentId())
+                .userId(entity.getUser().getUserId())
+                .classId(entity.getClassRoom().getClassId())
+                .createdAt(entity.getCreatedAt())
+                .build();
+    }
 }

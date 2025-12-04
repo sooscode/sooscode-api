@@ -52,5 +52,16 @@ public class ClassRoomController {
 //        return ResponseEntity.ok(snapshot);
 //    }
 
+    // 해당 강사가 담당하는 클래스 정보
+    @GetMapping("/teacher/{userId}")
+    public ResponseEntity<?> getClassesByTeacher(@PathVariable Long userId) {
+
+        log.info("getClassesByTeacher Controller userId={}", userId);
+
+        var response = classRoomService.getClassesByTeacher(userId);
+
+        return ResponseEntity.ok(response);
+    }
+
 
 }

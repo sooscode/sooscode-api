@@ -17,7 +17,7 @@ public class ClassParticipantController {
 
     private final ClassParticipantService classParticipantService;
 
-    // Participants의 리스트를 return하는 api
+    // class 참가자 조회
     @GetMapping("/participant/{classId}")
     public ResponseEntity<?> getClassParticipants(
             @PathVariable Long classId) {
@@ -29,6 +29,7 @@ public class ClassParticipantController {
         return ResponseEntity.ok(responses);
     }
 
+    // class 참가자 생성
     @PostMapping("/participant/{classId}/{userId}")
     public ResponseEntity<?> addClassParticipant(
             @PathVariable Long classId,
@@ -39,6 +40,7 @@ public class ClassParticipantController {
         return ResponseEntity.ok("add participant successfully");
     }
 
+    // class 참가자 삭제
     @DeleteMapping("/participant/{classId}/{userId}")
     public ResponseEntity<?> deleteClassParticipant(
             @PathVariable Long classId,

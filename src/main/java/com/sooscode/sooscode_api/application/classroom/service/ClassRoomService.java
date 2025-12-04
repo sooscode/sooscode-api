@@ -4,6 +4,7 @@ package com.sooscode.sooscode_api.application.classroom.service;
 import com.sooscode.sooscode_api.application.classroom.dto.ClassParticipantResponse;
 import com.sooscode.sooscode_api.application.classroom.dto.ClassRoomCreateRequest;
 import com.sooscode.sooscode_api.application.classroom.dto.ClassRoomResponse;
+import com.sooscode.sooscode_api.application.classroom.dto.TeacherClassResponse;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ public interface ClassRoomService {
     // Test용 classroom Create
     ClassRoom createClassRoom(ClassRoomCreateRequest request);
 
+    List<TeacherClassResponse> getClassesByTeacher(Long userId);
     // 강사 ClassRoom 진입시 getData
     //ClassDetailResponse getTeacherClassDetail(Long classId);
 
