@@ -1,6 +1,7 @@
 package com.sooscode.sooscode_api.global.user;
 
 import com.sooscode.sooscode_api.domain.user.entity.User;
+import com.sooscode.sooscode_api.domain.user.enums.UserStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -59,10 +60,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        /**
-         * 유저 상태 조건에 따라 변경 가능 (Active 여부 체크 가능)
-         */
-        return true;
+        return user.getStatus() == UserStatus.ACTIVE;
     }
 
     /**
