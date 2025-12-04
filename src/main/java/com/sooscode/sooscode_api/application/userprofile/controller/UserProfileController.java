@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import com.sooscode.sooscode_api.application.userprofile.dto.UserProfileResponse;
 
 @RestController
 @RequestMapping("/api/user")
@@ -12,9 +11,15 @@ import com.sooscode.sooscode_api.application.userprofile.dto.UserProfileResponse
 public class UserProfileController {
 
     @GetMapping("/profile")
-    public UserProfileResponse getProfile(
+    public com.sooscode.sooscode_api.application.userprofile.dto.UserResponse getProfile(
             @AuthenticationPrincipal UserDetails user
     ) {
-        return new UserProfileResponse(user.getUsername());
+        return new com.sooscode.sooscode_api.application.userprofile.dto.UserResponse(user.getUsername());
     }
+
+    /**
+     * 비밀번호 변경
+     */
+   // @PostMapping("/password/update")
+
 }

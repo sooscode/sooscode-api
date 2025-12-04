@@ -1,7 +1,7 @@
 package com.sooscode.sooscode_api.application.auth.controller;
 
 import com.sooscode.sooscode_api.application.auth.util.CookieUtil;
-import com.sooscode.sooscode_api.application.userProfile.dto.UserInfo;
+import com.sooscode.sooscode_api.application.userprofile.dto.UserInfo;
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.global.jwt.JwtUtil;
 import com.sooscode.sooscode_api.global.user.CustomUserDetails;
@@ -139,4 +139,17 @@ public class AuthController {
         );
         return ResponseEntity.ok(new ApiResponse(true, "사용자 정보 조회 성공", userInfo));
     }
+
+    /**
+     * 임시 비밀번호 발급 요청
+     */
+//    @GetMapping("/password/reset/request")
+//    public ResponseEntity<ApiResponse> resetPassword()
+
+    /**
+     * 임시 비밀번호로 로그인 (이건 시큐리티에)
+     */
+    //@GetMapping("/login/temp")
+
+
 }
