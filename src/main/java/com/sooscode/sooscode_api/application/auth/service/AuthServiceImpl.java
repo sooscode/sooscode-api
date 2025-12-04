@@ -260,4 +260,67 @@ public class AuthServiceImpl {
             throw new RuntimeException("이메일 전송 중 오류 발생", e);
         }
     }
+
+    /**
+     * 임시 비밀번호 생성 & 저장
+     */
+//    public void sendTempPassword(String email) {
+//        User user = userRepository.findByEmail(email)
+//                .orElseThrow(() -> new RuntimeException("존재하지 않는 이메일입니다."));
+//
+//        // 1) 랜덤 임시 비밀번호 생성
+//        String tempPassword = RandomStringUtils.randomAlphanumeric(10);
+//
+//        // 2) temp_credentials 테이블에 저장
+//        TempCredential credential = new TempCredential(
+//                user.getUserId(),
+//                tempPassword,
+//                LocalDateTime.now().plusMinutes(30),
+//                false
+//        );
+//        tempCredentialRepository.save(credential);
+//
+//        // 3) 이메일 발송 (생략)
+//        mailService.sendTempPassword(email, tempPassword);
+//    }
+
+
+    /**
+     * 임시 비밀번호 로그인
+     */
+//    public LoginResponse loginWithTempPassword(String email, String tempPassword) {
+//
+//        User user = userRepository.findByEmail(email)
+//                .orElseThrow(() -> new RuntimeException("존재하지 않는 이메일입니다."));
+//
+//        TempCredential credential = tempCredentialRepository
+//                .findTopByUserIdOrderByIssuedAtDesc(user.getUserId())
+//                .orElseThrow(() -> new RuntimeException("임시 비밀번호가 존재하지 않습니다."));
+//
+//        // 만료 확인
+//        if (credential.getExpiresAt().isBefore(LocalDateTime.now())) {
+//            throw new RuntimeException("임시 비밀번호가 만료되었습니다.");
+//        }
+//
+//        // 이미 사용 됐는지
+//        if (credential.isUsed()) {
+//            throw new RuntimeException("이미 사용된 임시 비밀번호입니다.");
+//        }
+//
+//        // 비밀번호 매칭
+//        if (!credential.getTempPassword().equals(tempPassword)) {
+//            throw new RuntimeException("임시 비밀번호가 일치하지 않습니다.");
+//        }
+//
+//        // 성공 → 1회성 사용 처리
+//        credential.setUsed(true);
+//        tempCredentialRepository.save(credential);
+//
+//        // 토큰 발급
+//        String accessToken = jwtUtil.createAccessToken(user.getEmail(), user.getRole());
+//        String refreshToken = jwtUtil.createRefreshToken(user.getEmail(), user.getRole());
+//
+//        return new LoginResponse(accessToken, refreshToken);
+//    }
+
 }
