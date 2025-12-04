@@ -2,10 +2,12 @@ package com.sooscode.sooscode_api.application.auth.service;
 
 import com.sooscode.sooscode_api.application.auth.dto.*;
 import com.sooscode.sooscode_api.domain.user.entity.EmailCode;
+import com.sooscode.sooscode_api.domain.user.entity.TempCredential;
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.enums.UserRole;
 import com.sooscode.sooscode_api.domain.user.enums.UserStatus;
 import com.sooscode.sooscode_api.domain.user.repository.EmailCodeRepository;
+import com.sooscode.sooscode_api.domain.user.repository.TempCredentialRepository;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
 import com.sooscode.sooscode_api.global.exception.CustomException;
 import com.sooscode.sooscode_api.global.exception.ErrorCode;
@@ -21,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -34,6 +37,7 @@ public class AuthServiceImpl {
     private final UserService userService;
     private final EmailCodeRepository emailCodeRepository;
     private final JavaMailSender mailSender;
+    private final TempCredentialRepository tempCredentialRepository;
 
     /**
      * 로그인 - 인증 및 JWT 토큰 생성
@@ -41,7 +45,8 @@ public class AuthServiceImpl {
     public LoginResponse authenticateAndGenerateTokens(
             LoginRequest request,
             AuthenticationManager authenticationManager
-    ) {/**
+    ) {
+        /**
          * 스프링 시큐리티를 통한 인증
          */
         Authentication authentication = authenticationManager.authenticate(
@@ -53,7 +58,8 @@ public class AuthServiceImpl {
 
         /**
          * 인증된 사용자 정보 추출
-         */CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+         */
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
 
         /**
@@ -139,14 +145,14 @@ public class AuthServiceImpl {
     }
 
     /**
-     * 6자리 코드 랜덤 발송
+     * 6자리 코드 랜덤 생성
      */
     private String generateCode(){
         return String.format("%06d", new Random().nextInt(999999));
     }
 
     /**
-     * 이메일 전송
+     * 이메일 html 템플릿
      */
     private void sendEmail(String to, String code) {
 
@@ -262,65 +268,136 @@ public class AuthServiceImpl {
     }
 
     /**
-     * 임시 비밀번호 생성 & 저장
+     * 임시 비밀번호 생성
      */
-//    public void sendTempPassword(String email) {
-//        User user = userRepository.findByEmail(email)
-//                .orElseThrow(() -> new RuntimeException("존재하지 않는 이메일입니다."));
-//
-//        // 1) 랜덤 임시 비밀번호 생성
-//        String tempPassword = RandomStringUtils.randomAlphanumeric(10);
-//
-//        // 2) temp_credentials 테이블에 저장
-//        TempCredential credential = new TempCredential(
-//                user.getUserId(),
-//                tempPassword,
-//                LocalDateTime.now().plusMinutes(30),
-//                false
-//        );
-//        tempCredentialRepository.save(credential);
-//
-//        // 3) 이메일 발송 (생략)
-//        mailService.sendTempPassword(email, tempPassword);
-//    }
+    private String generateTempPassword() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder();
+        SecureRandom random = new SecureRandom();
 
+        for (int i = 0; i < 10; i++) {   // 10자리
+            int index = random.nextInt(chars.length());
+            sb.append(chars.charAt(index));
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     *
+     * 임시 비밀번호 이메일 발송
+     */
+    public void sendTempPassword(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 이메일입니다."));
+
+        String tempPassword = generateTempPassword();
+
+        TempCredential credential = new TempCredential();
+        credential.setUser(user);
+        credential.setTempPassword(tempPassword);
+        credential.setExpiresAt(LocalDateTime.now().plusMinutes(30));
+        credential.setIsUsed(false);
+
+        tempCredentialRepository.save(credential);
+
+        sendTempPasswordEmail(email, tempPassword);
+    }
+
+    /**
+     *
+     * 임시 비밀번호 이메일 html 템플릿
+     */
+    private void sendTempPasswordEmail(String to, String tempPassword) {
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(to);
+            helper.setSubject("[SOOSCODE] 임시 비밀번호 안내");
+
+            String htmlContent = """
+          <html>
+          <body style="font-family: Arial, sans-serif; background:#f6f7fb; padding:20px;">
+              <div style="max-width:480px; margin:0 auto; background:white; padding:24px; 
+                          border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+                  
+                  <h2 style="color:#5865f2; text-align:center;">임시 비밀번호 안내</h2>
+                  
+                  <p style="text-align:center; font-size:14px; color:#555;">
+                      아래 임시 비밀번호로 로그인한 후,<br/>
+                      반드시 새로운 비밀번호로 변경해주세요.
+                  </p>
+
+                  <div style="text-align:center; margin:30px 0;">
+                      <span style="
+                          display:inline-block; 
+                          padding:12px 20px;
+                          background:#e8eaff;
+                          border:1px solid #5865f2;
+                          border-radius:8px;
+                          font-size:22px;
+                          font-weight:700;
+                          letter-spacing:4px;
+                          color:#333;">
+                          %s
+                      </span>
+                  </div>
+
+                  <p style="font-size:12px; color:#777; text-align:center;">
+                      이 임시 비밀번호는 발급 시점 기준 <b>30분간 유효</b>합니다.<br/>
+                      비밀번호 재설정을 요청하지 않았다면 이 이메일은 무시해주세요.
+                  </p>
+
+                  <div style="margin-top:24px; text-align:center; font-size:11px; color:#aaa;">
+                      © SOOSCODE Online Lecture Platform
+                  </div>
+
+              </div>
+          </body>
+          </html>
+          """.formatted(tempPassword);
+
+            helper.setText(htmlContent, true); // HTML 사용
+
+            mailSender.send(message);
+
+        } catch (Exception e) {
+            throw new RuntimeException("임시 비밀번호 이메일 전송 오류", e);
+        }
+    }
 
     /**
      * 임시 비밀번호 로그인
      */
-//    public LoginResponse loginWithTempPassword(String email, String tempPassword) {
-//
-//        User user = userRepository.findByEmail(email)
-//                .orElseThrow(() -> new RuntimeException("존재하지 않는 이메일입니다."));
-//
-//        TempCredential credential = tempCredentialRepository
-//                .findTopByUserIdOrderByIssuedAtDesc(user.getUserId())
-//                .orElseThrow(() -> new RuntimeException("임시 비밀번호가 존재하지 않습니다."));
-//
-//        // 만료 확인
-//        if (credential.getExpiresAt().isBefore(LocalDateTime.now())) {
-//            throw new RuntimeException("임시 비밀번호가 만료되었습니다.");
-//        }
-//
-//        // 이미 사용 됐는지
-//        if (credential.isUsed()) {
-//            throw new RuntimeException("이미 사용된 임시 비밀번호입니다.");
-//        }
-//
-//        // 비밀번호 매칭
-//        if (!credential.getTempPassword().equals(tempPassword)) {
-//            throw new RuntimeException("임시 비밀번호가 일치하지 않습니다.");
-//        }
-//
-//        // 성공 → 1회성 사용 처리
-//        credential.setUsed(true);
-//        tempCredentialRepository.save(credential);
-//
-//        // 토큰 발급
-//        String accessToken = jwtUtil.createAccessToken(user.getEmail(), user.getRole());
-//        String refreshToken = jwtUtil.createRefreshToken(user.getEmail(), user.getRole());
-//
-//        return new LoginResponse(accessToken, refreshToken);
-//    }
+    public LoginResponse loginWithTempPassword(String email, String tempPassword) {
 
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 이메일입니다."));
+
+        TempCredential credential = tempCredentialRepository
+                .findTopByUserOrderByCreatedAtDesc(user)
+                .orElseThrow(() -> new RuntimeException("임시 비밀번호가 존재하지 않습니다."));
+
+        if (credential.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("임시 비밀번호가 만료되었습니다.");
+        }
+
+        if (Boolean.TRUE.equals(credential.getIsUsed())) {
+            throw new RuntimeException("이미 사용된 임시 비밀번호입니다.");
+        }
+
+        if (!credential.getTempPassword().equals(tempPassword)) {
+            throw new RuntimeException("임시 비밀번호가 일치하지 않습니다.");
+        }
+
+        credential.setIsUsed(true);
+        tempCredentialRepository.save(credential);
+
+        String accessToken = jwtUtil.generateAccessToken(user);
+        String refreshToken = jwtUtil.generateRefreshToken(user);
+
+        return new LoginResponse(accessToken, refreshToken);
+    }
 }

@@ -8,7 +8,6 @@ import org.springframework.http.ResponseCookie;
 public class CookieUtil {
 
     public static void addTokenCookies(HttpServletResponse response, LoginResponse tokens) {
-
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", tokens.getAccessToken())
                 .httpOnly(true)
                 .path("/")
@@ -22,13 +21,11 @@ public class CookieUtil {
                 .maxAge(60 * 60 * 24 * 7)
                 .sameSite("Lax")
                 .build();
-
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
     }
 
     public static void deleteTokenCookies(HttpServletResponse response, LoginResponse tokens) {
-
         ResponseCookie deleteAccessCookie = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)
                 .path("/")
@@ -42,7 +39,6 @@ public class CookieUtil {
                 .maxAge(0)
                 .sameSite("Lax")
                 .build();
-
         response.addHeader(HttpHeaders.SET_COOKIE, deleteAccessCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, deleteRefreshCookie.toString());
     }

@@ -40,7 +40,6 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
-    // 가로챔
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -50,11 +49,16 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/ws/**", "/ws-raw/**").permitAll()  // WebSocket 경로 허용
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers(
                                 "/api/auth/login",
                                 "/api/auth/register",
-                                "/api/auth/email/**"
+                                "/api/auth/email/**",
+                                "/api/user/**"
                         ).permitAll()
+                        .requestMatchers("/api/auth/password/reset/**").permitAll()
+                        .requestMatchers("/api/auth/login/temp").permitAll()
+                        .requestMatchers("/api/auth/google/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception

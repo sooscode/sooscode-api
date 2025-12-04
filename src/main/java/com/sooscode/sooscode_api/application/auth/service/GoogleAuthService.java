@@ -23,7 +23,9 @@ public class GoogleAuthService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
 
-    // Google 로그인 URL 생성
+    /**
+     * Google 로그인 URL 생성
+     */
     public String buildGoogleLoginUrl() {
         return "https://accounts.google.com/o/oauth2/v2/auth" +
                 "?client_id=" + googleOAuthConfig.getClientId() +
@@ -33,7 +35,10 @@ public class GoogleAuthService {
                 "&access_type=offline";
     }
 
-    // Google Callback 처리 (AccessToken + RefreshToken 발급)
+    /**
+     *
+     * Google Callback 처리 (AccessToken + RefreshToken 발급)
+     */
     public LoginResponse processGoogleCallback(String code) {
 
         GoogleOAuthToken tokenResponse = getAccessToken(code);
@@ -50,7 +55,9 @@ public class GoogleAuthService {
         return new LoginResponse(accessToken, refreshToken);
     }
 
-    // code → oauth token
+    /**
+     * code → oauth token
+     */
     private GoogleOAuthToken getAccessToken(String code) {
 
         String url = "https://oauth2.googleapis.com/token";
@@ -70,7 +77,9 @@ public class GoogleAuthService {
         return restTemplate.postForObject(url, request, GoogleOAuthToken.class);
     }
 
-    // access-token → user info
+    /**
+     * access-token → user info
+     */
     private GoogleUserInfo getUserInfo(String accessToken) {
         String url = "https://www.googleapis.com/oauth2/v2/userinfo";
 
@@ -83,7 +92,9 @@ public class GoogleAuthService {
             .getBody();
     }
 
-    // 신규 유저 생성
+    /**
+     * 신규 유저 생성
+     */
     private User createGoogleUser(GoogleUserInfo info) {
         User newUser = new User();
         newUser.setEmail(info.email());

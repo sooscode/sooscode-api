@@ -20,17 +20,8 @@ import com.sooscode.sooscode_api.application.auth.dto.RegisterRequest;
 @RequiredArgsConstructor
 public class AuthController {
 
-    /**
-     * 인증 및 회원가입/로그인 로직 처리 서비스
-     */
     private final AuthServiceImpl authService;
-    /**
-     * 스프링 시큐리티 인증 처리 매치너 (FormLogin 대체)
-     */
     private final AuthenticationManager authenticationManager;
-    /**
-     * JWT 생성/검증 유틸리티
-     */
     private final JwtUtil jwtUtil;
 
     /**
@@ -52,8 +43,9 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse> logout(HttpServletResponse response) {
        CookieUtil.deleteTokenCookies(response, null);
-       ApiResponse responseBody = new ApiResponse(true, "로그아웃 성공", null);
-       return ResponseEntity.ok(responseBody);
+        return ResponseEntity.ok(
+                new ApiResponse(true, "로그아웃 성공", null)
+        );
     }
 
     /**
@@ -62,8 +54,9 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@RequestBody RegisterRequest request) {
         RegisterResponse data = authService.registerUser(request);
-        ApiResponse responseBody = new ApiResponse(true, "회원가입 성공", data);
-        return ResponseEntity.ok(responseBody);
+        return ResponseEntity.ok(
+                new ApiResponse(true, "회원가입 성공", data)
+        );
     }
 
     /**
@@ -75,7 +68,9 @@ public class AuthController {
         if (isDuplicate) {
             return ResponseEntity.ok(new ApiResponse(false, "이미 사용 중인 이메일입니다.", null));
         }
-        return ResponseEntity.ok(new ApiResponse(true, "사용 가능한 이메일입니다.", null));
+        return ResponseEntity.ok(
+                new ApiResponse(true, "사용 가능한 이메일입니다.", null)
+        );
     }
 
 
@@ -85,7 +80,10 @@ public class AuthController {
     @PostMapping("/email/send")
     public ResponseEntity<ApiResponse> sendVerificationCode(@RequestBody EmailRequest request) {
         authService.sendVerificationCode(request.getEmail());
-        return ResponseEntity.ok(new ApiResponse(true, "인증 코드가 이메일로 전송되었습니다.", null));
+
+        return ResponseEntity.ok(
+                new ApiResponse(true, "인증 코드가 이메일로 전송되었습니다.", null)
+        );
     }
 
     /**
@@ -97,7 +95,9 @@ public class AuthController {
         if (!result) {
             return ResponseEntity.ok(new ApiResponse(false, "인증 코드가 일치하지 않습니다.", null));
         }
-        return ResponseEntity.ok(new ApiResponse(true, "이메일 인증이 완료되었습니다.", null));
+        return ResponseEntity.ok(
+                new ApiResponse(true, "이메일 인증이 완료되었습니다.", null)
+        );
     }
 
 //    // Google 로그인 URL로 redirect
@@ -129,6 +129,7 @@ public class AuthController {
      * SecurityContext에 있는 CustomUserDetails 추출됨
      */
     @GetMapping("/me")
+
     public ResponseEntity<ApiResponse> me(@AuthenticationPrincipal CustomUserDetails userDetails) {
         User user = userDetails.getUser();
         UserInfo userInfo = new UserInfo(
@@ -137,19 +138,34 @@ public class AuthController {
                 user.getName(),
                 user.getRole()
         );
-        return ResponseEntity.ok(new ApiResponse(true, "사용자 정보 조회 성공", userInfo));
+        return ResponseEntity.ok(
+                new ApiResponse(true, "사용자 정보 조회 성공", userInfo)
+        );
     }
 
     /**
      * 임시 비밀번호 발급 요청
      */
-//    @GetMapping("/password/reset/request")
-//    public ResponseEntity<ApiResponse> resetPassword()
+    @PostMapping("/password/reset/request")
+    public ResponseEntity<?> requestTempPassword(@RequestBody TempPasswordRequest request) {
+        authService.sendTempPassword(request.getEmail());
+        return ResponseEntity.ok(
+                new ApiResponse(true, "임시 비밀번호가 이메일로 발송되었습니다.", null)
+        );
+    }
 
     /**
-     * 임시 비밀번호로 로그인 (이건 시큐리티에)
+     * 임시 비밀번호로 로그인
      */
-    //@GetMapping("/login/temp")
-
+    @PostMapping("/login/temp")
+    public ResponseEntity<ApiResponse> tempLogin(@RequestBody TempLoginRequest request) {
+        LoginResponse tokens = authService.loginWithTempPassword(
+                request.getEmail(),
+                request.getTempPassword()
+        );
+        return ResponseEntity.ok(
+                new ApiResponse(true, "임시 비밀번호 로그인 성공", tokens)
+        );
+    }
 
 }
