@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.application.userProfile.dto;
+package com.sooscode.sooscode_api.application.user.dto;
 
 import com.sooscode.sooscode_api.domain.user.enums.UserRole;
 import lombok.*;

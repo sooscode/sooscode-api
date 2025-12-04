@@ -31,7 +31,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        // 쿠키에서 AT 꺼냄
+        /**
+         * 쿠키에서 AT 꺼냄
+         */
         String token = null;
         if (request.getCookies() != null) {
             token = Arrays.stream(request.getCookies())
@@ -41,12 +43,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .orElse(null);
         }
 
-        // JWT 유효성 검증
+        /**
+         * JWT 유효성 검증
+         */
         if (token != null && jwtUtil.validateToken(token)) {
-            // 유효하면 토큰에서 email 추출
+            /**
+             * 유효하면 토큰에서 email 추출
+             */
             String email = jwtUtil.getUsernameFromToken(token);
 
-            // DB에서 유저 로드 -> userDetails 생성
+            /**
+             * DB에서 유저 로드 -> userDetails 생성
+             */
             CustomUserDetails userDetails =
                     (CustomUserDetails) customUserDetailsService.loadUserByUsername(email);
 
@@ -57,7 +65,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             userDetails.getAuthorities()
                     );
 
-            // SecurityContextHolder에 인증 저장
+            /**
+             * SecurityContextHolder에 인증 저장
+             */
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
