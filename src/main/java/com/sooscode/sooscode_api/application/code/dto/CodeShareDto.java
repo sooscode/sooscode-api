@@ -1,12 +1,11 @@
-package com.sooscode.sooscode_api.application.websocket.dto;
+// 3. CodeShareDto.java
+package com.sooscode.sooscode_api.application.code.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CodeShareDto {
@@ -14,6 +13,4 @@ public class CodeShareDto {
     private Long userId;
     private String userName;
     private String code;
-    private String language;
-    private Integer cursorPosition;
 }
