@@ -2,7 +2,6 @@ package com.sooscode.sooscode_api.application.compile.controller;
 
 import com.sooscode.sooscode_api.application.compile.dto.CompileResultResponse;
 import com.sooscode.sooscode_api.application.compile.dto.CompileRunRequest;
-import com.sooscode.sooscode_api.application.compile.dto.CompileRunResponse;
 import com.sooscode.sooscode_api.application.compile.service.CompileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,6 @@ public class CompileController {
     @PostMapping("/run")
     public ResponseEntity<CompileResultResponse> run(@Valid @RequestBody CompileRunRequest request) {
         CompileResultResponse result = compileService.runCode(request.getCode());
-
 
 
         return ResponseEntity.ok(result);
