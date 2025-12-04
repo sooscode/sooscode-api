@@ -1,18 +1,20 @@
 package com.sooscode.sooscode_api.domain.chatmessage.repository;
 
+import com.sooscode.sooscode_api.domain.chatmessage.entity.ChatMessage;
 import com.sooscode.sooscode_api.domain.chatmessage.entity.ChatMessageReaction;
+import com.sooscode.sooscode_api.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
 public interface ChatMessageReactionRepository extends JpaRepository<ChatMessageReaction, Long> {
 
-    // ✅ 특정 메시지(chatId) + 특정 유저(reactor)의 좋아요 여부 확인
-    boolean existsByMessage_ChatIdAndReactor(Long chatId, String reactor);
+    // 이미 공감했는지 여부
+    boolean existsByMessageAndUser(ChatMessage message, User user);
 
-    // ✅ 특정 메시지(chatId)의 좋아요 개수
-    long countByMessage_ChatId(Long chatId);
+    // 공감 취소
+    void deleteByMessageAndUser(ChatMessage message, User user);
 
-    // ✅ 특정 메시지(chatId)의 모든 리액션 목록
-    List<ChatMessageReaction> findByMessage_ChatId(Long chatId);
+    // 해당 메시지의 공감 총 개수
+    int countByMessage(ChatMessage message);
 }

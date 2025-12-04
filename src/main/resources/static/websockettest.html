@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>Mulang Chat & Reaction Test</title>
+
+    <!-- ✅ SockJS & STOMP (전역 Stomp 객체 버전) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 16px;
+            background: #111827;
+            color: #e5e7eb;
+        }
+        h1 {
+            margin-bottom: 4px;
+            color: #f97316;
+        }
+        .card {
+            border: 1px solid #374151;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            background: #020617;
+        }
+        label {
+            display: inline-block;
+            margin: 4px 0;
+        }
+        input, textarea, button {
+            margin: 4px 0;
+            padding: 6px 8px;
+            border-radius: 6px;
+            border: 1px solid #4b5563;
+            background: #020617;
+            color: #e5e7eb;
+        }
+        input, textarea {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            cursor: pointer;
+            border: none;
+            background: #2563eb;
+            color: white;
+            margin-right: 4px;
+        }
+        button.secondary {
+            background: #6b7280;
+        }
+        button.danger {
+            background: #dc2626;
+        }
+        #log {
+            background: #020617;
+            border-radius: 8px;
+            border: 1px solid #374151;
+            padding: 8px;
+            height: 260px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 12px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 999px;
+            font-size: 11px;
+            margin-right: 4px;
+            background: #111827;
+        }
+        .badge.ok {
+            background: #16a34a33;
+            color: #4ade80;
+        }
+        .badge.err {
+            background: #dc262633;
+            color: #fca5a5;
+        }
+    </style>
+</head>
+<body>
+<h1>Mulang Chat / Reaction Test</h1>
+<p style="margin-top:0;font-size:13px;color:#9ca3af">
+    🔑 <span class="badge ok">쿠키 기반 JWT</span> <span class="badge ok">/ws STOMP</span> <span class="badge ok">/api/chat REST</span>
+</p>
+
+<div class="card">
+    <h3>1. WebSocket 연결 / 구독 / 채팅</h3>
+
+    <label>Class ID (수업 ID, 예: 1)</label>
+    <input id="classIdInput" type="number" value="1" />
+
+    <div style="margin:6px 0;">
+        <button id="connectBtn">1) 연결하기 (/ws)</button>
+        <button id="subscribeBtn" class="secondary">2) 구독 + 히스토리 불러오기</button>
+        <button id="disconnectBtn" class="danger">연결 끊기</button>
+    </div>
+
+    <label>보낼 메세지 내용</label>
+    <textarea id="messageInput" rows="2" placeholder="보낼 채팅 내용을 입력하세요"></textarea>
+    <button id="sendBtn">3) 채팅 전송 (/app/chat.send)</button>
+</div>
+
+<div class="card">
+    <h3>2. 공감(리액션) 토글 테스트</h3>
+    <p style="font-size:12px;color:#9ca3af;margin-top:0;">
+        - <b>userId는 토큰(JWT)에서 가져옴</b><br/>
+        - Body에는 <code>chatId</code>만 넣어서 <code>POST /api/chat/chat.react</code> 호출
+    </p>
+    <label>Chat ID (메시지 PK, 예: 10)</label>
+    <input id="chatIdInput" type="number" />
+
+    <button id="toggleReactionBtn">공감 토글 (추가/삭제)</button>
+    <span id="reactionResult" style="margin-left:8px;font-size:13px;color:#fbbf24;"></span>
+</div>
+
+<div class="card">
+    <h3>3. 로그</h3>
+    <div id="log"></div>
+</div>
+
+<script>
+    let stompClient = null;
+    let connected = false;
+    let subscription = null;
+
+    const logEl = document.getElementById("log");
+
+    function log(message, type = "info") {
+        const time = new Date().toLocaleTimeString();
+        let prefix = "";
+        if (type === "ok") prefix = "[OK]";
+        else if (type === "err") prefix = "[ERR]";
+        else if (type === "ws") prefix = "[WS]";
+        else if (type === "http") prefix = "[HTTP]";
+        else prefix = "[LOG]";
+
+        logEl.textContent += `${time} ${prefix} ${message}\n`;
+        logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    // 1) WebSocket 연결
+    document.getElementById("connectBtn").addEventListener("click", () => {
+        if (connected) {
+            log("이미 연결되어 있음", "ws");
+            return;
+        }
+
+        // ✅ 같은 origin의 /ws 엔드포인트로 SockJS 연결 → 브라우저 쿠키 자동 포함
+        const socket = new SockJS("/ws");
+        stompClient = Stomp.over(socket);  // ✅ StompJs.Client 말고 이거!
+
+        // 콘솔 로그 너무 많이 찍히면 끄고 싶으면 주석 처리
+        stompClient.debug = (str) => log(str, "ws");
+
+        stompClient.connect(
+            {}, // 헤더 비움 (쿠키 기반 인증)
+            (frame) => {
+                connected = true;
+                log("STOMP 연결 성공: " + JSON.stringify(frame.headers), "ok");
+            },
+            (error) => {
+                connected = false;
+                log("STOMP 연결 실패/종료: " + error, "err");
+            }
+        );
+
+        log("STOMP connect 시도...", "ws");
+    });
+
+    // 2) 구독 + 히스토리 조회
+    document.getElementById("subscribeBtn").addEventListener("click", async () => {
+        const classId = document.getElementById("classIdInput").value;
+        if (!classId) {
+            alert("classId를 입력하세요.");
+            return;
+        }
+        if (!stompClient || !connected) {
+            alert("먼저 WebSocket 연결을 하세요.");
+            return;
+        }
+
+        // 기존 구독 해제
+        if (subscription) {
+            subscription.unsubscribe();
+            subscription = null;
+        }
+
+        const destination = `/topic/chat/${classId}`;
+        subscription = stompClient.subscribe(destination, (message) => {
+            try {
+                const body = JSON.parse(message.body);
+                log(`[채팅 수신] ${JSON.stringify(body)}`, "ws");
+            } catch (e) {
+                log(`[채팅 수신] ${message.body}`, "ws");
+            }
+        });
+
+        log(`구독 완료: ${destination}`, "ok");
+
+        // 히스토리 불러오기 (REST)
+        try {
+            const res = await fetch(`/api/chat/history?classId=${encodeURIComponent(classId)}`, {
+                method: "GET",
+                credentials: "include",  // ✅ 쿠키 같이 보냄
+                headers: {
+                    "Accept": "application/json"
+                }
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                log(`히스토리 요청 실패: ${res.status} ${text}`, "err");
+                return;
+            }
+
+            const data = await res.json();
+            log(`히스토리 ${data.length}개 불러옴`, "http");
+            data.forEach((m, idx) => {
+                log(`  [${idx + 1}] ${JSON.stringify(m)}`, "http");
+            });
+
+        } catch (err) {
+            log(`히스토리 요청 중 오류: ${err}`, "err");
+        }
+    });
+
+    // 3) 채팅 보내기
+    document.getElementById("sendBtn").addEventListener("click", () => {
+        const classId = document.getElementById("classIdInput").value;
+        const content = document.getElementById("messageInput").value.trim();
+
+        if (!connected || !stompClient) {
+            alert("먼저 WebSocket 연결을 하세요.");
+            return;
+        }
+        if (!classId) {
+            alert("classId를 입력하세요.");
+            return;
+        }
+        if (!content) {
+            alert("메시지를 입력하세요.");
+            return;
+        }
+
+        const payload = {
+            classId: Number(classId),
+            content: content
+        };
+
+        // ✅ stomp.js 2.x 방식: publish 말고 send
+        stompClient.send("/app/chat.send", {}, JSON.stringify(payload));
+
+        log(`메시지 전송: ${JSON.stringify(payload)}`, "ws");
+        document.getElementById("messageInput").value = "";
+    });
+
+    // 4) 연결 끊기
+    document.getElementById("disconnectBtn").addEventListener("click", () => {
+        if (stompClient && connected) {
+            stompClient.disconnect(() => {
+                log("STOMP 연결 끊김", "ws");
+            });
+            connected = false;
+        } else {
+            log("이미 끊어져 있음", "ws");
+        }
+    });
+
+    // 5) 공감 토글 버튼
+    document.getElementById("toggleReactionBtn").addEventListener("click", async () => {
+        const chatId = document.getElementById("chatIdInput").value;
+        const resultSpan = document.getElementById("reactionResult");
+        resultSpan.textContent = "";
+
+        if (!chatId) {
+            alert("chatId를 입력하세요.");
+            return;
+        }
+
+        try {
+            const res = await fetch("/api/chat/chat.react", {   // ✅ 엔드포인트 반영
+                method: "POST",
+                credentials: "include",   // ✅ 쿠키(JWT) 같이 보냄
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({ chatId: Number(chatId) })
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                log(`공감 토글 실패: ${res.status} ${text}`, "err");
+                resultSpan.textContent = "실패 (" + res.status + ")";
+                return;
+            }
+
+            // int 반환으로 가정
+            const count = await res.json();
+            log(`공감 토글 성공, 현재 공감 수: ${count}`, "http");
+            resultSpan.textContent = `현재 공감 수: ${count}`;
+
+        } catch (err) {
+            log(`공감 토글 중 오류: ${err}`, "err");
+            resultSpan.textContent = "오류";
+        }
+    });
+</script>
+</body>
+</html>
