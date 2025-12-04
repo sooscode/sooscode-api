@@ -20,16 +20,16 @@ public class TestController {
 
     private final TestServiceImpl testService;
 
-//    @PutMapping(value = "/profile", consumes = "multipart/form-data")
-//    public ResponseEntity<?> updateProfileImage(
-//            @RequestParam("userId") Long userId,
-//            @RequestPart(required = false) MultipartFile photo
-//    ) throws IOException {
-//
-//        testService.updateProfileImage(userId, photo);
-//
-//        return ResponseEntity.ok("프로필 이미지 수정 완료");
-//    }
+    @PutMapping(value = "/profile", consumes = "multipart/form-data")
+    public ResponseEntity<?> updateProfileImage(
+            @RequestParam("userId") Long userId,
+            @RequestPart(required = false) MultipartFile photo
+    ) throws IOException {
+
+        testService.updateProfileImage(userId, photo);
+
+        return ResponseEntity.ok("프로필 이미지 수정 완료");
+    }
 
 
 }

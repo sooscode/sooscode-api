@@ -1,5 +1,6 @@
 package com.sooscode.sooscode_api.domain.user.entity;
 
+import com.sooscode.sooscode_api.domain.file.entity.SooFile;
 import jakarta.persistence.*;
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -43,7 +44,9 @@ public class User {
     @Column(nullable = false, name="updated_at")
     private LocalDateTime updatedAt;
 
-    private String file;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "file_id")
+    private SooFile file;
 
     @PrePersist
     protected void onCreate() {
