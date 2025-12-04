@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.application.userProfile.dto;
+package com.sooscode.sooscode_api.application.userprofile.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

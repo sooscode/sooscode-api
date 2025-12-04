@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.application.userProfile.controller;
+package com.sooscode.sooscode_api.application.userprofile.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.*;
 public class UserProfileController {
 
     @GetMapping("/profile")
-    public com.sooscode.sooscode_api.application.userProfile.dto.UserResponse getProfile(
+    public com.sooscode.sooscode_api.application.userprofile.dto.UserResponse getProfile(
             @AuthenticationPrincipal UserDetails user
     ) {
-        return new com.sooscode.sooscode_api.application.userProfile.dto.UserResponse(user.getUsername());
+        return new com.sooscode.sooscode_api.application.userprofile.dto.UserResponse(user.getUsername());
     }
 
     /**

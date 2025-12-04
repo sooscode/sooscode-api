@@ -1,7 +1,7 @@
 package com.sooscode.sooscode_api.application.auth.controller;
 
 import com.sooscode.sooscode_api.application.auth.util.CookieUtil;
-import com.sooscode.sooscode_api.application.userProfile.dto.UserInfo;
+import com.sooscode.sooscode_api.application.userprofile.dto.UserInfo;
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.global.jwt.JwtUtil;
 import com.sooscode.sooscode_api.global.user.CustomUserDetails;
