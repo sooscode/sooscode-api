@@ -71,9 +71,58 @@ public class AuthServiceImpl {
     }
 
     /**
+     * 회원가입 유효성
+     */
+    private void validateRegisterRequest(RegisterRequest request) {
+
+        // 이메일 길이 체크
+        if (request.getEmail() == null ||
+                request.getEmail().length() < 5 ||
+                request.getEmail().length() > 100) {
+            throw new CustomException(ErrorCode.VALIDATION_FAILED, "이메일은 5~100자여야 합니다.");
+        }
+
+        // 이메일 형식 체크
+        if (!request.getEmail().matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+            throw new CustomException(ErrorCode.VALIDATION_FAILED, "이메일 형식이 올바르지 않습니다.");
+        }
+
+        // 비밀번호 길이 체크
+        if (request.getPassword() == null ||
+                request.getPassword().length() < 8 ||
+                request.getPassword().length() > 20) {
+            throw new CustomException(ErrorCode.VALIDATION_FAILED, "비밀번호는 8~20자여야 합니다.");
+        }
+
+        // 비밀번호 일치 확인
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new CustomException(ErrorCode.VALIDATION_FAILED, "비밀번호가 일치하지 않습니다.");
+        }
+
+        // 이름 길이 체크
+        if (request.getName() == null ||
+                request.getName().length() < 2 ||
+                request.getName().length() > 20) {
+            throw new CustomException(ErrorCode.VALIDATION_FAILED, "이름은 2~20자여야 합니다.");
+        }
+
+        // 이메일 인증 여부 검사
+        EmailCode emailCode = emailCodeRepository
+                .findTopByEmailOrderByEmailCodeIdDesc(request.getEmail())
+                .orElseThrow(() -> new CustomException(ErrorCode.VALIDATION_FAILED, "이메일 인증을 먼저 진행해주세요."));
+
+        if (!emailCode.getIsVerified()) {
+            throw new CustomException(ErrorCode.VALIDATION_FAILED, "이메일 인증이 완료되지 않았습니다.");
+        }
+    }
+
+
+    /**
      * 회원가입
      */
     public RegisterResponse registerUser(RegisterRequest request) {
+
+        validateRegisterRequest(request);
 
         if (userService.existsByEmail(request.getEmail())) {
             throw new CustomException(ErrorCode.AUTH_DUPLICATE_EMAIL);
@@ -81,8 +130,8 @@ public class AuthServiceImpl {
 
         User user = new User();
         user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setName(request.getName());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setProvider("local");
         user.setRole(UserRole.STUDENT);
         user.setStatus(UserStatus.ACTIVE);
@@ -126,7 +175,7 @@ public class AuthServiceImpl {
      */
     public boolean verifyEmailCode(String email, String code) {
         EmailCode emailCode = emailCodeRepository
-                .findTopByEmailOrderByCreatedAtDesc(email)
+                .findTopByEmailOrderByEmailCodeIdDesc(email)
                 .orElse(null);
 
         if (emailCode == null) return false;
