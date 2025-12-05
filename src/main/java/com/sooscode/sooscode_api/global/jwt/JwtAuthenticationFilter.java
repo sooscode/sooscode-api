@@ -1,7 +1,7 @@
 package com.sooscode.sooscode_api.global.jwt;
 
-import com.sooscode.sooscode_api.global.user.CustomUserDetails;
-import com.sooscode.sooscode_api.global.user.CustomUserDetailsService;
+import com.sooscode.sooscode_api.global.security.CustomUserDetails;
+import com.sooscode.sooscode_api.global.security.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;

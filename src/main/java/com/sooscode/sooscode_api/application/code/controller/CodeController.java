@@ -1,7 +1,7 @@
 package com.sooscode.sooscode_api.application.code.controller;
 
 import com.sooscode.sooscode_api.application.code.dto.CodeShareDto;
-import com.sooscode.sooscode_api.global.config.websocket.WebSocketSessionRegistry;
+import com.sooscode.sooscode_api.global.websocket.WebSocketSessionRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -9,8 +9,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
-
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 @Slf4j
 @Controller

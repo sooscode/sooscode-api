@@ -24,11 +24,6 @@ public class AdminUserRequest {
         @NotBlank(message = "이름은 필수입니다")
         @Size(min = 2, max = 50, message = "이름은 2자 이상 50자 이하여야 합니다")
         private String name;
-
-        @Pattern(regexp = "^010-\\d{4}-\\d{4}$", message = "전화번호 형식이 올바르지 않습니다 (010-XXXX-XXXX)")
-        private String phone;
-
-        private String department; // 부서 (선택)
     }
 
     /**

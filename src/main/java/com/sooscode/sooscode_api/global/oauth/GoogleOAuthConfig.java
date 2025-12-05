@@ -1,7 +1,6 @@
-package com.sooscode.sooscode_api.global.config;
+package com.sooscode.sooscode_api.global.oauth;
 
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 

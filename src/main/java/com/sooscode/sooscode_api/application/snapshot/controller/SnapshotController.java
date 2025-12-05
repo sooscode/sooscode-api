@@ -3,7 +3,7 @@ package com.sooscode.sooscode_api.application.snapshot.controller;
 import com.sooscode.sooscode_api.application.snapshot.dto.SnapShotResponse;
 import com.sooscode.sooscode_api.application.snapshot.dto.SnapshotRequest;
 import com.sooscode.sooscode_api.application.snapshot.service.SnapshotService;
-import com.sooscode.sooscode_api.global.user.CustomUserDetails;
+import com.sooscode.sooscode_api.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

@@ -4,6 +4,7 @@ import com.sooscode.sooscode_api.application.auth.dto.*;
 import com.sooscode.sooscode_api.domain.user.entity.EmailCode;
 import com.sooscode.sooscode_api.domain.user.entity.TempCredential;
 import com.sooscode.sooscode_api.domain.user.entity.User;
+import com.sooscode.sooscode_api.domain.user.enums.AuthProvider;
 import com.sooscode.sooscode_api.domain.user.enums.UserRole;
 import com.sooscode.sooscode_api.domain.user.enums.UserStatus;
 import com.sooscode.sooscode_api.domain.user.repository.EmailCodeRepository;
@@ -11,10 +12,9 @@ import com.sooscode.sooscode_api.domain.user.repository.TempCredentialRepository
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
 import com.sooscode.sooscode_api.global.exception.CustomException;
 import com.sooscode.sooscode_api.global.exception.errorcode.AuthErrorCode;
-import com.sooscode.sooscode_api.global.exception.errorcode.UserErrorCode;
 import com.sooscode.sooscode_api.global.exception.errorcode.ValidErrorCode;
 import com.sooscode.sooscode_api.global.jwt.JwtUtil;
-import com.sooscode.sooscode_api.global.user.CustomUserDetails;
+import com.sooscode.sooscode_api.global.security.CustomUserDetails;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -125,8 +125,6 @@ public class AuthServiceImpl {
      */
     public RegisterResponse registerUser(RegisterRequest request) {
 
-        validateRegisterRequest(request);
-
         if (userService.existsByEmail(request.getEmail())) {
             throw new CustomException(AuthErrorCode.DUPLICATE_EMAIL);
         }
@@ -135,7 +133,7 @@ public class AuthServiceImpl {
         user.setEmail(request.getEmail());
         user.setName(request.getName());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setProvider("local");
+        user.setProvider(AuthProvider.LOCAL);
         user.setRole(UserRole.STUDENT);
         user.setStatus(UserStatus.ACTIVE);
 

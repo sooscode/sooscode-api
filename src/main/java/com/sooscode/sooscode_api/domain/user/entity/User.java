@@ -1,15 +1,16 @@
 package com.sooscode.sooscode_api.domain.user.entity;
 
 import com.sooscode.sooscode_api.domain.file.entity.SooFile;
+import com.sooscode.sooscode_api.domain.user.enums.AuthProvider;
 import jakarta.persistence.*;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sooscode.sooscode_api.domain.user.enums.UserRole;
 import com.sooscode.sooscode_api.domain.user.enums.UserStatus;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name ="user")
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -26,9 +27,12 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
     private String name;
 
-    private String provider;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AuthProvider provider;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

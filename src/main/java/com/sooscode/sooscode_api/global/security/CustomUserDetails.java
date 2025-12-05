@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.global.user;
+package com.sooscode.sooscode_api.global.security;
 
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.enums.UserStatus;
