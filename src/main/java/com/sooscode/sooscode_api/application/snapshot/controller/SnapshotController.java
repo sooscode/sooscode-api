@@ -36,6 +36,20 @@ public class SnapshotController {
         snapshotService.saveCodeSnapshot(dto, userId);
         return ResponseEntity.ok("스냅샷 저장 완료");
     }
+    @PostMapping("/update")
+    public ResponseEntity<?> update(
+            @RequestBody SnapshotRequest dto,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam Long  snapshotId
+    ){
+        Long LoginuserId = userDetails.getUser().getUserId();
+
+        snapshotService.updateCodeSnapshot(dto,LoginuserId, snapshotId);
+        return ResponseEntity.ok("스냅샷 수정 완료");
+
+
+
+    }
     @GetMapping("/read")
     public ResponseEntity<Page<SnapShotResponse>> read(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -98,6 +112,47 @@ public class SnapshotController {
 
         return ResponseEntity.ok(snapShotResponses);
     }
+    @GetMapping("read/title/date")
+    public ResponseEntity<List<SnapShotResponse>> searchByTitleAndDate(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam Long classId,
+            @RequestParam String title,
+            @RequestParam String day
+    ){
+        Long userId = customUserDetails.getUser().getUserId();
+
+        LocalDate localDate = LocalDate.parse(day);
+
+        LocalDateTime start = localDate.atStartOfDay();
+        LocalDateTime end = localDate.atTime(LocalTime.MAX);
+
+        List<SnapShotResponse> snapShotResponses =
+                snapshotService.readSnapshotByTitleAndDate(userId, classId, title, start, end);
+
+        return ResponseEntity.ok(snapShotResponses);
+
+    }
+    @GetMapping("read/content/date")
+    public ResponseEntity<List<SnapShotResponse>> searchByContentAndDate(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam Long classId,
+            @RequestParam String content,
+            @RequestParam String day
+    ){
+        Long userId = customUserDetails.getUser().getUserId();
+
+        LocalDate localDate = LocalDate.parse(day);
+
+        LocalDateTime start = localDate.atStartOfDay();
+        LocalDateTime end = localDate.atTime(LocalTime.MAX);
+
+        List<SnapShotResponse> snapShotResponses =
+                snapshotService.readSnapshotByContentAndDate(userId, classId, content, start, end);
+
+        return ResponseEntity.ok(snapShotResponses);
+
+    }
+
 
 
 }

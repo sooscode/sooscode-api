@@ -8,6 +8,11 @@ import com.sooscode.sooscode_api.domain.snapshot.entity.CodeSnapshot;
 import com.sooscode.sooscode_api.domain.snapshot.repository.CodeSnapshotRepository;
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
+import com.sooscode.sooscode_api.global.exception.CustomException;
+import com.sooscode.sooscode_api.global.exception.errorcode.ClassErrorCode;
+import com.sooscode.sooscode_api.global.exception.errorcode.SnapshotErrorCode;
+import com.sooscode.sooscode_api.global.exception.errorcode.UserErrorCode;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,10 +33,10 @@ public class SnapshotServiceImpl implements SnapshotService {
     public CodeSnapshot saveCodeSnapshot(SnapshotRequest rq, Long userId) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(()-> new RuntimeException("발견된 유저 없음"));
+                .orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND));
 
         ClassRoom classRoom = classRoomRepository.findById(rq.getClassId())
-                .orElseThrow(()-> new RuntimeException("발견된 클래스 없음"));
+                .orElseThrow(()-> new CustomException(ClassErrorCode.NOT_FOUND));
 
 
         CodeSnapshot codeSnapshot = CodeSnapshot.builder()
@@ -43,6 +48,20 @@ public class SnapshotServiceImpl implements SnapshotService {
                 .build();
 
         return codeSnapshotRepository.save(codeSnapshot);
+    }
+    @Override
+    @Transactional
+    public CodeSnapshot updateCodeSnapshot(SnapshotRequest rq, Long LoginuserId, Long snapshotId) {
+
+        CodeSnapshot codeSnapshot = codeSnapshotRepository.findById(snapshotId)
+                .orElseThrow(() -> new CustomException(SnapshotErrorCode.NOT_FOUND));
+
+        if (!codeSnapshot.getUser().getUserId().equals(LoginuserId)) {
+            throw new CustomException(SnapshotErrorCode.FORBIDDEN);
+        }
+        codeSnapshot.update(rq.getTitle(), rq.getContent());
+
+        return codeSnapshotRepository.save(codeSnapshot); // 이건 됨
     }
     @Override
     public Page<SnapShotResponse> readAllSnapshots(Long userId, Long classId, Pageable pageable) {
@@ -83,6 +102,26 @@ public class SnapshotServiceImpl implements SnapshotService {
         List<CodeSnapshot> snapshots =
                 codeSnapshotRepository
                         .findByUser_userIdAndClassRoom_classIdAndCreatedAtBetween(userId, classId , start, end);
+
+        return snapshots.stream()
+                .map(SnapShotResponse::from)
+                .toList();
+    }
+    @Override
+    public List<SnapShotResponse> readSnapshotByTitleAndDate(Long userId, Long classId, String title,LocalDateTime start, LocalDateTime end){
+        List<CodeSnapshot> snapshots =
+                codeSnapshotRepository
+                        .findByUser_UserIdAndClassRoom_ClassIdAndTitleContainingAndCreatedAtBetween(userId, classId ,title, start, end);
+
+        return snapshots.stream()
+                .map(SnapShotResponse::from)
+                .toList();
+    }
+    @Override
+    public List<SnapShotResponse> readSnapshotByContentAndDate(Long userId, Long classId, String content,LocalDateTime start, LocalDateTime end){
+        List<CodeSnapshot> snapshots =
+                codeSnapshotRepository
+                        .findByUser_UserIdAndClassRoom_ClassIdAndContentContainingAndCreatedAtBetween(userId, classId ,content, start, end);
 
         return snapshots.stream()
                 .map(SnapShotResponse::from)
