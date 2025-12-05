@@ -4,6 +4,7 @@ import com.sooscode.sooscode_api.application.auth.dto.*;
 import com.sooscode.sooscode_api.domain.user.entity.EmailCode;
 import com.sooscode.sooscode_api.domain.user.entity.TempCredential;
 import com.sooscode.sooscode_api.domain.user.entity.User;
+import com.sooscode.sooscode_api.domain.user.enums.AuthProvider;
 import com.sooscode.sooscode_api.domain.user.enums.UserRole;
 import com.sooscode.sooscode_api.domain.user.enums.UserStatus;
 import com.sooscode.sooscode_api.domain.user.repository.EmailCodeRepository;
@@ -135,7 +136,7 @@ public class AuthServiceImpl {
         user.setEmail(request.getEmail());
         user.setName(request.getName());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setProvider("local");
+        user.setProvider(AuthProvider.LOCAL);
         user.setRole(UserRole.STUDENT);
         user.setStatus(UserStatus.ACTIVE);
 
