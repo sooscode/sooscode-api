@@ -1,5 +1,6 @@
 package com.sooscode.sooscode_api.application.snapshot.service;
 
+import com.sooscode.sooscode_api.application.snapshot.dto.SnapshotTitleResponse;
 import com.sooscode.sooscode_api.application.snapshot.dto.SnapShotResponse;
 import com.sooscode.sooscode_api.application.snapshot.dto.SnapshotRequest;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
@@ -36,7 +37,7 @@ public class SnapshotServiceImpl implements SnapshotService {
                 .orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND));
 
         ClassRoom classRoom = classRoomRepository.findById(rq.getClassId())
-                .orElseThrow(()-> new CustomException(ClassErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ClassErrorCode.NOT_FOUND));
 
 
         CodeSnapshot codeSnapshot = CodeSnapshot.builder()
@@ -49,6 +50,7 @@ public class SnapshotServiceImpl implements SnapshotService {
 
         return codeSnapshotRepository.save(codeSnapshot);
     }
+
     @Override
     @Transactional
     public CodeSnapshot updateCodeSnapshot(SnapshotRequest rq, Long LoginuserId, Long snapshotId) {
@@ -63,6 +65,7 @@ public class SnapshotServiceImpl implements SnapshotService {
 
         return codeSnapshotRepository.save(codeSnapshot); // 이건 됨
     }
+
     @Override
     public Page<SnapShotResponse> readAllSnapshots(Long userId, Long classId, Pageable pageable) {
 
@@ -73,8 +76,9 @@ public class SnapshotServiceImpl implements SnapshotService {
         return snapshots.map(SnapShotResponse::from);
 
     }
+
     @Override
-    public List<SnapShotResponse> readSnapshotsByTitle(Long userId, Long classId, String title){
+    public List<SnapShotResponse> readSnapshotsByTitle(Long userId, Long classId, String title) {
 
         List<CodeSnapshot> snapshots =
                 codeSnapshotRepository
@@ -85,6 +89,7 @@ public class SnapshotServiceImpl implements SnapshotService {
                 .toList();
 
     }
+
     @Override
     public List<SnapShotResponse> readSnapshotsByContent(Long userId, Long classId, String content) {
 
@@ -96,35 +101,51 @@ public class SnapshotServiceImpl implements SnapshotService {
                 .map(SnapShotResponse::from)
                 .toList();
     }
+
     @Override
-    public List<SnapShotResponse> readSnapshotByDate(Long userId, Long classId, LocalDateTime start, LocalDateTime end){
+    public List<SnapShotResponse> readSnapshotByDate(Long userId, Long classId, LocalDateTime start, LocalDateTime end) {
 
         List<CodeSnapshot> snapshots =
                 codeSnapshotRepository
-                        .findByUser_userIdAndClassRoom_classIdAndCreatedAtBetween(userId, classId , start, end);
+                        .findByUser_userIdAndClassRoom_classIdAndCreatedAtBetween(userId, classId, start, end);
 
         return snapshots.stream()
                 .map(SnapShotResponse::from)
                 .toList();
     }
+
     @Override
-    public List<SnapShotResponse> readSnapshotByTitleAndDate(Long userId, Long classId, String title,LocalDateTime start, LocalDateTime end){
+    public List<SnapShotResponse> readSnapshotByTitleAndDate(Long userId, Long classId, String title, LocalDateTime start, LocalDateTime end) {
         List<CodeSnapshot> snapshots =
                 codeSnapshotRepository
-                        .findByUser_UserIdAndClassRoom_ClassIdAndTitleContainingAndCreatedAtBetween(userId, classId ,title, start, end);
+                        .findByUser_UserIdAndClassRoom_ClassIdAndTitleContainingAndCreatedAtBetween(userId, classId, title, start, end);
 
         return snapshots.stream()
                 .map(SnapShotResponse::from)
                 .toList();
     }
+
     @Override
-    public List<SnapShotResponse> readSnapshotByContentAndDate(Long userId, Long classId, String content,LocalDateTime start, LocalDateTime end){
+    public List<SnapShotResponse> readSnapshotByContentAndDate(Long userId, Long classId, String content, LocalDateTime start, LocalDateTime end) {
         List<CodeSnapshot> snapshots =
                 codeSnapshotRepository
-                        .findByUser_UserIdAndClassRoom_ClassIdAndContentContainingAndCreatedAtBetween(userId, classId ,content, start, end);
+                        .findByUser_UserIdAndClassRoom_ClassIdAndContentContainingAndCreatedAtBetween(userId, classId, content, start, end);
 
         return snapshots.stream()
                 .map(SnapShotResponse::from)
+                .toList();
+    }
+
+    @Override
+    public List<SnapshotTitleResponse> readContentByDate(Long userId, Long classId, LocalDateTime start, LocalDateTime end) {
+        return codeSnapshotRepository
+                .findByUser_UserIdAndClassRoom_ClassIdAndCreatedAtBetween(
+                        userId, classId, start, end)
+                .stream()
+                .map(s -> new SnapshotTitleResponse(
+                        s.getCodeSnapshotId(),
+                        s.getTitle()
+                ))
                 .toList();
     }
 }

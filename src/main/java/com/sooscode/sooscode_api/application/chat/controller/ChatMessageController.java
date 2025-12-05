@@ -1,11 +1,8 @@
 package com.sooscode.sooscode_api.application.chat.controller;
 
 import com.sooscode.sooscode_api.application.chat.dto.ChatMessageResponse;
-import com.sooscode.sooscode_api.application.chat.dto.ChatReactionRequest;
 import com.sooscode.sooscode_api.application.chat.dto.ChatMessageRequest;
-import com.sooscode.sooscode_api.application.chat.service.ChatMessageReactionService;
-import com.sooscode.sooscode_api.application.chat.service.ChatService;
-import com.sooscode.sooscode_api.global.security.CustomUserDetails;
+import com.sooscode.sooscode_api.application.chat.service.ChatMessageService;
 import com.sooscode.sooscode_api.global.websocket.WebSocketSessionRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,9 +10,9 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -26,8 +23,7 @@ import java.util.List;
 public class ChatMessageController {
 
     private final WebSocketSessionRegistry sessionRegistry;
-    private final ChatService chatService;
-    private final ChatMessageReactionService chatMessageReactionService;
+    private final ChatMessageService chatMessageServiceService;
 
 
     /**
@@ -54,30 +50,19 @@ public class ChatMessageController {
 
         request.setClassId(classId);
         request.setUserId(userId);
+        request.setCreatedAt(LocalDateTime.now());
 
         log.info("CODE SEND — classId={}, userId={}, createdAt={}, length={}",
                 classId, userId, request.getCreatedAt(),
                 request.getContent() != null ? request.getContent().length() : 0
         );
-        chatService.saveAndBroadcast(request);
+        chatMessageServiceService.saveMessage(request, userId);
         return request;
     }
 
     @GetMapping("/history")
     public List<ChatMessageResponse> findAllByClassRoom_ClassIdOrderByCreatedAtAsc(@RequestParam("classId") Long classId) {
-        return chatService.getHistoryByClassRoom_ClassIdOrderByCreatedAtAsc(classId);
+        return chatMessageServiceService.findAllByClassRoom(classId);
     }
-    @MessageMapping("/chat.send")
-    public void send(ChatMessageRequest chatMessageRequest){
-        chatService.saveAndBroadcast(chatMessageRequest);
-    }
-    @PostMapping("/chat.react")
-    public int countReaction(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody ChatReactionRequest chatReactionRequest){
-        Long userId = customUserDetails.getUser().getUserId();
-        Long chatId = chatReactionRequest.getChatId();
-        return chatMessageReactionService.addorRemoveReaction(userId, chatId);
-
-    }
-
 
 }

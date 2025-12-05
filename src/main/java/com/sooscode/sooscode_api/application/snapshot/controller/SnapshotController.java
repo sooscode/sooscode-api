@@ -2,6 +2,7 @@ package com.sooscode.sooscode_api.application.snapshot.controller;
 
 import com.sooscode.sooscode_api.application.snapshot.dto.SnapShotResponse;
 import com.sooscode.sooscode_api.application.snapshot.dto.SnapshotRequest;
+import com.sooscode.sooscode_api.application.snapshot.dto.SnapshotTitleResponse;
 import com.sooscode.sooscode_api.application.snapshot.service.SnapshotService;
 import com.sooscode.sooscode_api.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -132,7 +133,7 @@ public class SnapshotController {
         return ResponseEntity.ok(snapShotResponses);
 
     }
-    @GetMapping("read/content/date")
+    @GetMapping("/read/content/date")
     public ResponseEntity<List<SnapShotResponse>> searchByContentAndDate(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestParam Long classId,
@@ -151,6 +152,22 @@ public class SnapshotController {
 
         return ResponseEntity.ok(snapShotResponses);
 
+    }
+    @GetMapping("/read/onlytitle/date")
+    public ResponseEntity<List<SnapshotTitleResponse>> searchOnlyTitleByDate(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam String day,
+            @RequestParam Long classId
+    ){
+        Long userId = customUserDetails.getUser().getUserId();
+
+        LocalDate localDate = LocalDate.parse(day);
+
+        LocalDateTime start = localDate.atStartOfDay();
+        LocalDateTime end = localDate.atTime(LocalTime.MAX);
+
+        return ResponseEntity.ok(
+                snapshotService.readContentByDate(userId, classId, start, end));
     }
 
 

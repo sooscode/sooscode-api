@@ -2,6 +2,7 @@ package com.sooscode.sooscode_api.application.snapshot.service;
 
 import com.sooscode.sooscode_api.application.snapshot.dto.SnapShotResponse;
 import com.sooscode.sooscode_api.application.snapshot.dto.SnapshotRequest;
+import com.sooscode.sooscode_api.application.snapshot.dto.SnapshotTitleResponse;
 import com.sooscode.sooscode_api.domain.snapshot.entity.CodeSnapshot;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,5 +29,6 @@ public interface SnapshotService {
     // 내용과 날짜별 조회
     List<SnapShotResponse> readSnapshotByContentAndDate(Long userId, Long classId, String content,LocalDateTime start, LocalDateTime end);
     // 날짜별 조회(제목만 로딩)
+    List<SnapshotTitleResponse> readContentByDate(Long userId, Long classId, LocalDateTime start, LocalDateTime end);
 
 }

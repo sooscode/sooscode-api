@@ -1,5 +1,6 @@
 package com.sooscode.sooscode_api.domain.snapshot.repository;
 
+import com.sooscode.sooscode_api.application.snapshot.dto.SnapshotTitleResponse;
 import com.sooscode.sooscode_api.domain.snapshot.entity.CodeSnapshot;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,5 +24,7 @@ public interface CodeSnapshotRepository extends JpaRepository<CodeSnapshot, Long
     List<CodeSnapshot> findByUser_UserIdAndClassRoom_ClassIdAndTitleContainingAndCreatedAtBetween(Long userId, Long classId, String title, LocalDateTime start, LocalDateTime end);
     // 내용과 날짜별 조회
     List<CodeSnapshot> findByUser_UserIdAndClassRoom_ClassIdAndContentContainingAndCreatedAtBetween(Long userId, Long classId, String content, LocalDateTime start, LocalDateTime end);
+    // 날짜별 조회(제목만 로딩)
+    List<SnapshotTitleResponse> findByUser_UserIdAndClassRoom_ClassIdAndCreatedAtBetween(Long userId, Long classId, LocalDateTime start, LocalDateTime end);
 
 }
