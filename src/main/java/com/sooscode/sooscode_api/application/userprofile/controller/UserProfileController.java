@@ -3,7 +3,7 @@ package com.sooscode.sooscode_api.application.userprofile.controller;
 import com.sooscode.sooscode_api.application.auth.dto.ApiResponse;
 import com.sooscode.sooscode_api.application.userprofile.dto.UpdatePasswordRequest;
 import com.sooscode.sooscode_api.application.userprofile.service.UserProfileService;
-import com.sooscode.sooscode_api.global.user.CustomUserDetails;
+import com.sooscode.sooscode_api.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

@@ -4,7 +4,7 @@ import com.sooscode.sooscode_api.application.auth.util.CookieUtil;
 import com.sooscode.sooscode_api.application.userprofile.dto.UserInfo;
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.global.jwt.JwtUtil;
-import com.sooscode.sooscode_api.global.user.CustomUserDetails;
+import com.sooscode.sooscode_api.global.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import com.sooscode.sooscode_api.application.auth.dto.*;
 import com.sooscode.sooscode_api.application.auth.service.AuthServiceImpl;
 import com.sooscode.sooscode_api.application.auth.dto.RegisterRequest;
+
+import static com.sooscode.sooscode_api.global.utils.UserValidator.validateSignupData;
+import static com.sooscode.sooscode_api.global.utils.UserValidator.validateUsername;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -53,6 +56,7 @@ public class AuthController {
      */
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@RequestBody RegisterRequest request) {
+        validateSignupData(request.getName(), request.getEmail(), request.getPassword(), request.getConfirmPassword());
         RegisterResponse data = authService.registerUser(request);
         return ResponseEntity.ok(
                 new ApiResponse(true, "회원가입 성공", data)

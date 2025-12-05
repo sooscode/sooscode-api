@@ -1,5 +1,5 @@
 // 2. WebSocketConfig.java
-package com.sooscode.sooscode_api.global.config.websocket;
+package com.sooscode.sooscode_api.global.websocket;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

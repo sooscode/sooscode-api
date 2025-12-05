@@ -8,7 +8,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import com.sooscode.sooscode_api.application.auth.dto.*;
-import com.sooscode.sooscode_api.global.config.GoogleOAuthConfig;
+import com.sooscode.sooscode_api.global.oauth.GoogleOAuthConfig;
 import com.sooscode.sooscode_api.global.jwt.JwtUtil;
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.enums.UserRole;

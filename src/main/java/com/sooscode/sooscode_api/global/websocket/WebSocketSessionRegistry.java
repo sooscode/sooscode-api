@@ -1,6 +1,6 @@
-package com.sooscode.sooscode_api.global.config.websocket;
+package com.sooscode.sooscode_api.global.websocket;
 
-import com.sooscode.sooscode_api.global.user.CustomUserDetails;
+import com.sooscode.sooscode_api.global.security.CustomUserDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
