@@ -2,6 +2,7 @@ package com.sooscode.sooscode_api.global.exception.handler;
 
 import com.sooscode.sooscode_api.global.exception.CustomException;
 import com.sooscode.sooscode_api.global.exception.ErrorResponse;
+import com.sooscode.sooscode_api.global.exception.errorcode.GlobalErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -33,10 +34,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
         log.error("[Exception] 예상치 못한 에러 발생", e);
 
-        ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
+        ErrorResponse response = ErrorResponse.of(GlobalErrorCode.INTERNAL_SERVER_ERROR);
 
         return ResponseEntity
-                .status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus())
+                .status(GlobalErrorCode.INTERNAL_SERVER_ERROR.getStatus())
                 .body(response);
     }
 }

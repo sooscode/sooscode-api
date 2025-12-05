@@ -2,6 +2,7 @@ package com.sooscode.sooscode_api.global.exception.handler;
 
 import com.sooscode.sooscode_api.global.exception.CustomException;
 import com.sooscode.sooscode_api.global.exception.ErrorResponse;
+import com.sooscode.sooscode_api.global.exception.errorcode.GlobalErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.simp.annotation.SendToUser;
@@ -39,6 +40,6 @@ public class WebSocketExceptionHandler {
 
         log.error("[WebSocket Exception] 사용자: {}, 에러: {}", userName, e.getMessage(), e);
 
-        return ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
+        return ErrorResponse.of(GlobalErrorCode.INTERNAL_SERVER_ERROR);
     }
 }
