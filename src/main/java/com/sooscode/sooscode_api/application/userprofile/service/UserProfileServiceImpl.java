@@ -19,10 +19,12 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Transactional
     public void updatePassword(User user, UpdatePasswordRequest request) {
 
+        // 현재 비밀번호 비교
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new RuntimeException("현재 비밀번호가 일치하지 않습니다.");
         }
 
+        // 암호화해서 저장
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
         userRepository.save(user);

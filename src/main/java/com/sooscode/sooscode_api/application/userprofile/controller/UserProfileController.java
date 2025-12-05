@@ -33,6 +33,7 @@ public class UserProfileController {
             @RequestBody UpdatePasswordRequest request
     ) {
         userProfileService.updatePassword(userDetails.getUser(), request);
+
         return ResponseEntity.ok(
                 new ApiResponse(true, "비밀번호가 성공적으로 변경되었습니다.", null)
         );
