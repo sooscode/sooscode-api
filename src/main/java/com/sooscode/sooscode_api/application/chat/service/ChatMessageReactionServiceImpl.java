@@ -6,6 +6,10 @@ import com.sooscode.sooscode_api.domain.chatmessage.repository.ChatMessageReacti
 import com.sooscode.sooscode_api.domain.chatmessage.repository.ChatMessageRepository;
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
+import com.sooscode.sooscode_api.global.exception.CustomException;
+import com.sooscode.sooscode_api.global.exception.errorcode.ChatErrorCode;
+import com.sooscode.sooscode_api.global.exception.errorcode.UserErrorCode;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
@@ -21,12 +25,13 @@ public class ChatMessageReactionServiceImpl implements ChatMessageReactionServic
     private final ChatMessageReactionRepository chatMessageReactionRepository;
 
     @Override
+    @Transactional
     public int addorRemoveReaction(Long userId, Long chatId) {
         User user = userRepository.findById(userId).
-                 orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+                 orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND));
 
         ChatMessage chatMessage = chatMessageRepository.findById(chatId).
-                orElseThrow(() -> new IllegalArgumentException("채팅 없음"));
+                orElseThrow(() -> new CustomException(ChatErrorCode.NOT_FOUND));
 
         boolean alreadyexist = chatMessageReactionRepository.existsByMessageAndUser(chatMessage, user);
 

@@ -65,4 +65,8 @@ public class ChatMessageController {
         return chatMessageServiceService.findAllByClassRoom(classId);
     }
 
+    private void effectiveness(){
+
+    }
+
 }

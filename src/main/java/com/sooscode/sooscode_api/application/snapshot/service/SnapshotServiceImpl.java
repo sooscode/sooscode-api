@@ -15,6 +15,7 @@ import com.sooscode.sooscode_api.global.exception.errorcode.SnapshotErrorCode;
 import com.sooscode.sooscode_api.global.exception.errorcode.UserErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.apache.bcel.classfile.Code;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -138,6 +139,7 @@ public class SnapshotServiceImpl implements SnapshotService {
 
     @Override
     public List<SnapshotTitleResponse> readContentByDate(Long userId, Long classId, LocalDateTime start, LocalDateTime end) {
+
         return codeSnapshotRepository
                 .findByUser_UserIdAndClassRoom_ClassIdAndCreatedAtBetween(
                         userId, classId, start, end)
