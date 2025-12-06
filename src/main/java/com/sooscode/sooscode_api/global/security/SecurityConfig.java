@@ -49,8 +49,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/ws/**", "/ws-raw/**").permitAll()  // WebSocket 경로 허용
+                        .requestMatchers("/api/compile/callback").permitAll()
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/api/auth/*").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception
