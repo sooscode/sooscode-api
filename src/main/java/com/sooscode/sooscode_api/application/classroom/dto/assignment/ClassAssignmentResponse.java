@@ -1,17 +1,16 @@
-package com.sooscode.sooscode_api.application.classroom.dto;
+package com.sooscode.sooscode_api.application.classroom.dto.assignment;
 
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassAssignment;
-import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
-import com.sooscode.sooscode_api.domain.user.entity.User;
-import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Data
 @Builder
+/**
+ *  Default ClassAssignment response DTO
+ */
 public class ClassAssignmentResponse {
     private Long classAssignmentId;
     private Long userId;

@@ -1,6 +1,6 @@
 package com.sooscode.sooscode_api.domain.classroom.repository;
 
-import com.sooscode.sooscode_api.application.classroom.dto.MyClassResponse;
+import com.sooscode.sooscode_api.application.classroom.dto.classroom.MyClassResponse;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassParticipant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +19,7 @@ public interface ClassParticipantRepository extends JpaRepository<ClassParticipa
     // classId와 userId를 조합해서 Participant를 찾아서 반환
     Optional<ClassParticipant> findByClassRoom_ClassIdAndUser_UserId(Long classId, Long userId);
     @Query("""
-        SELECT new com.sooscode.sooscode_api.application.classroom.dto.MyClassResponse(
+        SELECT new com.sooscode.sooscode_api.application.classroom.dto.classroom.MyClassResponse(
             cr.classId,
             cr.title,
             f.url,

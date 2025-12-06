@@ -1,11 +1,11 @@
-package com.sooscode.sooscode_api.application.classroom.dto;
+package com.sooscode.sooscode_api.application.classroom.dto.classroom;
 
-import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
-import com.sooscode.sooscode_api.domain.user.entity.User;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+/**
+ *  My class Info DTO
+ */
 public class MyClassResponse {
 
     private Long classId;

@@ -1,8 +1,8 @@
 package com.sooscode.sooscode_api.application.classroom.service;
 
-import com.sooscode.sooscode_api.application.classroom.dto.ClassAssignmentRequest;
-import com.sooscode.sooscode_api.application.classroom.dto.ClassAssignmentResponse;
-import com.sooscode.sooscode_api.application.classroom.dto.TeacherListItemResponse;
+import com.sooscode.sooscode_api.application.classroom.dto.assignment.ClassAssignmentRequest;
+import com.sooscode.sooscode_api.application.classroom.dto.assignment.ClassAssignmentResponse;
+import com.sooscode.sooscode_api.application.classroom.dto.classroom.TeacherListItemResponse;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassAssignment;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
 import com.sooscode.sooscode_api.domain.classroom.repository.ClassAssignmentRepository;
@@ -31,29 +31,6 @@ public class ClassAssignmentServiceImpl implements ClassAssignmentService {
     private final ClassRoomRepository classRoomRepository;
 
     @Override
-    public void addClassAssignment(ClassAssignmentRequest rq) {
-
-        log.info("addClassAssignment Service 실행");
-
-        if (classAssignmentRepository.existsByClassRoom_ClassId(rq.getClassId())) {
-            throw new CustomException(ClassErrorCode.ASSIGNMENT_NOT_FOUND);
-        }
-
-        User user = userRepository.findById(rq.getUserId())
-                .orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND));
-
-        ClassRoom classRoom = classRoomRepository.findById(rq.getClassId())
-                .orElseThrow(() -> new CustomException(ClassErrorCode.ASSIGNMENT_NOT_FOUND));
-
-        ClassAssignment assignment = ClassAssignment.builder()
-                .user(user)
-                .classRoom(classRoom)
-                .build();
-
-        classAssignmentRepository.save(assignment);
-    }
-
-    @Override
     public ClassAssignmentResponse getClassAssignment(Long classId) {
         log.info("getClassAssignment Service");
 
@@ -61,16 +38,6 @@ public class ClassAssignmentServiceImpl implements ClassAssignmentService {
                 .orElseThrow(() -> new CustomException(ClassErrorCode.ASSIGNMENT_NOT_FOUND));
 
         return ClassAssignmentResponse.from(assignment);
-    }
-
-    @Override
-    public void deleteClassAssignment(Long classId) {
-        log.info("deleteClassAssignment Service");
-
-        ClassAssignment assignment = classAssignmentRepository.findByClassRoom_ClassId(classId)
-                .orElseThrow(() -> new CustomException(ClassErrorCode.ASSIGNMENT_NOT_FOUND));
-
-        classAssignmentRepository.delete(assignment);
     }
 
     @Override

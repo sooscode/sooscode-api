@@ -90,7 +90,7 @@ public class ClassRoomFileServiceImpl implements ClassRoomFileService {
 
 
     /**
-     * 2) 클래스 전체 자료 조회
+     * 클래스 전체 자료 조회
      */
     @Override
     @Transactional(readOnly = true)
@@ -104,7 +104,7 @@ public class ClassRoomFileServiceImpl implements ClassRoomFileService {
 
 
     /**
-     * 3) 특정 날짜 자료 조회
+     * 특정 날짜 자료 조회
      */
     @Override
     @Transactional(readOnly = true)

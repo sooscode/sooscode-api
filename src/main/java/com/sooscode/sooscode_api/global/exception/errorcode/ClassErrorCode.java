@@ -34,13 +34,15 @@ public enum ClassErrorCode implements ErrorCode {
     PARTICIPANT_ALREADY_EXISTS(HttpStatus.CONFLICT, "PART_002", "이미 참여 중인 학생입니다"),
     PARTICIPANT_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "PART_003", "클래스 참여 인원이 초과되었습니다"),
     PARTICIPANT_CANNOT_REMOVE(HttpStatus.FORBIDDEN, "PART_004", "학생을 강제로 제거할 수 없습니다"),
-
     // =========================
     // COMMON VALIDATION
     // =========================
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "COMMON_001", "잘못된 요청입니다"),
     MISSING_REQUIRED_FIELD(HttpStatus.BAD_REQUEST, "COMMON_002", "필수 입력값이 누락되었습니다"),
-    INVALID_TIME_RANGE(HttpStatus.BAD_REQUEST, "COMMON_003", "유효하지 않은 시간 범위입니다");
+    INVALID_TIME_RANGE(HttpStatus.BAD_REQUEST, "COMMON_003", "유효하지 않은 시간 범위입니다"),
+
+    INVALID_CLASS_ID(HttpStatus.BAD_REQUEST, "COMMON_004", "유효하지 않은 클래스 ID입니다"),
+    INVALID_USER_ID(HttpStatus.BAD_REQUEST, "COMMON_005", "유효하지 않은 사용자 ID입니다");
 
     private final HttpStatus status;
     private final String code;

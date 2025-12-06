@@ -1,12 +1,9 @@
 package com.sooscode.sooscode_api.application.classroom.controller;
 
-import com.sooscode.sooscode_api.application.classroom.dto.ClassRoomCreateRequest;
-import com.sooscode.sooscode_api.application.classroom.dto.ClassRoomResponse;
-import com.sooscode.sooscode_api.application.classroom.dto.MyClassResponse;
+import com.sooscode.sooscode_api.application.classroom.dto.classroom.ClassRoomCreateRequest;
+import com.sooscode.sooscode_api.application.classroom.dto.classroom.MyClassResponse;
 import com.sooscode.sooscode_api.application.classroom.service.ClassRoomService;
-import com.sooscode.sooscode_api.application.snapshot.service.SnapshotService;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
-import com.sooscode.sooscode_api.domain.file.entity.SooFile;
 import com.sooscode.sooscode_api.global.security.CustomUserDetails;
 import com.sooscode.sooscode_api.infra.file.service.S3FileService;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +15,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 
 @RestController
@@ -31,15 +25,6 @@ public class ClassRoomController {
 
     private final ClassRoomService classRoomService;
     private final S3FileService s3FileService;
-
-    @PostMapping
-    public ResponseEntity<?> createClassRoom(@RequestBody ClassRoomCreateRequest request) {
-        log.info("createClassRoom Method");
-
-        ClassRoom saved = classRoomService.createClassRoom(request);
-
-        return ResponseEntity.ok(saved);
-    }
 
     // 해당 강사가 담당하는 클래스 정보
     @GetMapping("/teacher/{userId}")

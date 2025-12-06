@@ -1,6 +1,6 @@
 package com.sooscode.sooscode_api.application.classroom.controller;
 
-import com.sooscode.sooscode_api.application.classroom.dto.ClassParticipantResponse;
+import com.sooscode.sooscode_api.application.classroom.dto.participant.ClassParticipantResponse;
 import com.sooscode.sooscode_api.application.classroom.service.ClassParticipantService;
 import com.sooscode.sooscode_api.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -31,30 +31,5 @@ public class ClassParticipantController {
 
         return ResponseEntity.ok(responses);
     }
-
-    // class 참가자 생성
-    @PostMapping("/participant/{classId}/{userId}")
-    public ResponseEntity<?> addClassParticipant(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long classId,
-            @PathVariable Long userId) {
-
-        classParticipantService.addParticipant(classId, userId);
-
-        return ResponseEntity.ok("add participant successfully");
-    }
-
-    // class 참가자 삭제
-    @DeleteMapping("/participant/{classId}/{userId}")
-    public ResponseEntity<?> deleteClassParticipant(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long classId,
-            @PathVariable Long userId){
-        classParticipantService.deleteParticipant(classId, userId);
-
-        return ResponseEntity.ok("delete participant successfully");
-    }
-
-
 }
 

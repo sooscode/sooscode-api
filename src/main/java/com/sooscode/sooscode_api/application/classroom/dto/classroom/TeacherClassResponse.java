@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.application.classroom.dto;
+package com.sooscode.sooscode_api.application.classroom.dto.classroom;
 
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassAssignment;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
@@ -10,6 +10,9 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
+/**
+ *  Teacher 담당 Class Response DTO
+ */
 public class TeacherClassResponse {
 
     private Long classId;

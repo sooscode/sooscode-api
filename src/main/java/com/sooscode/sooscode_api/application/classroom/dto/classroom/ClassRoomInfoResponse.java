@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.application.classroom.dto;
+package com.sooscode.sooscode_api.application.classroom.dto.classroom;
 
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
 import lombok.Builder;
@@ -8,7 +8,10 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class ClassInfoResponse {
+/**
+ *  Class Info 전달 DTO
+ */
+public class ClassRoomInfoResponse {
     private Long classId;
     private String title;
     private String description;
@@ -18,8 +21,8 @@ public class ClassInfoResponse {
     private LocalDateTime startedAt;
     private LocalDateTime endedAt;
 
-    public static ClassInfoResponse from(ClassRoom classRoom){
-        return ClassInfoResponse.builder()
+    public static ClassRoomInfoResponse from(ClassRoom classRoom){
+        return ClassRoomInfoResponse.builder()
                 .classId(classRoom.getClassId())
                 .title(classRoom.getTitle())
                 .description(classRoom.getDescription())

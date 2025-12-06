@@ -38,7 +38,7 @@ public class SnapshotServiceImpl implements SnapshotService {
                 .orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND));
 
         ClassRoom classRoom = classRoomRepository.findById(rq.getClassId())
-                .orElseThrow(() -> new CustomException(ClassErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND));
 
 
         CodeSnapshot codeSnapshot = CodeSnapshot.builder()

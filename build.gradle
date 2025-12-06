@@ -58,6 +58,8 @@ dependencies {
     /* AWS S3 의존성 추가 */
     implementation platform('software.amazon.awssdk:bom:2.20.26')
     implementation 'software.amazon.awssdk:s3'
+    // Livekit WebFlux 의존성 추가 (Test중 )
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 tasks.named('test') {

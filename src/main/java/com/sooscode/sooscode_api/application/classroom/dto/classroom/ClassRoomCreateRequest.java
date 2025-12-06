@@ -1,9 +1,6 @@
-package com.sooscode.sooscode_api.application.classroom.dto;
+package com.sooscode.sooscode_api.application.classroom.dto.classroom;
 
-import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
 import com.sooscode.sooscode_api.domain.classroom.enums.ClassStatus;
-import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +9,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 /**
- *  (Test) Create Room시 사용하는 DTO
+ *  Room Create Request
  */
 public class ClassRoomCreateRequest {
     private boolean isOnline;

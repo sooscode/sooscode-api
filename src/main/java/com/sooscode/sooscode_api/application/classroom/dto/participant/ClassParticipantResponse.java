@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.application.classroom.dto;
+package com.sooscode.sooscode_api.application.classroom.dto.participant;
 
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassParticipant;
 import lombok.AllArgsConstructor;
@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ *  Default ClassParticipant response DTO
+ */
 public class ClassParticipantResponse {
 
     private Long participantId;
