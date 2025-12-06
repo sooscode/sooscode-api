@@ -199,4 +199,15 @@ public class AuthController {
 
         return ResponseEntity.ok(new ApiResponse(true, "Access Token 재발급 완료", tokens));
     }
+
+    @GetMapping("/test")
+    public ResponseEntity<?> test() {
+        try {
+            Thread.sleep(3000); // 3초 지연
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // 인터럽트 상태 복원
+        }
+        System.out.println("나다");
+        return ResponseEntity.ok(new ApiResponse(true, "test", null));
+    }
 }

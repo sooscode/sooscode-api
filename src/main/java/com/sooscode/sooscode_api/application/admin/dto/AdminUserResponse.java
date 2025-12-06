@@ -73,10 +73,8 @@ public class AdminUserResponse {
         private UserStatus isActive;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
-        private LocalDateTime lastLoginAt;
 
-        public static Detail from(User user, LocalDateTime lastLoginAt,
-                                  Integer totalClassCount, List<String> recentClassTitles) {
+        public static Detail from(User user) {
             return Detail.builder()
                     .userId(user.getUserId())
                     .email(user.getEmail())
@@ -85,7 +83,6 @@ public class AdminUserResponse {
                     .isActive(user.getStatus())
                     .createdAt(user.getCreatedAt())
                     .updatedAt(user.getUpdatedAt())
-                    .lastLoginAt(lastLoginAt)
                     .build();
         }
     }

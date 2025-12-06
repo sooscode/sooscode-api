@@ -72,7 +72,8 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     public AdminUserResponse.Detail getUserDetail(Long userId) {
-        return null;
+        User user = userRepository.findById(userId).orElse(null);
+        return AdminUserResponse.Detail.from(user);
     }
 
     @Override

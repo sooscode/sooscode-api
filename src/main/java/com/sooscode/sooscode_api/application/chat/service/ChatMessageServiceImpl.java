@@ -32,7 +32,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 .orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND));
 
         ClassRoom classRoom = classRoomRepository.findById(request.getClassId())
-                .orElseThrow(() -> new CustomException(ClassErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ClassErrorCode.CLASS_NOT_FOUND));
 
         ChatMessage entity = ChatMessage.builder()
                 .user(user)
