@@ -1,7 +1,9 @@
 package com.sooscode.sooscode_api.application.userprofile.service;
 
 import com.sooscode.sooscode_api.application.userprofile.dto.UpdatePasswordRequest;
+import com.sooscode.sooscode_api.application.userprofile.dto.UpdateProfileRequest;
 import com.sooscode.sooscode_api.domain.user.entity.User;
+import com.sooscode.sooscode_api.domain.user.enums.UserStatus;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,22 @@ public class UserProfileServiceImpl implements UserProfileService {
         // 암호화해서 저장
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
+        userRepository.save(user);
+    }
+
+    @Override
+    public User updateProfile(User user, UpdateProfileRequest request) {
+
+        if (request.getName() != null) {
+            user.setName(request.getName());
+        }
+
+        return userRepository.save(user);
+    }
+
+    @Override
+    public void deleteUser(User user) {
+        user.setStatus(UserStatus.INACTIVE);
         userRepository.save(user);
     }
 }
