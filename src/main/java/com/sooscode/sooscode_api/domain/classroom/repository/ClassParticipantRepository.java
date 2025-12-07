@@ -2,6 +2,7 @@ package com.sooscode.sooscode_api.domain.classroom.repository;
 
 import com.sooscode.sooscode_api.application.classroom.dto.classroom.MyClassResponse;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassParticipant;
+import com.sooscode.sooscode_api.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,5 +34,10 @@ public interface ClassParticipantRepository extends JpaRepository<ClassParticipa
         WHERE cp.user.userId = :userId
         """)
     Page<MyClassResponse> findMyClasses(@Param("userId") Long userId, Pageable pageable);
+
+    /**
+     * 특정 클래스에 참여하고 있는 유저 조회
+     */
+    List<ClassParticipant> findByUser(User user);
 
 }

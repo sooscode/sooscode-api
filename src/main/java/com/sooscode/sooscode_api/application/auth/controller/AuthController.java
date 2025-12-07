@@ -1,15 +1,14 @@
 package com.sooscode.sooscode_api.application.auth.controller;
 
 import com.sooscode.sooscode_api.application.auth.util.CookieUtil;
-import com.sooscode.sooscode_api.application.userprofile.dto.UserInfo;
+import com.sooscode.sooscode_api.application.mypage.dto.UserInfo;
 import com.sooscode.sooscode_api.domain.user.entity.User;
+import com.sooscode.sooscode_api.domain.user.enums.UserStatus;
 import com.sooscode.sooscode_api.global.exception.CustomException;
 import com.sooscode.sooscode_api.global.exception.errorcode.AuthErrorCode;
-import com.sooscode.sooscode_api.global.jwt.JwtUtil;
 import com.sooscode.sooscode_api.global.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,8 +18,9 @@ import com.sooscode.sooscode_api.application.auth.dto.*;
 import com.sooscode.sooscode_api.application.auth.service.AuthServiceImpl;
 import com.sooscode.sooscode_api.application.auth.dto.RegisterRequest;
 
+import java.util.Optional;
+
 import static com.sooscode.sooscode_api.global.utils.UserValidator.validateSignupData;
-import static com.sooscode.sooscode_api.global.utils.UserValidator.validateUsername;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -40,10 +40,8 @@ public class AuthController {
     ) {
         LoginResult result = authService.authenticateAndGenerateTokens(request, authenticationManager);
 
-        // ✔ 쿠키 저장
         CookieUtil.addTokenCookies(response, result.getTokens());
 
-        // ✔ 응답 body에는 유저 정보만
         return ResponseEntity.ok(
                 new ApiResponse(true, "로그인 성공", new LoginResponse(result.getUser()))
         );
@@ -74,10 +72,19 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@RequestBody RegisterRequest request) {
 
+        String email = request.getEmail();
+
         /**
-         * 이메일 중복 체크
+         * 탈퇴한 이메일인지 먼저 검사
          */
-        if (authService.isDuplicateEmail(request.getEmail())) {
+        if (authService.isInactiveEmail(email)) {
+            throw new CustomException(AuthErrorCode.EMAIL_INACTIVE);
+        }
+
+        /**
+         * 2) ACTIVE 상태의 중복 이메일 검사
+         */
+        if (authService.isDuplicateActiveEmail(email)) {
             throw new CustomException(AuthErrorCode.DUPLICATE_EMAIL);
         }
         /**
@@ -150,10 +157,10 @@ public class AuthController {
     public ResponseEntity<ApiResponse> me(@AuthenticationPrincipal CustomUserDetails userDetails) {
         User user = userDetails.getUser();
         UserInfo userInfo = new UserInfo(
-                user.getUserId(),
                 user.getEmail(),
                 user.getName(),
-                user.getRole()
+                user.getRole(),
+                user.getProfileImage()
         );
         return ResponseEntity.ok(
                 new ApiResponse(true, "사용자 정보 조회 성공", userInfo)

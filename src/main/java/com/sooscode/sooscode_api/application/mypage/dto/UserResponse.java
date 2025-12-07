@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.application.userprofile.dto;
+package com.sooscode.sooscode_api.application.mypage.dto;
 
 import com.sooscode.sooscode_api.domain.user.enums.UserRole;
 import com.sooscode.sooscode_api.domain.user.enums.UserStatus;

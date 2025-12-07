@@ -1,11 +1,9 @@
 package com.sooscode.sooscode_api.application.auth.service;
 
 import com.sooscode.sooscode_api.application.auth.dto.*;
-import com.sooscode.sooscode_api.application.auth.util.CookieUtil;
-import com.sooscode.sooscode_api.application.userprofile.dto.UserInfo;
+import com.sooscode.sooscode_api.application.mypage.dto.UserInfo;
 import com.sooscode.sooscode_api.domain.user.entity.EmailCode;
 import com.sooscode.sooscode_api.domain.user.entity.RefreshToken;
-import com.sooscode.sooscode_api.domain.user.entity.TempCredential;
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.enums.AuthProvider;
 import com.sooscode.sooscode_api.domain.user.enums.UserRole;
@@ -16,7 +14,7 @@ import com.sooscode.sooscode_api.domain.user.repository.TempCredentialRepository
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
 import com.sooscode.sooscode_api.global.exception.CustomException;
 import com.sooscode.sooscode_api.global.exception.errorcode.AuthErrorCode;
-import com.sooscode.sooscode_api.global.exception.errorcode.ValidErrorCode;
+import com.sooscode.sooscode_api.global.exception.errorcode.UserErrorCode;
 import com.sooscode.sooscode_api.global.jwt.JwtUtil;
 import com.sooscode.sooscode_api.global.security.CustomUserDetails;
 import jakarta.mail.internet.MimeMessage;
@@ -30,7 +28,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
@@ -39,7 +36,7 @@ import static com.sooscode.sooscode_api.global.exception.errorcode.AuthErrorCode
 
 @RequiredArgsConstructor
 @Service
-public class AuthServiceImpl {
+public class AuthServiceImpl implements AuthService{
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -49,7 +46,6 @@ public class AuthServiceImpl {
     private final JavaMailSender mailSender;
     private final TempCredentialRepository tempCredentialRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-
     /**
      * 로그인 - 인증 및 JWT 토큰 생성
      */
@@ -57,21 +53,26 @@ public class AuthServiceImpl {
             LoginRequest request,
             AuthenticationManager authenticationManager
     ) {
-        Authentication authentication = authenticationManager.authenticate(
+        /**
+         * 유저 + 프로필 이미지까지 Fetch Join 으로 로딩
+         */
+        User user = userRepository.findByEmailWithFile(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 이메일"));
+
+        /**
+         * 비밀번호 검증만 수행 (userDetails 를 새로 꺼낼 필요 없음)
+         */
+        authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()
                 )
         );
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        User user = userDetails.getUser();
         Long userId = user.getUserId();
 
-        // AT는 생성 (쿠키에 넣을 예정)
         String newAccessToken = jwtUtil.generateAccessToken(user);
 
-        // RT 조회 또는 최초 생성
         Optional<RefreshToken> existing = refreshTokenRepository.findByUserId(userId);
         String refreshToken;
 
@@ -89,10 +90,10 @@ public class AuthServiceImpl {
         }
 
         UserInfo userInfo = new UserInfo(
-                user.getUserId(),
                 user.getEmail(),
                 user.getName(),
-                user.getRole()
+                user.getRole(),
+                user.getProfileImage()
         );
 
         return new LoginResult(
@@ -100,7 +101,6 @@ public class AuthServiceImpl {
                 userInfo
         );
     }
-
 
     /**
      * RT로 AT재발급
@@ -118,10 +118,11 @@ public class AuthServiceImpl {
         User user = userRepository.findById(savedToken.getUserId())
                 .orElseThrow(() -> new CustomException(AuthErrorCode.LOGIN_FAILED));
 
-        // AT만 새로 생성
         String newAccessToken = jwtUtil.generateAccessToken(user);
 
-        // RT는 변경하지 않음
+        /**
+         *  RT는 변경하지 않음
+         */
         return new TokenPair(newAccessToken, savedToken.getTokenValue());
     }
 
@@ -148,18 +149,25 @@ public class AuthServiceImpl {
         User newUser = userService.saveUser(user);
 
         return new RegisterResponse(
-                newUser.getUserId(),
-                newUser.getEmail(),
-                newUser.getName(),
-                newUser.getRole()
+            newUser.getUserId(),
+            newUser.getEmail(),
+            newUser.getName(),
+            newUser.getRole()
         );
+    }
+
+    /**
+     * 유저 상태값 확인
+     */
+    public boolean isInactiveEmail(String email) {
+        return userRepository.findByEmailAndStatus(email, UserStatus.INACTIVE).isPresent();
     }
 
     /**
      * 이메일 중복 확인
      */
-     public boolean isDuplicateEmail(String email) {
-        return userRepository.existsByEmail(email);
+    public boolean isDuplicateActiveEmail(String email) {
+        return userRepository.findByEmailAndStatus(email, UserStatus.ACTIVE).isPresent();
     }
 
     /**

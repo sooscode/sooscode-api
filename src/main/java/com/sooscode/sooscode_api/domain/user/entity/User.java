@@ -62,5 +62,15 @@ public class User {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    /**
+     * 프로필 이미지
+     */
+    public String getProfileImage() {
+        if (this.file != null) {
+            return this.file.getUrl();
+        }
+        return "https://image-none.com";
+    }
 }
 

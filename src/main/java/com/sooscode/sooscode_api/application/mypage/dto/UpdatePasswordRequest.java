@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.application.userprofile.dto;
+package com.sooscode.sooscode_api.application.mypage.dto;
 
 import lombok.Getter;
 import lombok.Setter;
