@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClassRoomFileResponse {
+public class MypageClassFileResponse {
 
     private Long classroomFileId;
     private Long fileId;
@@ -18,8 +18,8 @@ public class ClassRoomFileResponse {
     private Long uploadedBy;
     private LocalDateTime createdAt;
 
-    public static ClassRoomFileResponse from(ClassRoomFile entity) {
-        return ClassRoomFileResponse.builder()
+    public static MypageClassFileResponse from(ClassRoomFile entity) {
+        return MypageClassFileResponse.builder()
                 .classroomFileId(entity.getClassroomFileId())
                 .fileId(entity.getFile().getFileId())
                 .fileName(entity.getFile().getOriginalName())   // SooFile 필드명에 따라 수정

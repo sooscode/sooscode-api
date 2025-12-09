@@ -1,6 +1,6 @@
 package com.sooscode.sooscode_api.application.mypage.controller;
 
-import com.sooscode.sooscode_api.application.mypage.dto.ClassRoomFileResponse;
+import com.sooscode.sooscode_api.application.mypage.dto.MypageClassFileResponse;
 import com.sooscode.sooscode_api.application.mypage.dto.MypageClassFileDeleteRequest;
 import com.sooscode.sooscode_api.application.mypage.dto.MypageClassFileUploadRequest;
 import com.sooscode.sooscode_api.application.mypage.service.MypageClassFileService;
@@ -19,7 +19,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/classroom")
+@RequestMapping("/api/mypage")
 @RequiredArgsConstructor
 @Slf4j
 public class MypageClassFileController {
@@ -40,7 +40,7 @@ public class MypageClassFileController {
         log.info("uploadClassFiles Controller | classId={}, teacherId={}, date={}, fileCount={}",
                 rq.getClassId(), rq.getTeacherId(), rq.getLectureDate(), rq.getFiles().size());
 
-        List<ClassRoomFileResponse> response = mypageClassFileService.uploadFiles(rq);
+        List<MypageClassFileResponse> response = mypageClassFileService.uploadFiles(rq);
 
         return ResponseEntity.ok(response);
     }

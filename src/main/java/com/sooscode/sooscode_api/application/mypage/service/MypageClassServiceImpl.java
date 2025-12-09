@@ -1,6 +1,6 @@
 package com.sooscode.sooscode_api.application.mypage.service;
 
-import com.sooscode.sooscode_api.application.mypage.dto.ClassRoomResponse;
+import com.sooscode.sooscode_api.application.mypage.dto.MypageClassDetailResponse;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
 import com.sooscode.sooscode_api.domain.classroom.repository.ClassParticipantRepository;
 import com.sooscode.sooscode_api.domain.classroom.repository.ClassRoomRepository;
@@ -29,11 +29,11 @@ public class MypageClassServiceImpl implements MypageClassService {
      * Class의 정보를 조회
      */
     @Override
-    public ClassRoomResponse.Detail getClassDetail(Long classId) {
+    public MypageClassDetailResponse getClassDetail(Long classId) {
         ClassRoom classRoom = classRoomRepository.findById(classId)
                 .orElseThrow(() -> new CustomException(ClassErrorCode.CLASS_NOT_FOUND));
 
-        return ClassRoomResponse.Detail.from(classRoom);
+        return MypageClassDetailResponse.from(classRoom);
     }
 
 }

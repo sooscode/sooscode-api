@@ -2,7 +2,7 @@ package com.sooscode.sooscode_api.application.mypage.service;
 
 import com.sooscode.sooscode_api.application.mypage.dto.MypageClassFileDeleteRequest;
 import com.sooscode.sooscode_api.application.mypage.dto.MypageClassFileUploadRequest;
-import com.sooscode.sooscode_api.application.mypage.dto.ClassRoomFileResponse;
+import com.sooscode.sooscode_api.application.mypage.dto.MypageClassFileResponse;
 
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoomFile;
@@ -52,7 +52,7 @@ public class MypageClassFileServiceImpl implements MypageClassFileService {
      * 1) 클래스 자료 업로드 (DTO 기반)
      */
     @Override
-    public List<ClassRoomFileResponse> uploadFiles(MypageClassFileUploadRequest rq) throws Exception {
+    public List<MypageClassFileResponse> uploadFiles(MypageClassFileUploadRequest rq) throws Exception {
 
         Long classId = rq.getClassId();
         Long teacherId = rq.getTeacherId();
@@ -67,7 +67,7 @@ public class MypageClassFileServiceImpl implements MypageClassFileService {
         User teacher = userRepository.findById(teacherId)
                 .orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND));
 
-        List<ClassRoomFileResponse> result = new ArrayList<>();
+        List<MypageClassFileResponse> result = new ArrayList<>();
 
         for (var file : rq.getFiles()) {
 
@@ -82,7 +82,7 @@ public class MypageClassFileServiceImpl implements MypageClassFileService {
                             .build()
             );
 
-            result.add(ClassRoomFileResponse.from(classRoomFile));
+            result.add(MypageClassFileResponse.from(classRoomFile));
         }
 
         return result;
@@ -94,12 +94,12 @@ public class MypageClassFileServiceImpl implements MypageClassFileService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<ClassRoomFileResponse> getFilesByClassId(Long classId, Pageable pageable) {
+    public Page<MypageClassFileResponse> getFilesByClassId(Long classId, Pageable pageable) {
 
         Page<ClassRoomFile> page =
                 classRoomFileRepository.findByClassRoom_ClassId(classId, pageable);
 
-        return page.map(ClassRoomFileResponse::from);
+        return page.map(MypageClassFileResponse::from);
     }
 
 
@@ -108,7 +108,7 @@ public class MypageClassFileServiceImpl implements MypageClassFileService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<ClassRoomFileResponse> getFilesByLectureDate(
+    public Page<MypageClassFileResponse> getFilesByLectureDate(
             Long classId,
             LocalDate lectureDate,
             Pageable pageable
@@ -116,7 +116,7 @@ public class MypageClassFileServiceImpl implements MypageClassFileService {
         Page<ClassRoomFile> page =
                 classRoomFileRepository.findByClassRoom_ClassIdAndLectureDate(classId, lectureDate, pageable);
 
-        return page.map(ClassRoomFileResponse::from);
+        return page.map(MypageClassFileResponse::from);
     }
 
     @Override
