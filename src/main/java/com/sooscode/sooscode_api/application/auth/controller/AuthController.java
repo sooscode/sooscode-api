@@ -146,9 +146,11 @@ public class AuthController {
         GoogleLoginResponse data = authService.loginUserResponse(code);
 
         // 토큰을 쿠키에 저장
+        // rememberMe = false (소셜 로그인 자동로그인 없다고 했으니까)
         CookieUtil.addTokenCookies(
                 response,
-                new TokenResponse(data.accessToken(), data.refreshToken())
+                new TokenResponse(data.accessToken(), data.refreshToken(), false),
+                false
         );
 
         // Body 없이 redirect
@@ -205,13 +207,17 @@ public class AuthController {
      * RT로 AT재발급
      */
     @PostMapping("/token/reissue")
-    public ResponseEntity<ApiResponse> reissueAccessToken(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<ApiResponse> reissueAccessToken(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
 
         String refreshToken = CookieUtil.getRefreshToken(request);
 
         TokenResponse tokens = authService.reissueAccessToken(refreshToken);
 
-        CookieUtil.addTokenCookies(response, tokens);
+        // rememberMe 정보를 함께 전달해야 한다
+        CookieUtil.addTokenCookies(response, tokens, tokens.isRememberMe());
 
         return ResponseEntity.ok(new ApiResponse(true, "Access Token 재발급 완료", tokens));
     }
