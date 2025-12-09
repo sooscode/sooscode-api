@@ -3,6 +3,7 @@ package com.sooscode.sooscode_api.domain.classroom.entity;
 import com.sooscode.sooscode_api.domain.classroom.enums.ClassMode;
 import com.sooscode.sooscode_api.domain.classroom.enums.ClassStatus;
 import com.sooscode.sooscode_api.domain.file.entity.SooFile;
+import com.sooscode.sooscode_api.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -28,6 +29,10 @@ public class ClassRoom {
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(name = "title", length = 255, nullable = false)
     private String title;

@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.application.classroom.dto.file;
+package com.sooscode.sooscode_api.application.mypage.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ClassRoomFileUploadRequest {
+public class MypageClassFileUploadRequest {
 
     private Long classId;
     private String lectureDate;

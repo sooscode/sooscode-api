@@ -1,25 +1,23 @@
 package com.sooscode.sooscode_api.application.mypage.service;
 
-import com.sooscode.sooscode_api.application.mypage.dto.MyClassResponse;
-import com.sooscode.sooscode_api.application.mypage.dto.UpdatePasswordRequest;
-import com.sooscode.sooscode_api.application.mypage.dto.UpdateProfileRequest;
+import com.sooscode.sooscode_api.application.mypage.dto.MypageUserUpdatePasswordRequest;
+import com.sooscode.sooscode_api.application.mypage.dto.MypageUserUpdateProfileRequest;
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
-public interface MypageService {
+public interface MypageUserService {
     /**
      * 비밀번호 변경
      */
-    void updatePassword(User user, UpdatePasswordRequest request);
+    void updatePassword(User user, MypageUserUpdatePasswordRequest request);
 
     /**
      *
      * 내 이름 변경
      */
-    User updateProfile(User user, UpdateProfileRequest request);
+    User updateProfile(User user, MypageUserUpdateProfileRequest request);
 
     /**
      * 회원 탈퇴 처리 (상태 INACTIVE 전환)
@@ -36,10 +34,4 @@ public interface MypageService {
      */
     void deleteProfileImage(Long userId);
 
-   // String getProfileImage(Long userId);
-
-    /**
-     * 내가 참여하고 있는 클래스 조회
-     */
-    List<MyClassResponse> getMyClasses(User user);
 }

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class MyClassResponse {
+public class MypageClassResponse {
     private Long classId;
     private String title;
     private List<String> teacherName;

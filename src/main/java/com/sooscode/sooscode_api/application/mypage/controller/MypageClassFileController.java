@@ -1,9 +1,9 @@
-package com.sooscode.sooscode_api.application.classroom.controller;
+package com.sooscode.sooscode_api.application.mypage.controller;
 
-import com.sooscode.sooscode_api.application.classroom.dto.file.ClassRoomFileDeleteRequest;
-import com.sooscode.sooscode_api.application.classroom.dto.file.ClassRoomFileUploadRequest;
-import com.sooscode.sooscode_api.application.classroom.dto.file.ClassRoomFileResponse;
-import com.sooscode.sooscode_api.application.classroom.service.ClassRoomFileService;
+import com.sooscode.sooscode_api.application.mypage.dto.ClassRoomFileResponse;
+import com.sooscode.sooscode_api.application.mypage.dto.MypageClassFileDeleteRequest;
+import com.sooscode.sooscode_api.application.mypage.dto.MypageClassFileUploadRequest;
+import com.sooscode.sooscode_api.application.mypage.service.MypageClassFileService;
 import com.sooscode.sooscode_api.global.security.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,10 +22,9 @@ import java.util.List;
 @RequestMapping("/api/classroom")
 @RequiredArgsConstructor
 @Slf4j
-public class ClassRoomFileController {
+public class MypageClassFileController {
 
-    private final ClassRoomFileService classRoomFileService;
-
+    private final MypageClassFileService mypageClassFileService;
 
     /**
      * 1) 클래스 자료 업로드 (DTO 기반)
@@ -34,7 +32,7 @@ public class ClassRoomFileController {
     @PostMapping("/files/upload")
     public ResponseEntity<?> uploadClassFiles(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            ClassRoomFileUploadRequest rq
+            MypageClassFileUploadRequest rq
     ) throws Exception {
 
         rq.setTeacherId(userDetails.getUser().getUserId());
@@ -42,7 +40,7 @@ public class ClassRoomFileController {
         log.info("uploadClassFiles Controller | classId={}, teacherId={}, date={}, fileCount={}",
                 rq.getClassId(), rq.getTeacherId(), rq.getLectureDate(), rq.getFiles().size());
 
-        List<ClassRoomFileResponse> response = classRoomFileService.uploadFiles(rq);
+        List<ClassRoomFileResponse> response = mypageClassFileService.uploadFiles(rq);
 
         return ResponseEntity.ok(response);
     }
@@ -60,7 +58,7 @@ public class ClassRoomFileController {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        var response = classRoomFileService.getFilesByClassId(classId, pageable);
+        var response = mypageClassFileService.getFilesByClassId(classId, pageable);
 
         return ResponseEntity.ok(response);
     }
@@ -86,7 +84,7 @@ public class ClassRoomFileController {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        var response = classRoomFileService.getFilesByLectureDate(classId, date, pageable);
+        var response = mypageClassFileService.getFilesByLectureDate(classId, date, pageable);
 
         return ResponseEntity.ok(response);
     }
@@ -97,12 +95,12 @@ public class ClassRoomFileController {
     @DeleteMapping("/files/batch")
     public ResponseEntity<?> deleteClassFiles(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody ClassRoomFileDeleteRequest rq
+            @RequestBody MypageClassFileDeleteRequest rq
     ) throws Exception {
 
         rq.setTeacherId(userDetails.getUser().getUserId());
 
-        classRoomFileService.deleteFiles(rq);
+        mypageClassFileService.deleteFiles(rq);
 
         return ResponseEntity.ok("Files deleted successfully");
     }

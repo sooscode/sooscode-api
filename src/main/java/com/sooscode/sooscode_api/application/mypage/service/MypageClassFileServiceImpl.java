@@ -1,8 +1,8 @@
-package com.sooscode.sooscode_api.application.classroom.service;
+package com.sooscode.sooscode_api.application.mypage.service;
 
-import com.sooscode.sooscode_api.application.classroom.dto.file.ClassRoomFileDeleteRequest;
-import com.sooscode.sooscode_api.application.classroom.dto.file.ClassRoomFileUploadRequest;
-import com.sooscode.sooscode_api.application.classroom.dto.file.ClassRoomFileResponse;
+import com.sooscode.sooscode_api.application.mypage.dto.MypageClassFileDeleteRequest;
+import com.sooscode.sooscode_api.application.mypage.dto.MypageClassFileUploadRequest;
+import com.sooscode.sooscode_api.application.mypage.dto.ClassRoomFileResponse;
 
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoomFile;
@@ -39,7 +39,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class ClassRoomFileServiceImpl implements ClassRoomFileService {
+public class MypageClassFileServiceImpl implements MypageClassFileService {
 
     private final ClassRoomRepository classRoomRepository;
     private final UserRepository userRepository;
@@ -52,7 +52,7 @@ public class ClassRoomFileServiceImpl implements ClassRoomFileService {
      * 1) 클래스 자료 업로드 (DTO 기반)
      */
     @Override
-    public List<ClassRoomFileResponse> uploadFiles(ClassRoomFileUploadRequest rq) throws Exception {
+    public List<ClassRoomFileResponse> uploadFiles(MypageClassFileUploadRequest rq) throws Exception {
 
         Long classId = rq.getClassId();
         Long teacherId = rq.getTeacherId();
@@ -120,7 +120,7 @@ public class ClassRoomFileServiceImpl implements ClassRoomFileService {
     }
 
     @Override
-    public void deleteFiles(ClassRoomFileDeleteRequest rq) throws Exception {
+    public void deleteFiles(MypageClassFileDeleteRequest rq) throws Exception {
 
         Long teacherId = rq.getTeacherId();
 

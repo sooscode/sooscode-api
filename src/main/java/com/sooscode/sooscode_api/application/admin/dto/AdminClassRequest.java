@@ -17,28 +17,11 @@ public class AdminClassRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Create {
-
-        @NotBlank(message = "클래스 제목은 필수입니다")
-        @Size(max = 255, message = "제목은 255자를 초과할 수 없습니다")
         private String title;
-
-        @Size(max = 1000, message = "설명은 1000자를 초과할 수 없습니다")
         private String description;
-
-        @NotNull(message = "온라인 여부는 필수입니다")
         private Boolean isOnline;
-
-        @NotNull(message = "클래스 모드는 필수입니다")
-        private ClassMode mode;
-
-        @NotNull(message = "시작 일시는 필수입니다")
-        @Future(message = "시작 일시는 현재보다 미래여야 합니다")
         private LocalDateTime startedAt;
-
-        @NotNull(message = "종료 일시는 필수입니다")
         private LocalDateTime endedAt;
-
-        private Long fileId; // 선택 사항
     }
 
     /**

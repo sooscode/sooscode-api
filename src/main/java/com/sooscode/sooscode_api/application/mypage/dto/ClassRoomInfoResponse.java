@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.application.classroom.dto.classroom;
+package com.sooscode.sooscode_api.application.mypage.dto;
 
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
 import lombok.Builder;

@@ -1,12 +1,7 @@
 package com.sooscode.sooscode_api.application.mypage.service;
 
-import com.sooscode.sooscode_api.application.mypage.dto.MyClassResponse;
-import com.sooscode.sooscode_api.application.mypage.dto.UpdatePasswordRequest;
-import com.sooscode.sooscode_api.application.mypage.dto.UpdateProfileRequest;
-import com.sooscode.sooscode_api.domain.classroom.entity.ClassAssignment;
-import com.sooscode.sooscode_api.domain.classroom.entity.ClassParticipant;
-import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
-import com.sooscode.sooscode_api.domain.classroom.repository.ClassAssignmentRepository;
+import com.sooscode.sooscode_api.application.mypage.dto.MypageUserUpdatePasswordRequest;
+import com.sooscode.sooscode_api.application.mypage.dto.MypageUserUpdateProfileRequest;
 import com.sooscode.sooscode_api.domain.classroom.repository.ClassParticipantRepository;
 import com.sooscode.sooscode_api.domain.file.entity.SooFile;
 import com.sooscode.sooscode_api.domain.user.entity.User;
@@ -21,18 +16,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class MypageServiceImpl implements MypageService {
+public class MypageUserServiceImpl implements MypageUserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final S3FileService fileService;
     private final ClassParticipantRepository classParticipantRepository;
-    private final ClassAssignmentRepository classAssignmentRepository;
 
     /**
      * 유저 조회
@@ -47,7 +39,7 @@ public class MypageServiceImpl implements MypageService {
      */
     @Override
     @Transactional
-    public void updatePassword(User user, UpdatePasswordRequest request) {
+    public void updatePassword(User user, MypageUserUpdatePasswordRequest request) {
 
         // 현재 비밀번호 비교
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
@@ -64,7 +56,7 @@ public class MypageServiceImpl implements MypageService {
      * 프로필 정보 변경
      */
     @Override
-    public User updateProfile(User user, UpdateProfileRequest request) {
+    public User updateProfile(User user, MypageUserUpdateProfileRequest request) {
         /**
          * 변경하고 싶은 항목 아래 추가하면 됨
          */
@@ -146,38 +138,4 @@ public class MypageServiceImpl implements MypageService {
 //
 //        return user.getFile().getUrl();
 //    }
-
-    /**
-     * 내가 참여하고 있는 클래스 조회
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<MyClassResponse> getMyClasses(User user) {
-
-        List<ClassParticipant> list =
-                classParticipantRepository.findByUser(user);
-
-        return list.stream()
-            .map(p -> {
-
-                ClassRoom cls = p.getClassRoom();
-
-                // 강사 목록 조회
-                List<ClassAssignment> assignments =
-                        classAssignmentRepository.findByClassRoom(cls);
-
-                List<String> teacherName = assignments.stream()
-                        .map(a -> a.getUser().getName())
-                        .collect(Collectors.toList());
-
-                return new MyClassResponse(
-                        cls.getClassId(),
-                        cls.getTitle(),
-                        teacherName,
-                        p.getCreatedAt()
-                );
-            })
-            .collect(Collectors.toList());
-    }
-
 }

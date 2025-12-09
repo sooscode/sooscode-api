@@ -1,12 +1,10 @@
 package com.sooscode.sooscode_api.application.mypage.controller;
 
 import com.sooscode.sooscode_api.application.auth.dto.ApiResponse;
-import com.sooscode.sooscode_api.application.classroom.service.TestServiceImpl;
-import com.sooscode.sooscode_api.application.mypage.dto.UpdatePasswordRequest;
-import com.sooscode.sooscode_api.application.mypage.dto.UpdateProfileRequest;
-import com.sooscode.sooscode_api.application.mypage.dto.UserResponse;
-import com.sooscode.sooscode_api.application.mypage.service.MypageService;
-import com.sooscode.sooscode_api.application.mypage.service.MypageServiceImpl;
+import com.sooscode.sooscode_api.application.mypage.dto.MypageUserUpdatePasswordRequest;
+import com.sooscode.sooscode_api.application.mypage.dto.MypageUserUpdateProfileRequest;
+import com.sooscode.sooscode_api.application.mypage.dto.MypageUserUpdateResponse;
+import com.sooscode.sooscode_api.application.mypage.service.MypageUserService;
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -20,26 +18,9 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/mypage")
 @RequiredArgsConstructor
-public class MypageController {
+public class MypageUserController {
 
-    private final MypageService mypageService;
-
-    /**
-     * 프로필 조회
-     * */
-    @GetMapping("/profile")
-    public UserResponse getProfile(@AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        User user = userDetails.getUser();
-        return new UserResponse(
-            user.getUserId(),
-            user.getEmail(),
-            user.getName(),
-            user.getRole(),
-            user.getStatus()
-        );
-    }
-
+    private final MypageUserService mypageService;
 
     /**
      * 비밀번호 변경
@@ -47,7 +28,7 @@ public class MypageController {
     @PostMapping("/password/update")
     public ResponseEntity<ApiResponse> updatePassword(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody UpdatePasswordRequest request
+            @RequestBody MypageUserUpdatePasswordRequest request
     ) {
         mypageService.updatePassword(userDetails.getUser(), request);
 
@@ -62,12 +43,12 @@ public class MypageController {
     @PostMapping("/profile/update")
     public ResponseEntity<ApiResponse> updateProfile(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody UpdateProfileRequest request
+            @RequestBody MypageUserUpdateProfileRequest request
     ) {
         User user = userDetails.getUser();
         User updated = mypageService.updateProfile(user, request);
 
-        UserResponse response = new UserResponse(
+        MypageUserUpdateResponse response = new MypageUserUpdateResponse(
             updated.getUserId(),
             updated.getEmail(),
             updated.getName(),
@@ -123,21 +104,4 @@ public class MypageController {
 
         return ResponseEntity.ok(new ApiResponse(true, "프로필 이미지 삭제 완료", null));
     }
-
-
-    /**
-     * 내가 참여하고 있는 클래스 조회
-     */
-    @GetMapping("/classes")
-    public ResponseEntity<ApiResponse> getMyClasses(
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        User user = userDetails.getUser();
-
-        return ResponseEntity.ok(
-                new ApiResponse(true, "내 클래스 목록 조회 성공",
-                        mypageService.getMyClasses(user))
-        );
-    }
-
 }
