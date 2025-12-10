@@ -2,6 +2,7 @@ package com.sooscode.sooscode_api.application.admin.service;
 
 import com.sooscode.sooscode_api.application.admin.dto.AdminUserRequest;
 import com.sooscode.sooscode_api.application.admin.dto.AdminUserResponse;
+import com.sooscode.sooscode_api.domain.user.enums.UserRole;
 import com.sooscode.sooscode_api.global.api.exception.CustomException;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public interface AdminUserService {
      * @throws CustomException AUTH_DUPLICATE_EMAIL - 이미 가입된 이메일인 경우
      * @throws CustomException BAD_REQUEST - 유효하지 않은 입력값인 경우
      */
-    AdminUserResponse.InstructorCreated createInstructor(AdminUserRequest.CreateInstructor request);
+    AdminUserResponse.InstructorCreated createUser(AdminUserRequest.Create request, UserRole role);
 
     /**
      * 전체 사용자 목록 조회

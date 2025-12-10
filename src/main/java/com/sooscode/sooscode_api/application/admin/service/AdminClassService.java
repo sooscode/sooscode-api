@@ -16,7 +16,7 @@ public interface AdminClassService {
      * @throws CustomException FILE_NOT_FOUND - 파일(썸네일)을 찾을 수 없는 경우
      * @throws CustomException BAD_REQUEST - 시작/종료 시간을 정상적으로 생성 않은 경우
      */
-    AdminClassResponse.Detail createClass(AdminClassRequest.Create request);
+    AdminClassResponse.ClassItem createClass(AdminClassRequest.Create request);
 
     /**
      * 클래스 수정
@@ -49,7 +49,7 @@ public interface AdminClassService {
      * @param size 페이지 크기
      * @return 페이지네이션된 클래스 목록
      */
-    AdminClassResponse.PageResponse getClassList(
+    AdminClassResponse.ClassListPage getClassList(
             AdminClassRequest.SearchFilter filter,
             int page,
             int size

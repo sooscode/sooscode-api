@@ -30,7 +30,7 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     @Transactional
-    public AdminUserResponse.InstructorCreated createInstructor(AdminUserRequest.CreateInstructor request) {
+    public AdminUserResponse.InstructorCreated createUser(AdminUserRequest.Create request, UserRole role) {
         // 이메일 중복 체크
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new CustomException(AuthStatus.DUPLICATE_EMAIL);
@@ -38,17 +38,15 @@ public class AdminUserServiceImpl implements AdminUserService {
 
         // 임시 비밀번호 생성 (8자리 랜덤)
         String temporaryPassword = generateTemporaryPassword();
-
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(temporaryPassword);
-
         // User 엔티티 생성
         User instructor = User.builder()
                 .email(request.getEmail())
                 .password(encodedPassword)
                 .name(request.getName())
                 .provider(AuthProvider.LOCAL) // 관리자가 생성한 계정은 로컬 계정
-                .role(UserRole.INSTRUCTOR)
+                .role(role)
                 .status(UserStatus.ACTIVE) // 생성 시 활성 상태
                 .build();
 
@@ -62,8 +60,6 @@ public class AdminUserServiceImpl implements AdminUserService {
         // 응답 DTO 생성
         return AdminUserResponse.InstructorCreated.from(saved, temporaryPassword);
     }
-
-
 
     @Override
     public AdminUserResponse.PageResponse getUserList(AdminUserRequest.SearchFilter filter, int page, int size) {

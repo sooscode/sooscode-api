@@ -13,6 +13,11 @@ public enum AdminStatus implements StatusCode {
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "ADMIN_002", "관리자 권한이 필요합니다"),
     FORBIDDEN(HttpStatus.FORBIDDEN, "ADMIN_003", "해당 기능에 접근할 수 없습니다"),
 
+    CLASS_CREATE_SUCCESS(HttpStatus.OK, "ADMIN_CLASS_200", "클래스 생성에 성공하였습니다"),
+
+    USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "ADMIN_USER_010", "유저가 존재하지 않습니다"),
+    CLASS_INSTRUCTOR_INVALID(HttpStatus.BAD_REQUEST, "ADMIN_CLS_003", "이 유저는 강사가 아닙니다"),
+
     // ===== 강제 종료, 유저 관리 =====
     CLASS_FORCE_CLOSE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "ADMIN_010", "클래스를 강제로 종료할 수 없습니다"),
     FORCE_LOGOUT_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "ADMIN_011", "사용자를 강제 로그아웃할 수 없습니다"),
