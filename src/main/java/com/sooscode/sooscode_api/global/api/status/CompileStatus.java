@@ -1,13 +1,12 @@
-package com.sooscode.sooscode_api.global.exception.errorcode;
+package com.sooscode.sooscode_api.global.api.status;
 
-import com.sooscode.sooscode_api.global.exception.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum CompileErrorCode implements ErrorCode {
+public enum CompileStatus implements StatusCode {
 
     NOT_FOUND(HttpStatus.NOT_FOUND, "COMPILE_001", "코드를 입력해주세요"),
     // 코드 공백 제출
@@ -25,7 +24,7 @@ public enum CompileErrorCode implements ErrorCode {
     //코드 실행중 오류
     RUNTIME_ERROR(HttpStatus.BAD_REQUEST,"COMPILE_008","코드 실행 중 오류가 발생했습니다");
 
-    private final HttpStatus status;
+    private final HttpStatus httpStatus;
     private final String code;
     private final String message;
 }

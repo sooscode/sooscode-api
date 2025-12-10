@@ -1,13 +1,12 @@
-package com.sooscode.sooscode_api.global.exception.errorcode;
+package com.sooscode.sooscode_api.global.api.status;
 
-import com.sooscode.sooscode_api.global.exception.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum AdminErrorCode implements ErrorCode {
+public enum AdminStatus implements StatusCode {
 
     // ===== 관리자 공통 =====
     NOT_FOUND(HttpStatus.NOT_FOUND, "ADMIN_001", "관리자를 찾을 수 없습니다"),
@@ -31,7 +30,7 @@ public enum AdminErrorCode implements ErrorCode {
     LOG_ACCESS_DENIED(HttpStatus.FORBIDDEN, "ADMIN_040", "로그 접근 권한이 없습니다"),
     LOG_NOT_FOUND(HttpStatus.NOT_FOUND, "ADMIN_041", "요청한 로그를 찾을 수 없습니다");
 
-    private final HttpStatus status;
+    private final HttpStatus httpStatus;
     private final String code;
     private final String message;
 }

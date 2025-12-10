@@ -3,6 +3,7 @@ package com.sooscode.sooscode_api.application.admin.controller;
 import com.sooscode.sooscode_api.application.admin.dto.AdminUserRequest;
 import com.sooscode.sooscode_api.application.admin.dto.AdminUserResponse;
 import com.sooscode.sooscode_api.application.admin.service.AdminUserService;
+import com.sooscode.sooscode_api.global.api.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,14 +30,14 @@ public class AdminUserController {
      * POST /api/admin/users/instructor
      */
     @PostMapping("/instructor")
-    public ResponseEntity<AdminUserResponse.InstructorCreated> createInstructor(
+    public ResponseEntity<ApiResponse<AdminUserResponse.InstructorCreated>> createInstructor(
             @Valid @RequestBody AdminUserRequest.CreateInstructor request
     ) {
         validateUsername(request.getName());
         validateEmail(request.getEmail());
         log.info("관리자 강사 계정 생성 요청: email={}", request.getEmail());
         AdminUserResponse.InstructorCreated response = adminUserService.createInstructor(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ApiResponse.ok(response);
     }
 
     /**

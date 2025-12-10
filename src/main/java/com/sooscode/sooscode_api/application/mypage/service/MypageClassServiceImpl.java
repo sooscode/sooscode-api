@@ -7,8 +7,8 @@ import com.sooscode.sooscode_api.domain.classroom.repository.ClassRoomRepository
 import com.sooscode.sooscode_api.domain.file.repository.SooFileRepository;
 import com.sooscode.sooscode_api.domain.snapshot.repository.CodeSnapshotRepository;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
-import com.sooscode.sooscode_api.global.exception.CustomException;
-import com.sooscode.sooscode_api.global.exception.errorcode.ClassErrorCode;
+import com.sooscode.sooscode_api.global.api.exception.CustomException;
+import com.sooscode.sooscode_api.global.api.status.ClassStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public class MypageClassServiceImpl implements MypageClassService {
     @Override
     public MypageClassDetailResponse getClassDetail(Long classId) {
         ClassRoom classRoom = classRoomRepository.findById(classId)
-                .orElseThrow(() -> new CustomException(ClassErrorCode.CLASS_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ClassStatus.CLASS_NOT_FOUND));
 
         return MypageClassDetailResponse.from(classRoom);
     }

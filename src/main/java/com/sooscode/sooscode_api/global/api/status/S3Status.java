@@ -1,13 +1,12 @@
-package com.sooscode.sooscode_api.global.exception.errorcode;
+package com.sooscode.sooscode_api.global.api.status;
 
-import com.sooscode.sooscode_api.global.exception.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum S3ErrorCode implements ErrorCode {
+public enum S3Status implements StatusCode {
 
     UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3_001", "파일 업로드에 실패했습니다"),
     DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3_002", "파일 삭제에 실패했습니다"),
@@ -19,7 +18,7 @@ public enum S3ErrorCode implements ErrorCode {
     PRESIGNED_URL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3_008", "Presigned URL 생성에 실패했습니다"),
     PUBLIC_URL_NOT_ALLOWED(HttpStatus.FORBIDDEN, "S3_009", "해당 파일은 Public URL을 제공하지 않습니다");
 
-    private final HttpStatus status;
+    private final HttpStatus httpStatus;
     private final String code;
     private final String message;
 }

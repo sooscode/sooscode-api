@@ -1,13 +1,12 @@
-package com.sooscode.sooscode_api.global.exception.errorcode;
+package com.sooscode.sooscode_api.global.api.status;
 
-import com.sooscode.sooscode_api.global.exception.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum TokenErrorCode implements ErrorCode {
+public enum TokenStatus implements StatusCode {
 
     // ===== JWT 관련 기본 오류 =====
     NOT_FOUND(HttpStatus.UNAUTHORIZED, "TOKEN_001", "토큰이 존재하지 않습니다"),
@@ -17,7 +16,7 @@ public enum TokenErrorCode implements ErrorCode {
     MALFORMED(HttpStatus.BAD_REQUEST, "TOKEN_005", "잘못된 형식의 토큰입니다"),
     UNSUPPORTED(HttpStatus.BAD_REQUEST, "TOKEN_006", "지원되지 않는 토큰 형식입니다");
 
-    private final HttpStatus status;
+    private final HttpStatus httpStatus;
     private final String code;
     private final String message;
 }

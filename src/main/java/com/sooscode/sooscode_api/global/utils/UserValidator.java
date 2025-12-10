@@ -1,7 +1,7 @@
 package com.sooscode.sooscode_api.global.utils;
 
-import com.sooscode.sooscode_api.global.exception.CustomException;
-import com.sooscode.sooscode_api.global.exception.errorcode.ValidErrorCode;
+import com.sooscode.sooscode_api.global.api.exception.CustomException;
+import com.sooscode.sooscode_api.global.api.status.ValidStatus;
 
 import java.util.regex.Pattern;
 
@@ -24,15 +24,15 @@ public class UserValidator {
      */
     public static void validateUsername(String username) {
         if (username == null || username.trim().isEmpty()) {
-            throw new CustomException(ValidErrorCode.NAME_REQUIRED);
+            throw new CustomException(ValidStatus.NAME_REQUIRED);
         }
 
         String trimmed = username.trim();
         if (trimmed.length() < 2) {
-            throw new CustomException(ValidErrorCode.NAME_TOO_SHORT);
+            throw new CustomException(ValidStatus.NAME_TOO_SHORT);
         }
         if (trimmed.length() > 16) {
-            throw new CustomException(ValidErrorCode.NAME_TOO_LONG);
+            throw new CustomException(ValidStatus.NAME_TOO_LONG);
         }
     }
 
@@ -42,20 +42,20 @@ public class UserValidator {
      */
     public static void validateEmail(String email) {
         if (email == null || email.trim().isEmpty()) {
-            throw new CustomException(ValidErrorCode.EMAIL_REQUIRED);
+            throw new CustomException(ValidStatus.EMAIL_REQUIRED);
         }
 
         String trimmed = email.trim();
         if (trimmed.length() < 5) {
-            throw new CustomException(ValidErrorCode.EMAIL_TOO_SHORT);
+            throw new CustomException(ValidStatus.EMAIL_TOO_SHORT);
         }
 
         if (trimmed.length() > 50) {
-            throw new CustomException(ValidErrorCode.EMAIL_TOO_LONG);
+            throw new CustomException(ValidStatus.EMAIL_TOO_LONG);
         }
 
         if (!EMAIL_PATTERN.matcher(trimmed).matches()) {
-            throw new CustomException(ValidErrorCode.EMAIL_INVALID_FORMAT);
+            throw new CustomException(ValidStatus.EMAIL_INVALID_FORMAT);
         }
     }
 
@@ -66,18 +66,18 @@ public class UserValidator {
     public static void validatePassword(String password) {
 
         if (password == null || password.isEmpty()) {
-            throw new CustomException(ValidErrorCode.PASSWORD_REQUIRED);
+            throw new CustomException(ValidStatus.PASSWORD_REQUIRED);
         }
 
         if (password.length() < 8) {
-            throw new CustomException(ValidErrorCode.PASSWORD_TOO_SHORT);
+            throw new CustomException(ValidStatus.PASSWORD_TOO_SHORT);
         }
         if (password.length() > 16) {
-            throw new CustomException(ValidErrorCode.PASSWORD_TOO_LONG);
+            throw new CustomException(ValidStatus.PASSWORD_TOO_LONG);
         }
 
         if (!PASSWORD_PATTERN.matcher(password).matches()) {
-            throw new CustomException(ValidErrorCode.PASSWORD_INVALID_FORMAT);
+            throw new CustomException(ValidStatus.PASSWORD_INVALID_FORMAT);
         }
     }
 
@@ -87,11 +87,11 @@ public class UserValidator {
      */
     public static void validatePasswordConfirm(String password, String passwordConfirm) {
         if (passwordConfirm == null || passwordConfirm.isEmpty()) {
-            throw new CustomException(ValidErrorCode.PASSWORD_REQUIRED);
+            throw new CustomException(ValidStatus.PASSWORD_REQUIRED);
         }
 
         if (!password.equals(passwordConfirm)) {
-            throw new CustomException(ValidErrorCode.PASSWORD_MISMATCH);
+            throw new CustomException(ValidStatus.PASSWORD_MISMATCH);
         }
     }
 

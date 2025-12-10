@@ -11,8 +11,8 @@ import com.sooscode.sooscode_api.domain.user.enums.UserStatus;
 import com.sooscode.sooscode_api.domain.user.repository.EmailCodeRepository;
 import com.sooscode.sooscode_api.domain.user.repository.RefreshTokenRepository;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
-import com.sooscode.sooscode_api.global.exception.CustomException;
-import com.sooscode.sooscode_api.global.exception.errorcode.AuthErrorCode;
+import com.sooscode.sooscode_api.global.api.exception.CustomException;
+import com.sooscode.sooscode_api.application.admin.status.AuthStatus;
 import com.sooscode.sooscode_api.global.jwt.JwtUtil;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
-import static com.sooscode.sooscode_api.global.exception.errorcode.AuthErrorCode.ERROR_WHILE_EMAIL_SENDING;
+import static com.sooscode.sooscode_api.application.admin.status.AuthStatus.ERROR_WHILE_EMAIL_SENDING;
 
 @RequiredArgsConstructor
 @Service
@@ -56,7 +56,7 @@ public class AuthServiceImpl implements AuthService{
 
         // 1. 유저 조회 (파일 포함)
         User user = userRepository.findByEmailWithFile(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 이메일"));
+                .orElseThrow(() -> new CustomException(AuthStatus.EMAIL_NOT_FOUND));
 
         // 2. 비밀번호 인증
         authenticationManager.authenticate(
@@ -108,14 +108,14 @@ public class AuthServiceImpl implements AuthService{
     public TokenResponse reissueAccessToken(String refreshToken) {
         RefreshToken savedToken =
                 refreshTokenRepository.findByTokenValue(refreshToken)
-                        .orElseThrow(() -> new CustomException(AuthErrorCode.REFRESH_TOKEN_NOT_FOUND));
+                        .orElseThrow(() -> new CustomException(AuthStatus.REFRESH_TOKEN_NOT_FOUND));
 
         if (savedToken.getExpiredAt().isBefore(LocalDateTime.now())) {
-            throw new CustomException(AuthErrorCode.REFRESH_TOKEN_EXPIRED);
+            throw new CustomException(AuthStatus.REFRESH_TOKEN_EXPIRED);
         }
 
         User user = userRepository.findById(savedToken.getUserId())
-                .orElseThrow(() -> new CustomException(AuthErrorCode.LOGIN_FAILED));
+                .orElseThrow(() -> new CustomException(AuthStatus.LOGIN_FAILED));
 
         String newAccessToken = jwtUtil.generateAccessToken(user);
 

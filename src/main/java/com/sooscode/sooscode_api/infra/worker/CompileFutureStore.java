@@ -1,8 +1,8 @@
 package com.sooscode.sooscode_api.infra.worker;
 
 import com.sooscode.sooscode_api.application.compile.dto.CompileResultResponse;
-import com.sooscode.sooscode_api.global.exception.CustomException;
-import com.sooscode.sooscode_api.global.exception.errorcode.CompileErrorCode;
+import com.sooscode.sooscode_api.global.api.exception.CustomException;
+import com.sooscode.sooscode_api.global.api.status.CompileStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -48,7 +48,7 @@ public class CompileFutureStore {
                         // LOG 추가
                         log.warn("[FutureStore] Future removed due to TIMEOUT - jobId={}", jobId);
 
-                        throw new CustomException(CompileErrorCode.WORKER_TIMEOUT);
+                        throw new CustomException(CompileStatus.WORKER_TIMEOUT);
                     }
 
                     futureMap.remove(jobId);
@@ -56,7 +56,7 @@ public class CompileFutureStore {
                     // LOG 추가
                     log.warn("[FutureStore] Future removed due to OTHER EXCEPTION - jobId={}", jobId);
 
-                    throw new CustomException(CompileErrorCode.NOT_FOUND);
+                    throw new CustomException(CompileStatus.NOT_FOUND);
                 });
 
         return future;

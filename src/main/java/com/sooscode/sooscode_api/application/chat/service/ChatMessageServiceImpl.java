@@ -8,9 +8,9 @@ import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
 import com.sooscode.sooscode_api.domain.classroom.repository.ClassRoomRepository;
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
-import com.sooscode.sooscode_api.global.exception.CustomException;
-import com.sooscode.sooscode_api.global.exception.errorcode.ClassErrorCode;
-import com.sooscode.sooscode_api.global.exception.errorcode.UserErrorCode;
+import com.sooscode.sooscode_api.global.api.exception.CustomException;
+import com.sooscode.sooscode_api.global.api.status.ClassStatus;
+import com.sooscode.sooscode_api.global.api.status.UserStatus;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,10 +30,10 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     @Override
     public ChatMessageResponse saveMessage(ChatMessageRequest request, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(UserStatus.NOT_FOUND));
 
         ClassRoom classRoom = classRoomRepository.findById(request.getClassId())
-                .orElseThrow(() -> new CustomException(ClassErrorCode.CLASS_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ClassStatus.CLASS_NOT_FOUND));
 
         ChatMessage entity = ChatMessage.builder()
                 .user(user)

@@ -1,13 +1,12 @@
-package com.sooscode.sooscode_api.global.exception.errorcode;
+package com.sooscode.sooscode_api.global.api.status;
 
-import com.sooscode.sooscode_api.global.exception.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum FileErrorCode implements ErrorCode {
+public enum FileStatus implements StatusCode {
 
     NOT_FOUND(HttpStatus.NOT_FOUND, "FILE_001", "파일을 찾을 수 없습니다"),
     METADATA_SAVE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_002", "파일 메타데이터 저장 실패"),
@@ -24,7 +23,7 @@ public enum FileErrorCode implements ErrorCode {
     PRESIGNED_URL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_011", "파일 다운로드 URL 생성에 실패했습니다"),
     PUBLIC_URL_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "FILE_012", "해당 파일은 Public URL을 지원하지 않습니다");
 
-    private final HttpStatus status;
+    private final HttpStatus httpStatus;
     private final String code;
     private final String message;
 }

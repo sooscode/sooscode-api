@@ -17,10 +17,10 @@ import com.sooscode.sooscode_api.infra.file.service.S3FileService;
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
 
-import com.sooscode.sooscode_api.global.exception.CustomException;
-import com.sooscode.sooscode_api.global.exception.errorcode.ClassErrorCode;
-import com.sooscode.sooscode_api.global.exception.errorcode.FileErrorCode;
-import com.sooscode.sooscode_api.global.exception.errorcode.UserErrorCode;
+import com.sooscode.sooscode_api.global.api.exception.CustomException;
+import com.sooscode.sooscode_api.global.api.status.ClassStatus;
+import com.sooscode.sooscode_api.global.api.status.FileStatus;
+import com.sooscode.sooscode_api.global.api.status.UserStatus;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -62,10 +62,10 @@ public class MypageClassFileServiceImpl implements MypageClassFileService {
                 classId, teacherId, rq.getFiles().size());
 
         ClassRoom classRoom = classRoomRepository.findById(classId)
-                .orElseThrow(() -> new CustomException(ClassErrorCode.CLASS_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ClassStatus.CLASS_NOT_FOUND));
 
         User teacher = userRepository.findById(teacherId)
-                .orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(UserStatus.NOT_FOUND));
 
         List<MypageClassFileResponse> result = new ArrayList<>();
 
@@ -127,11 +127,11 @@ public class MypageClassFileServiceImpl implements MypageClassFileService {
         for (Long classRoomFileId : rq.getFileIds()) {
 
             ClassRoomFile crf = classRoomFileRepository.findById(classRoomFileId)
-                    .orElseThrow(() -> new CustomException(FileErrorCode.NOT_FOUND));
+                    .orElseThrow(() -> new CustomException(FileStatus.NOT_FOUND));
 
             // 업로더 확인
             if (!crf.getUploadedBy().getUserId().equals(teacherId)) {
-                throw new CustomException(FileErrorCode.FORBIDDEN_ACCESS);
+                throw new CustomException(FileStatus.FORBIDDEN_ACCESS);
             }
 
             // 1) 필요한 애들 먼저 꺼내놓기 (Lazy 방지)

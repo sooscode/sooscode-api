@@ -3,8 +3,8 @@ package com.sooscode.sooscode_api.infra.file.service;
 import com.sooscode.sooscode_api.domain.file.entity.SooFile;
 import com.sooscode.sooscode_api.domain.file.enums.FileType;
 import com.sooscode.sooscode_api.domain.file.repository.SooFileRepository;
-import com.sooscode.sooscode_api.global.exception.CustomException;
-import com.sooscode.sooscode_api.global.exception.errorcode.S3ErrorCode;
+import com.sooscode.sooscode_api.global.api.exception.CustomException;
+import com.sooscode.sooscode_api.global.api.status.S3Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -87,13 +87,13 @@ public class S3FileServiceImpl implements S3FileService {
 
         } catch (S3Exception e) {
             log.error("S3 업로드 중 에러 발생: {}", e.awsErrorDetails().errorMessage(), e);
-            throw new CustomException(S3ErrorCode.UPLOAD_FAILED, e.awsErrorDetails().errorMessage());
+            throw new CustomException(S3Status.UPLOAD_FAILED, e.awsErrorDetails().errorMessage());
         } catch (IOException e) {
             log.error("파일 처리 중 에러 발생: {}", e.getMessage(), e);
-            throw new CustomException(S3ErrorCode.UPLOAD_FAILED, "파일 읽기 실패");
+            throw new CustomException(S3Status.UPLOAD_FAILED, "파일 읽기 실패");
         } catch (Exception e) {
             log.error("예상치 못한 에러 발생: {}", e.getMessage(), e);
-            throw new CustomException(S3ErrorCode.CONNECTION_FAILED, e.getMessage());
+            throw new CustomException(S3Status.CONNECTION_FAILED, e.getMessage());
         }
     }
 
@@ -105,7 +105,7 @@ public class S3FileServiceImpl implements S3FileService {
         // VIDEO 타입은 Public URL 제공 불가
         if (file.getFileType() == FileType.VIDEO) {
             log.warn("VIDEO 파일에 대한 Public URL 요청: fileId={}", fileId);
-            throw new CustomException(S3ErrorCode.PUBLIC_URL_NOT_ALLOWED);
+            throw new CustomException(S3Status.PUBLIC_URL_NOT_ALLOWED);
         }
 
         // Public URL 생성
@@ -143,10 +143,10 @@ public class S3FileServiceImpl implements S3FileService {
 
         } catch (S3Exception e) {
             log.error("Presigned URL 생성 실패: {}", e.awsErrorDetails().errorMessage(), e);
-            throw new CustomException(S3ErrorCode.PRESIGNED_URL_FAILED, e.awsErrorDetails().errorMessage());
+            throw new CustomException(S3Status.PRESIGNED_URL_FAILED, e.awsErrorDetails().errorMessage());
         } catch (Exception e) {
             log.error("Presigned URL 생성 중 예상치 못한 에러: {}", e.getMessage(), e);
-            throw new CustomException(S3ErrorCode.PRESIGNED_URL_FAILED, e.getMessage());
+            throw new CustomException(S3Status.PRESIGNED_URL_FAILED, e.getMessage());
         }
     }
 
@@ -175,10 +175,10 @@ public class S3FileServiceImpl implements S3FileService {
 
         } catch (S3Exception e) {
             log.error("S3 파일 삭제 실패: {}", e.awsErrorDetails().errorMessage(), e);
-            throw new CustomException(S3ErrorCode.DELETE_FAILED, file.getUrl());
+            throw new CustomException(S3Status.DELETE_FAILED, file.getUrl());
         } catch (Exception e) {
             log.error("파일 삭제 중 예상치 못한 에러: {}", e.getMessage(), e);
-            throw new CustomException(S3ErrorCode.DELETE_FAILED, e.getMessage());
+            throw new CustomException(S3Status.DELETE_FAILED, e.getMessage());
         }
     }
 
@@ -191,27 +191,27 @@ public class S3FileServiceImpl implements S3FileService {
         // null 또는 empty 체크
         if (file == null || file.isEmpty()) {
             log.warn("업로드 파일이 null 또는 비어있음");
-            throw new CustomException(S3ErrorCode.FILE_EMPTY);
+            throw new CustomException(S3Status.FILE_EMPTY);
         }
 
         // 파일 크기 체크 (100MB 제한)
         long maxSize = 100 * 1024 * 1024; // 100MB
         if (file.getSize() > maxSize) {
             log.warn("파일 크기 초과: {} bytes (최대: {} bytes)", file.getSize(), maxSize);
-            throw new CustomException(S3ErrorCode.INVALID_FILE_TYPE, "파일 크기가 100MB를 초과합니다");
+            throw new CustomException(S3Status.INVALID_FILE_TYPE, "파일 크기가 100MB를 초과합니다");
         }
 
         // 파일명 체크
         String originalName = file.getOriginalFilename();
         if (originalName == null || originalName.isBlank()) {
             log.warn("파일명이 유효하지 않음");
-            throw new CustomException(S3ErrorCode.INVALID_FILE_TYPE, "파일명이 유효하지 않습니다");
+            throw new CustomException(S3Status.INVALID_FILE_TYPE, "파일명이 유효하지 않습니다");
         }
 
         // 확장자 체크
         if (!originalName.contains(".")) {
             log.warn("파일 확장자가 없음: {}", originalName);
-            throw new CustomException(S3ErrorCode.INVALID_FILE_TYPE, "파일 확장자가 없습니다");
+            throw new CustomException(S3Status.INVALID_FILE_TYPE, "파일 확장자가 없습니다");
         }
     }
 
@@ -276,7 +276,7 @@ public class S3FileServiceImpl implements S3FileService {
         return fileRepository.findById(fileId)
                 .orElseThrow(() -> {
                     log.error("파일을 찾을 수 없음: fileId={}", fileId);
-                    return new CustomException(S3ErrorCode.FILE_NOT_FOUND);
+                    return new CustomException(S3Status.FILE_NOT_FOUND);
                 });
     }
 }

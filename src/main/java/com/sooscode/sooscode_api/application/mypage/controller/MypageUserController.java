@@ -1,6 +1,6 @@
 package com.sooscode.sooscode_api.application.mypage.controller;
 
-import com.sooscode.sooscode_api.application.auth.dto.ApiResponse;
+import com.sooscode.sooscode_api.application.auth.dto.SBApiResponse;
 import com.sooscode.sooscode_api.application.mypage.dto.MypageUserUpdatePasswordRequest;
 import com.sooscode.sooscode_api.application.mypage.dto.MypageUserUpdateProfileRequest;
 import com.sooscode.sooscode_api.application.mypage.dto.MypageUserUpdateResponse;
@@ -26,14 +26,14 @@ public class MypageUserController {
      * 비밀번호 변경
      */
     @PostMapping("/password/update")
-    public ResponseEntity<ApiResponse> updatePassword(
+    public ResponseEntity<SBApiResponse> updatePassword(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody MypageUserUpdatePasswordRequest request
     ) {
         mypageService.updatePassword(userDetails.getUser(), request);
 
         return ResponseEntity.ok(
-                new ApiResponse(true, "비밀번호가 성공적으로 변경되었습니다.", null)
+                new SBApiResponse(true, "비밀번호가 성공적으로 변경되었습니다.", null)
         );
     }
 
@@ -41,7 +41,7 @@ public class MypageUserController {
      * 프로필 수정
      */
     @PostMapping("/profile/update")
-    public ResponseEntity<ApiResponse> updateProfile(
+    public ResponseEntity<SBApiResponse> updateProfile(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody MypageUserUpdateProfileRequest request
     ) {
@@ -57,7 +57,7 @@ public class MypageUserController {
         );
 
         return ResponseEntity.ok(
-                new ApiResponse(true, "프로필이 수정되었습니다.", response)
+                new SBApiResponse(true, "프로필이 수정되었습니다.", response)
         );
     }
 
@@ -65,14 +65,14 @@ public class MypageUserController {
      * 회원 탈퇴
      */
     @PostMapping("/delete")
-    public ResponseEntity<ApiResponse> deleteUser(
+    public ResponseEntity<SBApiResponse> deleteUser(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         User user = userDetails.getUser();
         mypageService.deleteUser(user);
 
         return ResponseEntity.ok(
-                new ApiResponse(true, "회원 탈퇴가 완료되었습니다.", null)
+                new SBApiResponse(true, "회원 탈퇴가 완료되었습니다.", null)
         );
     }
 
@@ -88,7 +88,7 @@ public class MypageUserController {
         Long userId = userDetails.getUser().getUserId();
         mypageService.updateProfileImage(userId, photo);
 
-        return ResponseEntity.ok(new ApiResponse(true, "프로필 이미지 업로드 완료", null));
+        return ResponseEntity.ok(new SBApiResponse(true, "프로필 이미지 업로드 완료", null));
     }
 
     /**
@@ -102,6 +102,6 @@ public class MypageUserController {
         Long userId = userDetails.getUser().getUserId();
         mypageService.deleteProfileImage(userId);
 
-        return ResponseEntity.ok(new ApiResponse(true, "프로필 이미지 삭제 완료", null));
+        return ResponseEntity.ok(new SBApiResponse(true, "프로필 이미지 삭제 완료", null));
     }
 }

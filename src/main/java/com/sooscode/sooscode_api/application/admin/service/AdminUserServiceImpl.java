@@ -7,8 +7,8 @@ import com.sooscode.sooscode_api.domain.user.enums.AuthProvider;
 import com.sooscode.sooscode_api.domain.user.enums.UserRole;
 import com.sooscode.sooscode_api.domain.user.enums.UserStatus;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
-import com.sooscode.sooscode_api.global.exception.CustomException;
-import com.sooscode.sooscode_api.global.exception.errorcode.AuthErrorCode;
+import com.sooscode.sooscode_api.global.api.exception.CustomException;
+import com.sooscode.sooscode_api.application.admin.status.AuthStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,7 +33,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     public AdminUserResponse.InstructorCreated createInstructor(AdminUserRequest.CreateInstructor request) {
         // 이메일 중복 체크
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new CustomException(AuthErrorCode.DUPLICATE_EMAIL);
+            throw new CustomException(AuthStatus.DUPLICATE_EMAIL);
         }
 
         // 임시 비밀번호 생성 (8자리 랜덤)
