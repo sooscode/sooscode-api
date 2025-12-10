@@ -29,5 +29,22 @@ public class ChatMessageResponse {
                 message.getCreatedAt()
         );
     }
+    public static ChatMessageResponse system( // 입퇴장용
+            Long classId,
+            Long userId,
+            String email,
+            String name,
+            String content
+    ) {
+        return new ChatMessageResponse(
+                null,
+                classId,
+                userId,
+                email,
+                name,
+                content,
+                LocalDateTime.now()
+        );
+    }
 
 }

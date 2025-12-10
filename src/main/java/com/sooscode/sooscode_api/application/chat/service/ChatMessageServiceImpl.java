@@ -2,6 +2,7 @@ package com.sooscode.sooscode_api.application.chat.service;
 
 import com.sooscode.sooscode_api.application.chat.dto.ChatMessageRequest;
 import com.sooscode.sooscode_api.application.chat.dto.ChatMessageResponse;
+import com.sooscode.sooscode_api.application.chat.dto.EnterOrExitResponse;
 import com.sooscode.sooscode_api.domain.chatmessage.entity.ChatMessage;
 import com.sooscode.sooscode_api.domain.chatmessage.repository.ChatMessageRepository;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
@@ -55,5 +56,25 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         return messages.stream()
                 .map(ChatMessageResponse::from)
                 .toList();
+    }
+    @Override
+    public EnterOrExitResponse enterchatRoom(Long userId, Long classRoomId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(UserStatus.NOT_FOUND));
+
+        return new EnterOrExitResponse(
+                user.getEmail(),
+                user.getName()
+        );
+    }
+    @Override
+    public EnterOrExitResponse exitchatRoom(Long userId, Long classRoomId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(UserStatus.NOT_FOUND));
+
+        return new EnterOrExitResponse(
+                user.getEmail(),
+                user.getName()
+        );
     }
 }
