@@ -3,6 +3,7 @@ package com.sooscode.sooscode_api.application.compile.service;
 import com.sooscode.sooscode_api.application.compile.dto.CompileResultResponse;
 import com.sooscode.sooscode_api.global.api.exception.CustomException;
 import com.sooscode.sooscode_api.global.api.status.CompileStatus;
+import com.sooscode.sooscode_api.global.utils.CodeValidator;
 import com.sooscode.sooscode_api.infra.worker.CodeBlacklistFilter;
 import com.sooscode.sooscode_api.infra.worker.CompileFutureStore;
 import com.sooscode.sooscode_api.infra.worker.CompileWorkerClient;
@@ -25,10 +26,14 @@ public class CompileServiceImpl implements CompileService {
 
     @Override
     public CompletableFuture<CompileResultResponse> runCode(String code) {
+
+        // 유효성 검사
+        CodeValidator.validateAll(code);
         /**
          *  blacklist 필터
          */
         CodeBlacklistFilter.validate(code);
+
         //job Id 생성
         String jobId = UUID.randomUUID().toString();
 
@@ -54,12 +59,11 @@ public class CompileServiceImpl implements CompileService {
              * */
             return future;
 
-        } catch (CustomException e) {
-            throw e;
-        } catch (Exception e) {
-            compileFutureStore.completeFuture(jobId,
-                    new CompileResultResponse("TIMEOUT", "워커 서버 통신 오류 발생"));
-            throw new CustomException(CompileStatus.WORKER_TIMEOUT);
+        } catch (CustomException exception) {
+            throw exception;
+        } catch (Exception exception) {
+            compileFutureStore.failFuture(jobId, new CustomException(CompileStatus.WORKER_UNAVAILABLE));
+                throw new CustomException(CompileStatus.WORKER_UNAVAILABLE);
         }
     }
 }

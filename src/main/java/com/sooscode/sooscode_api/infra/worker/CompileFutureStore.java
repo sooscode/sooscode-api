@@ -56,7 +56,7 @@ public class CompileFutureStore {
                     // LOG 추가
                     log.warn("[FutureStore] Future removed due to OTHER EXCEPTION - jobId={}", jobId);
 
-                    throw new CustomException(CompileStatus.NOT_FOUND);
+                    throw new CustomException(CompileStatus.WORKER_ERROR);
                 });
 
         return future;
@@ -86,6 +86,16 @@ public class CompileFutureStore {
 
             // LOG 추가
             log.warn("[FutureStore] future NOT FOUND - jobId={} (PENDING 발생 원인)", jobId);
+        }
+    }
+
+    /**
+     *  콜백 대기 future 비동기 객체  실패 했을대
+     * */
+    public void failFuture(String jobId, CustomException ex) {
+        CompletableFuture<?> future = futureMap.remove(jobId);
+        if (future != null) {
+            future.completeExceptionally(ex);
         }
     }
 }

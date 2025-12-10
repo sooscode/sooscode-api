@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum CompileStatus implements StatusCode {
 
+    // ok = ok 라는 뜻
+    OK(HttpStatus.OK, "COMPILE_000", "컴파일 완료"),
+
     NOT_FOUND(HttpStatus.NOT_FOUND, "COMPILE_001", "코드를 입력해주세요"),
     // 코드 공백 제출
     EMPTY_CODE(HttpStatus.BAD_REQUEST, "COMPILE_002", "코드가 입력되지 않았습니다"),
@@ -23,6 +26,7 @@ public enum CompileStatus implements StatusCode {
     COMPILE_FAILED(HttpStatus.BAD_REQUEST,"COMPILE_007","컴파일 오류가 발생했습니다"),
     //코드 실행중 오류
     RUNTIME_ERROR(HttpStatus.BAD_REQUEST,"COMPILE_008","코드 실행 중 오류가 발생했습니다");
+
 
     private final HttpStatus httpStatus;
     private final String code;

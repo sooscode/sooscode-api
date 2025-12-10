@@ -41,7 +41,7 @@ public class CompileWorkerClient {
             return response.getBody();
         } catch (Exception e) {
             log.error("워커 서버 통신 실패: {}", e.getMessage());
-            throw new CustomException(CompileStatus.NOT_FOUND);
+            throw new CustomException(CompileStatus.WORKER_UNAVAILABLE);
         }
     }
     /**
