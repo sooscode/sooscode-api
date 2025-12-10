@@ -5,6 +5,7 @@ import com.sooscode.sooscode_api.application.snapshot.dto.SnapshotRequest;
 import com.sooscode.sooscode_api.application.snapshot.dto.SnapshotTitleResponse;
 import com.sooscode.sooscode_api.application.snapshot.service.SnapshotService;
 import com.sooscode.sooscode_api.global.api.exception.CustomException;
+import com.sooscode.sooscode_api.global.api.response.ApiResponse;
 import com.sooscode.sooscode_api.global.api.status.SnapshotStatus;
 import com.sooscode.sooscode_api.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +59,7 @@ public class SnapshotController {
 
     }
     @GetMapping("/read")
-    public ResponseEntity<Page<SnapShotResponse>> read(
+    public ResponseEntity<ApiResponse<Page<SnapShotResponse>>> read(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam Long classId,
             @RequestParam(defaultValue = "0") int page,
@@ -72,7 +73,7 @@ public class SnapshotController {
 
         pageReadEffectiveness(snapShotResponses);
 
-        return ResponseEntity.ok(snapShotResponses);
+        return ApiResponse.ok(snapShotResponses);
 
     }
     @GetMapping("/read/title")

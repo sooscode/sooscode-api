@@ -1,5 +1,6 @@
 package com.sooscode.sooscode_api.global.utils;
 
+import com.sooscode.sooscode_api.domain.user.enums.UserRole;
 import com.sooscode.sooscode_api.global.api.exception.CustomException;
 import com.sooscode.sooscode_api.global.api.status.ValidStatus;
 
@@ -93,6 +94,32 @@ public class UserValidator {
         if (!password.equals(passwordConfirm)) {
             throw new CustomException(ValidStatus.PASSWORD_MISMATCH);
         }
+    }
+
+    public static UserRole validateRole(String role) {
+
+        if (role == null || role.isBlank()) {
+            throw new CustomException(ValidStatus.ROLE_REQUIRED);
+        }
+        // 문자열 → Enum 변환
+        UserRole parsedRole;
+        try {
+            parsedRole = UserRole.valueOf(role.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new CustomException(ValidStatus.INVALID_USER_ROLE);
+        }
+
+        // ADMIN 거부
+        if (parsedRole == UserRole.ADMIN) {
+            throw new CustomException(ValidStatus.ADMIN_ROLE_NOT_ALLOWED);
+        }
+
+        // 허용 권한 체크
+        if (parsedRole != UserRole.INSTRUCTOR && parsedRole != UserRole.STUDENT) {
+            throw new CustomException(ValidStatus.INVALID_USER_ROLE);
+        }
+
+        return parsedRole;
     }
 
     /**

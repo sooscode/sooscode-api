@@ -5,7 +5,9 @@ import com.sooscode.sooscode_api.domain.classroom.enums.ClassStatus;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public class AdminClassRequest {
@@ -19,9 +21,14 @@ public class AdminClassRequest {
     public static class Create {
         private String title;
         private String description;
+        private Long instructorId;
         private Boolean isOnline;
         private LocalDateTime startedAt;
         private LocalDateTime endedAt;
+//        private LocalDate startDate;
+//        private LocalDate endDate;
+//        private LocalTime startTime;
+//        private LocalTime endTime;
     }
 
     /**
@@ -31,19 +38,16 @@ public class AdminClassRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Update {
-
-        @NotBlank(message = "클래스 제목은 필수입니다")
-        @Size(max = 255, message = "제목은 255자를 초과할 수 없습니다")
         private String title;
-
-        @Size(max = 1000, message = "설명은 1000자를 초과할 수 없습니다")
         private String description;
-
-        @NotNull(message = "시작 일시는 필수입니다")
+        private Long instructorId;
+        private Boolean isOnline;
         private LocalDateTime startedAt;
-
-        @NotNull(message = "종료 일시는 필수입니다")
         private LocalDateTime endedAt;
+//        private LocalDate startDate;
+//        private LocalDate endDate;
+//        private LocalTime startTime;
+//        private LocalTime endTime;
     }
 
     /**
@@ -53,8 +57,6 @@ public class AdminClassRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class AssignInstructor {
-
-        @NotNull(message = "강사 ID는 필수입니다")
         private Long instructorId;
     }
 

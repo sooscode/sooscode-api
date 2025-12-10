@@ -1,7 +1,6 @@
 package com.sooscode.sooscode_api.application.admin.dto;
 
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
-import com.sooscode.sooscode_api.domain.classroom.enums.ClassMode;
 import com.sooscode.sooscode_api.domain.classroom.enums.ClassStatus;
 import lombok.*;
 
@@ -15,28 +14,32 @@ public class AdminClassResponse {
      */
     @Data
     @Builder
-    public static class ListItem {
+    public static class ClassItem {
         private Long classId;
+        private String thumbnail;
         private String title;
+        private String description;
         private boolean isOnline;
         private ClassStatus status;
+        private boolean isActive;
         private LocalDateTime startedAt;
         private LocalDateTime endedAt;
         private String instructorName;
-        private Integer participantCount;
-        private LocalDateTime createdAt;
+        private Integer studentCount;
 
-        public static ListItem from(ClassRoom classRoom, String instructorName, Integer participantCount) {
-            return ListItem.builder()
+        public static ClassItem from(ClassRoom classRoom, String thumbnail, String instructorName, Integer studentCount) {
+            return ClassItem.builder()
                     .classId(classRoom.getClassId())
+                    .thumbnail(thumbnail)
                     .title(classRoom.getTitle())
+                    .description(classRoom.getDescription())
                     .isOnline(classRoom.isOnline())
                     .status(classRoom.getStatus())
+                    .isActive(classRoom.isActive())
                     .startedAt(classRoom.getStartedAt())
                     .endedAt(classRoom.getEndedAt())
                     .instructorName(instructorName)
-                    .participantCount(participantCount)
-                    .createdAt(classRoom.getCreatedAt())
+                    .studentCount(studentCount)
                     .build();
         }
     }
@@ -48,36 +51,30 @@ public class AdminClassResponse {
     @Builder
     public static class Detail {
         private Long classId;
+        private String thumbnail;
         private String title;
         private String description;
         private boolean isOnline;
-        private boolean isActive;
         private ClassStatus status;
-        private ClassMode mode;
+        private boolean isActive;
         private LocalDateTime startedAt;
         private LocalDateTime endedAt;
-        private Long fileId;
         private String instructorName;
-        private Integer participantCount;
-        private LocalDateTime createdAt;
-        private LocalDateTime updatedAt;
+        private Integer studentCount;
 
-        public static Detail from(ClassRoom classRoom, String instructorName, Integer participantCount) {
+        public static Detail from(ClassRoom classRoom, String thumbnail, String instructorName, Integer studentCount) {
             return Detail.builder()
                     .classId(classRoom.getClassId())
+                    .thumbnail(thumbnail)
                     .title(classRoom.getTitle())
                     .description(classRoom.getDescription())
                     .isOnline(classRoom.isOnline())
-                    .isActive(classRoom.isActive())
                     .status(classRoom.getStatus())
-                    .mode(classRoom.getMode())
+                    .isActive(classRoom.isActive())
                     .startedAt(classRoom.getStartedAt())
                     .endedAt(classRoom.getEndedAt())
-                    .fileId(classRoom.getFile() != null ? classRoom.getFile().getFileId() : null)
                     .instructorName(instructorName)
-                    .participantCount(participantCount)
-                    .createdAt(classRoom.getCreatedAt())
-                    .updatedAt(classRoom.getUpdatedAt())
+                    .studentCount(studentCount)
                     .build();
         }
     }
@@ -87,8 +84,8 @@ public class AdminClassResponse {
      */
     @Data
     @Builder
-    public static class PageResponse {
-        private List<ListItem> content;
+    public static class ClassListPage {
+        private List<ClassItem> content;
         private int page;
         private int size;
         private long totalElements;

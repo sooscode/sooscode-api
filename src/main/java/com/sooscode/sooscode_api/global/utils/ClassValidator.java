@@ -4,6 +4,7 @@ import com.sooscode.sooscode_api.global.api.exception.CustomException;
 import com.sooscode.sooscode_api.global.api.status.ValidStatus;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 클래스 입력 유효성 검증 유틸리티 클래스
@@ -114,6 +115,26 @@ public class ClassValidator {
     public static void validateIsOnline(Boolean isOnline) {
         if (isOnline == null) {
             throw new CustomException(ValidStatus.CLASS_IS_ONLINE_REQUIRED);
+        }
+    }
+
+    /**
+     * 강사 배정 검증
+     * - 현재는 별도 검증 없음 → return
+     */
+    public static void validateAssignInstructor(Long instructorId) {
+        if (instructorId == null || instructorId <= 0) {
+            throw new CustomException(ValidStatus.CLASS_INSTRUCTOR_NOT_FOUND);
+        }
+    }
+
+    /**
+     * 학생 일괄 배정 검증
+     * - 현재는 별도 검증 없음 → return
+     */
+    public static void validateAssignStudents(List<Long> studentIds) {
+        if (studentIds == null || studentIds.isEmpty()) {
+            throw new CustomException(ValidStatus.CLASS_STUDENT_NOT_FOUND);
         }
     }
 

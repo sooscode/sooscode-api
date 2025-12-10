@@ -2,7 +2,6 @@ package com.sooscode.sooscode_api.application.admin.dto;
 
 import com.sooscode.sooscode_api.domain.user.enums.UserRole;
 import com.sooscode.sooscode_api.domain.user.enums.UserStatus;
-import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,9 +15,10 @@ public class AdminUserRequest {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CreateInstructor {
+    public static class Create {
         private String email;
         private String name;
+        private String role;
     }
 
     /**
