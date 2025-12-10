@@ -20,4 +20,6 @@ public interface ClassRoomRepository extends JpaRepository<ClassRoom, Long> {
     List<ClassRoom> findByMode(ClassMode mode);
     // 시작 기간에 따라 객체 조회
     List<ClassRoom> findByStartedAtBetween(LocalDateTime start, LocalDateTime end);
+    // userId를 통해서 class의 강사 조회
+    List<ClassRoom> findByUser_UserId(Long userId);
 }

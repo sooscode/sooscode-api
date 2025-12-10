@@ -19,5 +19,7 @@ public interface ClassParticipantRepository extends JpaRepository<ClassParticipa
      * 특정 클래스에 참여하고 있는 유저 조회
      */
     List<ClassParticipant> findByUser(User user);
+    // class에 참가하고있는 user를 조회
+    List<ClassParticipant> findByUser_UserId(Long userId);
 
 }

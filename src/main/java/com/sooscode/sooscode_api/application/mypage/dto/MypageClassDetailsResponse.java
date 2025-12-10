@@ -16,7 +16,6 @@ public class MypageClassDetailsResponse {
     private String classTitle;
     private String classDescription;
     private LocalDateTime assignedAt;
-
     private Long teacherId;
     private String teacherName;
 }
