@@ -15,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @Service
 @RequiredArgsConstructor
 public class AdminClassServiceImpl implements AdminClassService {
@@ -26,9 +24,9 @@ public class AdminClassServiceImpl implements AdminClassService {
 
     @Override
     public AdminClassResponse.ClassItem createClass(AdminClassRequest.Create request) {
-        // ===== 1. 강사 조회 =====
+
         User instructor = null;
-        if(request.getInstructorId() == null){
+        if(request.getInstructorId() != null){
             instructor = userRepository.findById(request.getInstructorId())
                     .orElseThrow(() -> new CustomException(AdminStatus.USER_NOT_FOUND));
             if(instructor.getRole().equals(UserRole.INSTRUCTOR)){
@@ -36,7 +34,6 @@ public class AdminClassServiceImpl implements AdminClassService {
             }
         }
 
-        // ===== 3. 클래스 엔티티 생성 =====
         ClassRoom classRoom = ClassRoom.builder()
                 .isOnline(request.getIsOnline())
                 .isActive(true)
@@ -46,26 +43,28 @@ public class AdminClassServiceImpl implements AdminClassService {
                 .file(null)
                 .status(ClassStatus.UPCOMING)
                 .mode(ClassMode.FREE)
-                .startedAt(request.getStartedAt())
-                .endedAt(request.getEndedAt())
+                .startDate(request.getStartDate())
+                .endDate(request.getEndDate())
+                .startTime(request.getStartTime())
+                .endTime(request.getEndTime())
                 .build();
         classroomRepository.save(classRoom);
 
-        // ===== 4. 초기 학생 수 = 0 =====
         Integer studentCount = 0;
         String thumbnail = null;
+        String instructorName = (instructor != null) ? instructor.getName() : null;
 
         return AdminClassResponse.ClassItem.from(
                 classRoom,
                 thumbnail,
-                instructor.getName(),
+                instructorName,
                 studentCount
         );
     }
 
     @Override
     @Transactional
-    public AdminClassResponse.Detail updateClass(Long classId, AdminClassRequest.Update request) {
+    public AdminClassResponse.ClassItem updateClass(Long classId, AdminClassRequest.Update request) {
         ClassRoom classRoom = classroomRepository.findById(classId)
                 .orElseThrow(() -> new CustomException(com.sooscode.sooscode_api.global.api.status.ClassStatus.CLASS_NOT_FOUND));
 
@@ -92,7 +91,7 @@ public class AdminClassServiceImpl implements AdminClassService {
     }
 
     @Override
-    public AdminClassResponse.Detail getClassDetail(Long classId) {
+    public AdminClassResponse.ClassItem getClassDetail(Long classId) {
         return null;
     }
 

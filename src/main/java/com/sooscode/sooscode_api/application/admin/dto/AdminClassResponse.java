@@ -4,7 +4,9 @@ import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
 import com.sooscode.sooscode_api.domain.classroom.enums.ClassStatus;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public class AdminClassResponse {
@@ -22,8 +24,10 @@ public class AdminClassResponse {
         private boolean isOnline;
         private ClassStatus status;
         private boolean isActive;
-        private LocalDateTime startedAt;
-        private LocalDateTime endedAt;
+        private LocalDate startDate;
+        private LocalDate endDate;
+        private LocalTime startTime;
+        private LocalTime endTime;
         private String instructorName;
         private Integer studentCount;
 
@@ -36,43 +40,10 @@ public class AdminClassResponse {
                     .isOnline(classRoom.isOnline())
                     .status(classRoom.getStatus())
                     .isActive(classRoom.isActive())
-                    .startedAt(classRoom.getStartedAt())
-                    .endedAt(classRoom.getEndedAt())
-                    .instructorName(instructorName)
-                    .studentCount(studentCount)
-                    .build();
-        }
-    }
-
-    /**
-     * 클래스 상세 정보
-     */
-    @Data
-    @Builder
-    public static class Detail {
-        private Long classId;
-        private String thumbnail;
-        private String title;
-        private String description;
-        private boolean isOnline;
-        private ClassStatus status;
-        private boolean isActive;
-        private LocalDateTime startedAt;
-        private LocalDateTime endedAt;
-        private String instructorName;
-        private Integer studentCount;
-
-        public static Detail from(ClassRoom classRoom, String thumbnail, String instructorName, Integer studentCount) {
-            return Detail.builder()
-                    .classId(classRoom.getClassId())
-                    .thumbnail(thumbnail)
-                    .title(classRoom.getTitle())
-                    .description(classRoom.getDescription())
-                    .isOnline(classRoom.isOnline())
-                    .status(classRoom.getStatus())
-                    .isActive(classRoom.isActive())
-                    .startedAt(classRoom.getStartedAt())
-                    .endedAt(classRoom.getEndedAt())
+                    .startDate(classRoom.getStartDate())
+                    .endDate(classRoom.getEndDate())
+                    .startTime(classRoom.getStartTime())
+                    .endTime(classRoom.getEndTime())
                     .instructorName(instructorName)
                     .studentCount(studentCount)
                     .build();

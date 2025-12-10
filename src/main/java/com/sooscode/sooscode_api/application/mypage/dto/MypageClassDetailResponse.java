@@ -4,7 +4,9 @@ import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
 @Builder
@@ -15,8 +17,10 @@ public class MypageClassDetailResponse {
     private String description;
     private String mode;
     private String status;
-    private LocalDateTime startedAt;
-    private LocalDateTime endedAt;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private LocalTime startTime;
+    private LocalTime endTime;
 
     public static MypageClassDetailResponse from(ClassRoom classRoom) {
         return MypageClassDetailResponse.builder()
@@ -25,8 +29,10 @@ public class MypageClassDetailResponse {
                 .description(classRoom.getDescription())
                 .mode(classRoom.getMode().name())
                 .status(classRoom.getStatus().name())
-                .startedAt(classRoom.getStartedAt())
-                .endedAt(classRoom.getEndedAt())
+                .startDate(classRoom.getStartDate())
+                .endDate(classRoom.getEndDate())
+                .startTime(classRoom.getStartTime())
+                .endTime(classRoom.getEndTime())
                 .build();
     }
 }

@@ -1,6 +1,5 @@
 package com.sooscode.sooscode_api.application.admin.dto;
 
-import com.sooscode.sooscode_api.domain.classroom.enums.ClassMode;
 import com.sooscode.sooscode_api.domain.classroom.enums.ClassStatus;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -23,12 +22,10 @@ public class AdminClassRequest {
         private String description;
         private Long instructorId;
         private Boolean isOnline;
-        private LocalDateTime startedAt;
-        private LocalDateTime endedAt;
-//        private LocalDate startDate;
-//        private LocalDate endDate;
-//        private LocalTime startTime;
-//        private LocalTime endTime;
+        private LocalDate startDate;
+        private LocalDate endDate;
+        private LocalTime startTime;
+        private LocalTime endTime;
     }
 
     /**
@@ -42,12 +39,10 @@ public class AdminClassRequest {
         private String description;
         private Long instructorId;
         private Boolean isOnline;
-        private LocalDateTime startedAt;
-        private LocalDateTime endedAt;
-//        private LocalDate startDate;
-//        private LocalDate endDate;
-//        private LocalTime startTime;
-//        private LocalTime endTime;
+        private LocalDate startedAt;
+        private LocalDate endedAt;
+        private LocalTime startTime;
+        private LocalTime endTime;
     }
 
     /**
@@ -67,8 +62,6 @@ public class AdminClassRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class AssignStudents {
-
-        @NotEmpty(message = "최소 1명 이상의 학생을 선택해야 합니다")
         private List<Long> studentIds;
     }
 
@@ -84,9 +77,9 @@ public class AdminClassRequest {
 
         private ClassStatus status; // UPCOMING, ONGOING, FINISHED
 
-        private LocalDateTime startDate; // 기간 필터 (시작)
+        private LocalDate startDate; // 기간 필터 (시작)
 
-        private LocalDateTime endDate; // 기간 필터 (종료)
+        private LocalDate endDate; // 기간 필터 (종료)
 
         private String sortBy = "createdAt"; // 정렬 기준: createdAt, participantCount, duration
 

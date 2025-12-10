@@ -9,6 +9,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -55,16 +56,16 @@ public class ClassRoom {
     private ClassMode mode;
 
     @Column(name = "started_at", nullable = false)
-    private LocalDateTime startedAt; //LocalDate startDate로 변경
+    private LocalDate startDate; //LocalDate startDate로 변경
 
     @Column(name = "ended_at", nullable = false)
-    private LocalDateTime endedAt;
+    private LocalDate endDate;
 
-//    @Column(name = "start_time", nullable = true)
-//    private LocalTime startTime;
-//
-//    @Column(name = "end_time", nullable = true)
-//    private LocalTime endTime;
+    @Column(name = "start_time", nullable = false)
+    private LocalTime startTime;
+
+    @Column(name = "end_time", nullable = false)
+    private LocalTime endTime;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

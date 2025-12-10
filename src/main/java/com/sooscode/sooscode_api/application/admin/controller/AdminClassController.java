@@ -5,7 +5,6 @@ import com.sooscode.sooscode_api.application.admin.dto.AdminClassResponse;
 import com.sooscode.sooscode_api.application.admin.service.AdminClassService;
 import com.sooscode.sooscode_api.global.api.response.ApiResponse;
 import com.sooscode.sooscode_api.global.api.status.AdminStatus;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -30,13 +29,15 @@ public class AdminClassController {
             @RequestBody AdminClassRequest.Create request
     ) {
         log.info("관리자 클래스 생성 요청: title={}", request.getTitle());
-        validateCreateData(
+        validateCreate(
                 request.getTitle(),
                 request.getDescription(),
                 request.getIsOnline(),
-                request.getStartedAt(),
-                request.getEndedAt());
-
+                request.getStartDate(),
+                request.getEndDate(),
+                request.getStartTime(),
+                request.getEndTime()
+                );
         AdminClassResponse.ClassItem response = adminClassService.createClass(request);
         return ApiResponse.ok(AdminStatus.CLASS_CREATE_SUCCESS, response);
     }
@@ -46,9 +47,9 @@ public class AdminClassController {
      * GET /api/admin/classes/{classId}
      */
     @GetMapping("/{classId}")
-    public ResponseEntity<AdminClassResponse.Detail> getClassDetail(@PathVariable Long classId) {
+    public ResponseEntity<AdminClassResponse.ClassItem> getClassDetail(@PathVariable Long classId) {
         log.info("관리자 클래스 상세 조회: classId={}", classId);
-        AdminClassResponse.Detail response = adminClassService.getClassDetail(classId);
+        AdminClassResponse.ClassItem response = adminClassService.getClassDetail(classId);
         return ResponseEntity.ok(response);
     }
 
@@ -57,12 +58,12 @@ public class AdminClassController {
      * POST /api/admin/classes/{classId}/edit
      */
     @PostMapping("/{classId}/edit")
-    public ResponseEntity<AdminClassResponse.Detail> updateClass(
+    public ResponseEntity<AdminClassResponse.ClassItem> updateClass(
             @PathVariable Long classId,
             @RequestBody AdminClassRequest.Update request
     ) {
         log.info("관리자 클래스 수정 요청: classId={}", classId);
-        AdminClassResponse.Detail response = adminClassService.updateClass(classId, request);
+        AdminClassResponse.ClassItem response = adminClassService.updateClass(classId, request);
         return ResponseEntity.ok(response);
     }
 
@@ -87,7 +88,7 @@ public class AdminClassController {
             @RequestBody AdminClassRequest.AssignInstructor request
     ) {
         log.info("클래스 강사 수정 요청: classId={}, instructorId={}", classId, request.getInstructorId());
-        validateAssignInstructor(request.getInstructorId());
+        validateInstructorId(request.getInstructorId());
         adminClassService.assignInstructor(classId, request);
         return ResponseEntity.ok().build();
     }
@@ -102,7 +103,7 @@ public class AdminClassController {
             @RequestBody AdminClassRequest.AssignStudents request
     ) {
         log.info("학생 일괄 배정 요청: classId={}, 학생 수={}", classId, request.getStudentIds().size());
-        validateAssignStudents(request.getStudentIds());
+        validateStudentIds(request.getStudentIds());
         adminClassService.assignStudents(classId, request);
         return ResponseEntity.ok().build();
     }

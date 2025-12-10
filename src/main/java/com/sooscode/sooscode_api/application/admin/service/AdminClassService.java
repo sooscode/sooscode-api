@@ -28,7 +28,7 @@ public interface AdminClassService {
      * @throws CustomException CLASS_NOT_FOUND - 클래스를 찾을 수 없는 경우
      * @throws CustomException BAD_REQUEST - 시작/종료 시간을 정상적으로 수정하지 않은 경우
      */
-    AdminClassResponse.Detail updateClass(Long classId, AdminClassRequest.Update request);
+    AdminClassResponse.ClassItem updateClass(Long classId, AdminClassRequest.Update request);
 
     /**
      * 클래스 삭제 (Soft Delete) -> isActive 비활성화
@@ -64,7 +64,7 @@ public interface AdminClassService {
      * @return 클래스 상세 정보
      * @throws CustomException CLASS_NOT_FOUND - 클래스를 찾을 수 없는 경우
      */
-    AdminClassResponse.Detail getClassDetail(Long classId);
+    AdminClassResponse.ClassItem getClassDetail(Long classId);
 
     /**
      * 강사 배정
