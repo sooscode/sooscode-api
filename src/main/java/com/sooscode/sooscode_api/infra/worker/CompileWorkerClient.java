@@ -1,9 +1,8 @@
 package com.sooscode.sooscode_api.infra.worker;
 
-import com.sooscode.sooscode_api.application.compile.dto.CompileResultResponse;
 import com.sooscode.sooscode_api.application.compile.dto.CompileRunResponse;
-import com.sooscode.sooscode_api.global.exception.CustomException;
-import com.sooscode.sooscode_api.global.exception.errorcode.CompileErrorCode;
+import com.sooscode.sooscode_api.global.api.exception.CustomException;
+import com.sooscode.sooscode_api.global.api.status.CompileStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,7 +41,7 @@ public class CompileWorkerClient {
             return response.getBody();
         } catch (Exception e) {
             log.error("워커 서버 통신 실패: {}", e.getMessage());
-            throw new CustomException(CompileErrorCode.NOT_FOUND);
+            throw new CustomException(CompileStatus.NOT_FOUND);
         }
     }
     /**

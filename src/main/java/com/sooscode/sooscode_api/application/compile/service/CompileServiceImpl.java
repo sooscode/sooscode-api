@@ -1,9 +1,8 @@
 package com.sooscode.sooscode_api.application.compile.service;
 
 import com.sooscode.sooscode_api.application.compile.dto.CompileResultResponse;
-import com.sooscode.sooscode_api.application.compile.dto.CompileRunResponse;
-import com.sooscode.sooscode_api.global.exception.CustomException;
-import com.sooscode.sooscode_api.global.exception.errorcode.CompileErrorCode;
+import com.sooscode.sooscode_api.global.api.exception.CustomException;
+import com.sooscode.sooscode_api.global.api.status.CompileStatus;
 import com.sooscode.sooscode_api.infra.worker.CodeBlacklistFilter;
 import com.sooscode.sooscode_api.infra.worker.CompileFutureStore;
 import com.sooscode.sooscode_api.infra.worker.CompileWorkerClient;
@@ -60,7 +59,7 @@ public class CompileServiceImpl implements CompileService {
         } catch (Exception e) {
             compileFutureStore.completeFuture(jobId,
                     new CompileResultResponse("TIMEOUT", "워커 서버 통신 오류 발생"));
-            throw new CustomException(CompileErrorCode.WORKER_TIMEOUT);
+            throw new CustomException(CompileStatus.WORKER_TIMEOUT);
         }
     }
 }

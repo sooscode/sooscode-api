@@ -1,14 +1,15 @@
-package com.sooscode.sooscode_api.global.exception.errorcode;
+package com.sooscode.sooscode_api.application.admin.status;
 
-import com.sooscode.sooscode_api.global.exception.ErrorCode;
+import com.sooscode.sooscode_api.global.api.status.StatusCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum AuthErrorCode implements ErrorCode {
+public enum AuthStatus implements StatusCode {
 
+    OK(HttpStatus.OK, "AUTH_000", "로그인이 성공적으로 완료되었습니다"),
     EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "AUTH_001", "존재하지 않는 이메일입니다"),
     DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, "AUTH_002", "이미 가입한 이메일입니다"),
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_003", "이메일 또는 비밀번호가 올바르지 않습니다"),
@@ -21,7 +22,7 @@ public enum AuthErrorCode implements ErrorCode {
 
 
 
-    private final HttpStatus status;
+    private final HttpStatus httpStatus;
     private final String code;
     private final String message;
 }

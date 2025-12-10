@@ -1,13 +1,12 @@
-package com.sooscode.sooscode_api.global.exception.errorcode;
+package com.sooscode.sooscode_api.global.api.status;
 
-import com.sooscode.sooscode_api.global.exception.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum SnapshotErrorCode implements ErrorCode {
+public enum SnapshotStatus implements StatusCode {
 
     NOT_FOUND(HttpStatus.NOT_FOUND, "SNAPSHOT_001", "스냅샷을 찾을 수 없습니다"),
     FORBIDDEN(HttpStatus.FORBIDDEN,"SNAPSHOT_002","작성한 사용자만 수정할 수 있습니다"),
@@ -17,7 +16,7 @@ public enum SnapshotErrorCode implements ErrorCode {
     TITLE_EMPTY(HttpStatus.BAD_REQUEST, "SNAPSHOT_006", "제목을 입력해주세요"),
     TITLE_TOO_LONG(HttpStatus.BAD_REQUEST, "SNAPSHOT_007", "제목은 50자 이하여야 합니다");
 
-    private final HttpStatus status;
+    private final HttpStatus httpStatus;
     private final String code;
     private final String message;
 }

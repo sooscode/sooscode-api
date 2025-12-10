@@ -2,7 +2,7 @@ package com.sooscode.sooscode_api.global.jwt;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sooscode.sooscode_api.application.auth.dto.ApiResponse;
+import com.sooscode.sooscode_api.application.auth.dto.SBApiResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,9 +32,9 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json;charset=UTF-8");
 
-        ApiResponse apiResponse = new ApiResponse(false, "인증이 필요합니다.", null);
+        SBApiResponse SBApiResponse = new SBApiResponse(false, "인증이 필요합니다.", null);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
+        response.getWriter().write(objectMapper.writeValueAsString(SBApiResponse));
     }
 }

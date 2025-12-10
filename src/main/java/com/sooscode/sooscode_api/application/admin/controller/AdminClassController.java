@@ -20,7 +20,7 @@ public class AdminClassController {
 
     /**
      * 클래스 생성
-     * POST /api/admin/classes
+     * POST /api/admin/class
      */
     @PostMapping
     public ResponseEntity<AdminClassResponse.Detail> createClass(
@@ -33,7 +33,7 @@ public class AdminClassController {
 
     /**
      * 클래스 수정
-     * PUT /api/admin/classes/{classId}
+     * PUT /api/admin/class/{classId}
      */
     @PutMapping("/{classId}")
     public ResponseEntity<AdminClassResponse.Detail> updateClass(

@@ -1,7 +1,7 @@
 package com.sooscode.sooscode_api.infra.worker;
 
-import com.sooscode.sooscode_api.global.exception.CustomException;
-import com.sooscode.sooscode_api.global.exception.errorcode.CompileErrorCode;
+import com.sooscode.sooscode_api.global.api.exception.CustomException;
+import com.sooscode.sooscode_api.global.api.status.CompileStatus;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class CodeBlacklistFilter {
 
         for (String banned : BLACKLIST_PATTERNS) {
             if (code.contains(banned)) {
-                throw new CustomException(CompileErrorCode.NOT_FOUND);
+                throw new CustomException(CompileStatus.NOT_FOUND);
             }
         }
     }

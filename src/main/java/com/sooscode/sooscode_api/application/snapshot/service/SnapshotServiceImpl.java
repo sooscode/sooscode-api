@@ -9,13 +9,12 @@ import com.sooscode.sooscode_api.domain.snapshot.entity.CodeSnapshot;
 import com.sooscode.sooscode_api.domain.snapshot.repository.CodeSnapshotRepository;
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
-import com.sooscode.sooscode_api.global.exception.CustomException;
-import com.sooscode.sooscode_api.global.exception.errorcode.ClassErrorCode;
-import com.sooscode.sooscode_api.global.exception.errorcode.SnapshotErrorCode;
-import com.sooscode.sooscode_api.global.exception.errorcode.UserErrorCode;
+import com.sooscode.sooscode_api.global.api.exception.CustomException;
+import com.sooscode.sooscode_api.global.api.status.ClassStatus;
+import com.sooscode.sooscode_api.global.api.status.SnapshotStatus;
+import com.sooscode.sooscode_api.global.api.status.UserStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.apache.bcel.classfile.Code;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,10 +34,10 @@ public class SnapshotServiceImpl implements SnapshotService {
     public CodeSnapshot saveCodeSnapshot(SnapshotRequest rq, Long userId) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(UserStatus.NOT_FOUND));
 
         ClassRoom classRoom = classRoomRepository.findById(rq.getClassId())
-                .orElseThrow(() -> new CustomException(ClassErrorCode.CLASS_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ClassStatus.CLASS_NOT_FOUND));
 
         CodeSnapshot codeSnapshot = CodeSnapshot.builder()
                 .user(user)
@@ -56,10 +55,10 @@ public class SnapshotServiceImpl implements SnapshotService {
     public CodeSnapshot updateCodeSnapshot(SnapshotRequest rq, Long LoginuserId, Long snapshotId) {
 
         CodeSnapshot codeSnapshot = codeSnapshotRepository.findById(snapshotId)
-                .orElseThrow(() -> new CustomException(SnapshotErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(SnapshotStatus.NOT_FOUND));
 
         if (!codeSnapshot.getUser().getUserId().equals(LoginuserId)) {
-            throw new CustomException(SnapshotErrorCode.FORBIDDEN);
+            throw new CustomException(SnapshotStatus.FORBIDDEN);
         }
         codeSnapshot.update(rq.getTitle(), rq.getContent());
 
@@ -156,7 +155,7 @@ public class SnapshotServiceImpl implements SnapshotService {
                 .deleteByCodeSnapshotIdAndUser_UserIdAndClassRoom_ClassId(snapshotId, userId, classId);
 
         if (deleted == 0) {
-           throw new CustomException(SnapshotErrorCode.NOT_FOUND);
+           throw new CustomException(SnapshotStatus.NOT_FOUND);
         }
 
     }

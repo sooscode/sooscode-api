@@ -7,12 +7,11 @@ import com.sooscode.sooscode_api.domain.chatmessage.repository.ChatMessageReacti
 import com.sooscode.sooscode_api.domain.chatmessage.repository.ChatMessageRepository;
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
-import com.sooscode.sooscode_api.global.exception.CustomException;
-import com.sooscode.sooscode_api.global.exception.errorcode.ChatErrorCode;
-import com.sooscode.sooscode_api.global.exception.errorcode.UserErrorCode;
+import com.sooscode.sooscode_api.global.api.exception.CustomException;
+import com.sooscode.sooscode_api.global.api.status.ChatStatus;
+import com.sooscode.sooscode_api.global.api.status.UserStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -31,10 +30,10 @@ public class ChatMessageReactionServiceImpl implements ChatMessageReactionServic
     @Transactional
     public int addorRemoveReaction(Long userId, Long chatId) {
         User user = userRepository.findById(userId).
-                 orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND));
+                 orElseThrow(() -> new CustomException(UserStatus.NOT_FOUND));
 
         ChatMessage chatMessage = chatMessageRepository.findById(chatId).
-                orElseThrow(() -> new CustomException(ChatErrorCode.NOT_FOUND));
+                orElseThrow(() -> new CustomException(ChatStatus.NOT_FOUND));
 
         boolean alreadyexist = chatMessageReactionRepository.existsByMessageAndUser(chatMessage, user);
 

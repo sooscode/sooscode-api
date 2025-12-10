@@ -1,13 +1,12 @@
-package com.sooscode.sooscode_api.global.exception.errorcode;
+package com.sooscode.sooscode_api.global.api.status;
 
-import com.sooscode.sooscode_api.global.exception.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum ValidErrorCode implements ErrorCode {
+public enum ValidStatus implements StatusCode {
 
     // 일반 검증 실패
     VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "VALID_001", "입력하신 값을 다시 확인해 주세요"),
@@ -48,7 +47,8 @@ public enum ValidErrorCode implements ErrorCode {
 
     // 클래스 온라인 여부 검증
     CLASS_IS_ONLINE_REQUIRED(HttpStatus.BAD_REQUEST, "VALID_024", "온라인 여부를 선택해주세요");
-    private final HttpStatus status;
+
+    private final HttpStatus httpStatus;
     private final String code;
     private final String message;
 }

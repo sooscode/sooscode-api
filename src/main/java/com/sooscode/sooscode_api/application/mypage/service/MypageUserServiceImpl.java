@@ -5,10 +5,9 @@ import com.sooscode.sooscode_api.application.mypage.dto.MypageUserUpdateProfileR
 import com.sooscode.sooscode_api.domain.classroom.repository.ClassParticipantRepository;
 import com.sooscode.sooscode_api.domain.file.entity.SooFile;
 import com.sooscode.sooscode_api.domain.user.entity.User;
-import com.sooscode.sooscode_api.domain.user.enums.UserStatus;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
-import com.sooscode.sooscode_api.global.exception.CustomException;
-import com.sooscode.sooscode_api.global.exception.errorcode.UserErrorCode;
+import com.sooscode.sooscode_api.global.api.exception.CustomException;
+import com.sooscode.sooscode_api.global.api.status.UserStatus;
 import com.sooscode.sooscode_api.infra.file.service.S3FileService;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,7 @@ public class MypageUserServiceImpl implements MypageUserService {
      */
     private User getUser(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(UserStatus.NOT_FOUND));
     }
 
     /**
@@ -72,7 +71,7 @@ public class MypageUserServiceImpl implements MypageUserService {
      */
     @Override
     public void deleteUser(User user) {
-        user.setStatus(UserStatus.INACTIVE);
+        user.setStatus(com.sooscode.sooscode_api.domain.user.enums.UserStatus.INACTIVE);
         userRepository.save(user);
     }
 
