@@ -3,18 +3,19 @@ package com.sooscode.sooscode_api.application.auth.service;
 import com.sooscode.sooscode_api.application.auth.dto.*;
 import com.sooscode.sooscode_api.application.auth.util.CookieUtil;
 import com.sooscode.sooscode_api.domain.user.entity.EmailCode;
-import com.sooscode.sooscode_api.domain.user.entity.RefreshToken;
+// import com.sooscode.sooscode_api.domain.user.entity.RefreshToken;  // 제거
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.enums.AuthProvider;
 import com.sooscode.sooscode_api.domain.user.enums.UserRole;
 import com.sooscode.sooscode_api.domain.user.enums.UserStatus;
 import com.sooscode.sooscode_api.domain.user.repository.EmailCodeRepository;
-import com.sooscode.sooscode_api.domain.user.repository.RefreshTokenRepository;
+// import com.sooscode.sooscode_api.domain.user.repository.RefreshTokenRepository;  // 제거
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
 import com.sooscode.sooscode_api.global.api.exception.CustomException;
 import com.sooscode.sooscode_api.global.api.status.AuthStatus;
 import com.sooscode.sooscode_api.global.jwt.JwtUtil;
 import com.sooscode.sooscode_api.global.utils.UserValidator;
+import com.sooscode.sooscode_api.infra.redis.TokenRedisService;  // 추가
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -36,14 +37,15 @@ import static com.sooscode.sooscode_api.global.api.status.AuthStatus.ERROR_WHILE
 
 @RequiredArgsConstructor
 @Service
-public class AuthServiceImpl implements AuthService{
+public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final EmailCodeRepository emailCodeRepository;
     private final JavaMailSender mailSender;
-    private final RefreshTokenRepository refreshTokenRepository;
+    // private final RefreshTokenRepository refreshTokenRepository;  // 기존: DB 저장
+    private final TokenRedisService tokenRedisService;  // 변경: Redis 저장
 
     /**
      * 로그인 - 인증 및 JWT 토큰 생성
@@ -79,23 +81,30 @@ public class AuthServiceImpl implements AuthService{
         String accessToken = jwtUtil.generateAccessToken(user);
 
         // 4. Refresh Token 생성 or 조회
-        String refreshToken;
+        // ========== 기존: DB 저장 ==========
+        // String refreshToken;
+        // Optional<RefreshToken> existing = refreshTokenRepository.findByUserId(userId);
+        // if (existing.isPresent()) {
+        //     refreshToken = existing.get().getTokenValue();
+        // } else {
+        //     refreshToken = jwtUtil.generateRefreshToken(user);
+        //     RefreshToken token = new RefreshToken();
+        //     token.setTokenValue(refreshToken);
+        //     token.setUserId(userId);
+        //     token.setExpiredAt(LocalDateTime.now().plusDays(7));
+        //     refreshTokenRepository.save(token);
+        // }
 
-        Optional<RefreshToken> existing = refreshTokenRepository.findByUserId(userId);
-        if (existing.isPresent()) {
-            refreshToken = existing.get().getTokenValue();
-        } else {
+        // ========== 변경: Redis 저장 ==========
+        String refreshToken = tokenRedisService.getRefreshToken(userId);
+
+        if (refreshToken == null || !jwtUtil.validateToken(refreshToken)) {
+            // 없거나 만료됐으면 새로 생성
             refreshToken = jwtUtil.generateRefreshToken(user);
-
-            RefreshToken token = new RefreshToken();
-            token.setTokenValue(refreshToken);
-            token.setUserId(userId);
-            token.setExpiredAt(LocalDateTime.now().plusDays(7));
-
-            refreshTokenRepository.save(token);
+            tokenRedisService.saveRefreshToken(userId, refreshToken);
         }
 
-        // 5. 쿠키에 토큰 저장 (중첩 DTO 사용하지 않기 때문에 이 위치가 맞음)
+        // 5. 쿠키에 토큰 저장
         CookieUtil.addTokenCookies(response, new TokenResponse(accessToken, refreshToken));
 
         // 6. Body로 내려줄 평탄화된 유저 정보
@@ -113,32 +122,58 @@ public class AuthServiceImpl implements AuthService{
      */
     @Transactional
     public TokenResponse reissueAccessToken(String refreshToken) {
-        RefreshToken savedToken =
-                refreshTokenRepository.findByTokenValue(refreshToken)
-                        .orElseThrow(() -> new CustomException(AuthStatus.REFRESH_TOKEN_NOT_FOUND));
 
-        if (savedToken.getExpiredAt().isBefore(LocalDateTime.now())) {
-            throw new CustomException(AuthStatus.REFRESH_TOKEN_EXPIRED);
+        // ========== 기존: DB 조회 ==========
+        // RefreshToken savedToken =
+        //         refreshTokenRepository.findByTokenValue(refreshToken)
+        //                 .orElseThrow(() -> new CustomException(AuthStatus.REFRESH_TOKEN_NOT_FOUND));
+        //
+        // if (savedToken.getExpiredAt().isBefore(LocalDateTime.now())) {
+        //     throw new CustomException(AuthStatus.REFRESH_TOKEN_EXPIRED);
+        // }
+        //
+        // User user = userRepository.findById(savedToken.getUserId())
+        //         .orElseThrow(() -> new CustomException(AuthStatus.USER_NOT_FOUND));
+        //
+        // String newAccessToken = jwtUtil.generateAccessToken(user);
+        // return new TokenResponse(newAccessToken, savedToken.getTokenValue());
+
+        // ========== 변경: Redis 조회 ==========
+        Long userId = jwtUtil.getUserIdFromToken(refreshToken);
+
+        // Redis에 저장된 토큰과 비교
+        String savedToken = tokenRedisService.getRefreshToken(userId);
+        if (savedToken == null || !savedToken.equals(refreshToken)) {
+            throw new CustomException(AuthStatus.REFRESH_TOKEN_NOT_FOUND);
         }
 
-        User user = userRepository.findById(savedToken.getUserId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(AuthStatus.USER_NOT_FOUND));
 
         String newAccessToken = jwtUtil.generateAccessToken(user);
 
-        /**
-         *  RT는 변경하지 않음
-         */
-        return new TokenResponse(newAccessToken, savedToken.getTokenValue());
+        return new TokenResponse(newAccessToken, refreshToken);
     }
 
     /**
-     * RT 토큰 삭제
+     * 로그아웃 - RT 삭제 + AT 블랙리스트 등록
      */
-    @Transactional
-    public void deleteRefreshToken(Long userId) {
-        refreshTokenRepository.deleteByUserId(userId);
+    public void logout(Long userId, String accessToken) {
+        // 기존: DB 삭제
+        // refreshTokenRepository.deleteByUserId(userId);
+
+        // Redis Refresh Token 삭제
+        tokenRedisService.deleteRefreshToken(userId);
+
+        // Access Token 블랙리스트 등록
+        if (accessToken != null) {
+            long remainingMillis = jwtUtil.getRemainingExpiration(accessToken);
+            if (remainingMillis > 0) {
+                tokenRedisService.addToBlacklist(accessToken, remainingMillis);
+            }
+        }
     }
+
 
     /**
      * 회원가입
@@ -489,5 +524,4 @@ public class AuthServiceImpl implements AuthService{
     public User saveUser(User user) {
         return userRepository.save(user);
     }
-
 }

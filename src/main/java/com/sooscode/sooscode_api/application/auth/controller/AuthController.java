@@ -52,11 +52,11 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout(
             @AuthenticationPrincipal CustomUserDetails user,
+            @CookieValue(name = "accessToken", required = false) String accessToken,
             HttpServletResponse response
     ) {
-        authService.deleteRefreshToken(user.getUser().getUserId());
+        authService.logout(user.getUser().getUserId(), accessToken);  // RT 삭제 + AT 블랙리스트
         CookieUtil.deleteTokenCookies(response, null);
-
         return ApiResponse.ok(GlobalStatus.OK);
     }
 
@@ -164,6 +164,11 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> reissueAccessToken(HttpServletRequest request, HttpServletResponse response) {
 
         String refreshToken = CookieUtil.getRefreshToken(request);
+
+        // 토큰 유효성 검사
+        if (!jwtUtil.validateToken(refreshToken)) {
+            throw new CustomException(AuthStatus.REFRESH_TOKEN_EXPIRED);
+        }
 
         TokenResponse tokens = authService.reissueAccessToken(refreshToken);
 

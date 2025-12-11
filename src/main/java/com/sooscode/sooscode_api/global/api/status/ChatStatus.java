@@ -13,7 +13,8 @@ public enum ChatStatus implements StatusCode {
     ENTER_OK(HttpStatus.OK, "CHAT_001", "채팅방에 성공적으로 입장되었습니다"),
     EXIT_OK(HttpStatus.OK, "CHAT_001", "채팅방에 성공적으로 퇴장되었습니다"),
     NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT_004", "채팅을 찾을 수 없습니다"),
-    ACCESS_DENIED(HttpStatus.FORBIDDEN, "CHAT_005", "채팅 접근 권한이 없습니다");
+    ACCESS_DENIED(HttpStatus.FORBIDDEN, "CHAT_005", "채팅 접근 권한이 없습니다"),
+    DELETE_OK(HttpStatus.OK, "CHAT_006", "채팅방에 성공적으로 삭제되었습니다");
 
     private final HttpStatus httpStatus;
     private final String code;

@@ -11,4 +11,5 @@ import java.time.LocalDateTime;
 public class ChatMessageRequest {
     private Long classId;
     private String content;
+    private Long replyToChatId; // 답장안하는 채팅일경우 null
 }

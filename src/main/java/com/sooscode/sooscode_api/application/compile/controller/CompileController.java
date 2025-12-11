@@ -36,7 +36,8 @@ public class CompileController {
     @PostMapping("/run")
     public CompletableFuture<ResponseEntity<ApiResponse<CompileResultResponse>>> run(
             @Valid @RequestBody CompileRunRequest request){
-        log.info("===> /run 요청 수신");
+        log.info(" /run 요청 수신");
+
         /**
          *  비동기 컴파일 요청 Future 획득 시점
          * - 여기서는 future 만 반환, 실제 실행은 콜백이 도착해야 완료
@@ -50,7 +51,7 @@ public class CompileController {
 
             CompletableFuture<CompileResultResponse> resultFuture =
                     compileService.runCode(decode);
-            log.info("===> Future 생성 완료");
+            log.info(" Future 생성 완료");
 
             /**
              *  비동기 처리 thenApply 가 토큰 인증정보를 가지고있지않음

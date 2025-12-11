@@ -1,10 +1,8 @@
 package com.sooscode.sooscode_api.application.chat.controller;
 
-import com.sooscode.sooscode_api.application.chat.dto.ChatMessageResponse;
-import com.sooscode.sooscode_api.application.chat.dto.ChatMessageRequest;
-import com.sooscode.sooscode_api.application.chat.dto.ChatMessageType;
-import com.sooscode.sooscode_api.application.chat.dto.EnterOrExitResponse;
+import com.sooscode.sooscode_api.application.chat.dto.*;
 import com.sooscode.sooscode_api.application.chat.service.ChatMessageService;
+import com.sooscode.sooscode_api.application.chat.service.ChatPresenceService;
 import com.sooscode.sooscode_api.domain.chatmessage.entity.ChatMessage;
 import com.sooscode.sooscode_api.global.api.exception.CustomException;
 import com.sooscode.sooscode_api.global.api.response.ApiResponse;
@@ -35,6 +33,7 @@ public class ChatMessageController {
 
     private final WebSocketSessionRegistry sessionRegistry;
     private final ChatMessageService chatMessageService;
+    private final ChatPresenceService chatPresenceService;
 
 
     /**
@@ -78,8 +77,12 @@ public class ChatMessageController {
         Long userId = sessionRegistry.getUserId(sessionId);
 
         userEffectiveness(sessionId, userId);// 유저 Id 유효성 검사
-
         classEffectiveness(classId); // 클래스 Id 유효성검사
+
+        if(chatPresenceService.isAlreadyIn(userId, classId)) {
+            return null;
+        }
+        chatPresenceService.markEnter(userId, classId);
 
         EnterOrExitResponse response = chatMessageService.enterchatRoom(userId, classId);
         ChatMessageResponse enter = ChatMessageResponse.system(
@@ -104,8 +107,12 @@ public class ChatMessageController {
         Long userId = sessionRegistry.getUserId(sessionId);
 
         userEffectiveness(sessionId, userId);// 유저 Id 유효성 검사
-
         classEffectiveness(classId); // 클래스 Id 유효성검사
+
+        if(chatPresenceService.isAleadyOut(userId, classId)) {
+            return null;
+        }
+        chatPresenceService.markExit(userId, classId);
 
         EnterOrExitResponse response = chatMessageService.exitchatRoom(userId, classId);
         ChatMessageResponse exit = ChatMessageResponse.system(
@@ -119,6 +126,34 @@ public class ChatMessageController {
 
         return ApiResponse.ok(ChatStatus.EXIT_OK, exit);
     }
+    @MessageMapping("/chat/{classId}/delete")
+    @SendTo("/topic/chat/{classId}")
+    public ResponseEntity<ApiResponse<ChatDeleteResponse>> deleteChat(
+            @DestinationVariable Long classId,
+            ChatDeleteRequest request,
+            StompHeaderAccessor accessor
+    ){
+        String sessionId = accessor.getSessionId();
+        Long uesrId = sessionRegistry.getUserId(sessionId);
+
+        userEffectiveness(sessionId, uesrId);
+        classEffectiveness(classId);
+
+
+
+        chatMessageService.deleteMessage(classId, request.getChatId(),  uesrId);
+
+        ChatDeleteResponse response =   new ChatDeleteResponse(
+                request.getChatId(),
+                classId,
+                ChatMessageType.DELETE
+        );
+
+        return ApiResponse.ok(ChatStatus.DELETE_OK,response);
+
+    }
+
+
     private void classEffectiveness(Long classId){
         if (classId == null) {
             throw new CustomException(ClassStatus.CLASS_NOT_FOUND);

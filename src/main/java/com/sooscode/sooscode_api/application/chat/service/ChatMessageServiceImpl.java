@@ -10,6 +10,7 @@ import com.sooscode.sooscode_api.domain.classroom.repository.ClassRoomRepository
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
 import com.sooscode.sooscode_api.global.api.exception.CustomException;
+import com.sooscode.sooscode_api.global.api.status.ChatStatus;
 import com.sooscode.sooscode_api.global.api.status.ClassStatus;
 import com.sooscode.sooscode_api.global.api.status.UserStatus;
 import lombok.Builder;
@@ -22,12 +23,14 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Builder
+@Transactional(readOnly = true)
 public class ChatMessageServiceImpl implements ChatMessageService {
 
     private final ChatMessageRepository chatMessageRepository;
     private final UserRepository userRepository;
     private final ClassRoomRepository classRoomRepository;
 
+    @Transactional
     @Override
     public ChatMessageResponse saveMessage(ChatMessageRequest request, Long userId) {
         User user = userRepository.findById(userId)
@@ -36,11 +39,24 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         ClassRoom classRoom = classRoomRepository.findById(request.getClassId())
                 .orElseThrow(() -> new CustomException(ClassStatus.CLASS_NOT_FOUND));
 
-        ChatMessage entity = ChatMessage.builder()
-                .user(user)
-                .classRoom(classRoom)
-                .content(request.getContent())
-                .build();
+        ChatMessage reply = null;
+
+        if (request.getReplyToChatId() != null) {
+            reply = chatMessageRepository.findById(request.getReplyToChatId())
+                    .orElseThrow(() -> new CustomException(ChatStatus.NOT_FOUND));
+
+            // ️ 다른 클래스 메시지에 답장 못 하게 막기
+            if (!reply.getClassRoom().getClassId().equals(request.getClassId())) {
+                throw new CustomException(ChatStatus.ACCESS_DENIED);
+            }
+        }
+
+        ChatMessage entity = ChatMessage.of(
+                user,
+                classRoom,
+                request.getContent(),
+                reply
+        );
 
         ChatMessage saved = chatMessageRepository.save(entity);
 
@@ -56,6 +72,21 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         return messages.stream()
                 .map(ChatMessageResponse::from)
                 .toList();
+    }
+    @Transactional
+    @Override
+    public void deleteMessage(Long classId, Long chatId, Long userId){
+        ChatMessage chatMessage = chatMessageRepository.findById(chatId)
+                .orElseThrow(() -> new CustomException(ChatStatus.NOT_FOUND));
+        
+        // 자신것만 삭제가능 유효성검사
+        if(!chatMessage.getUser().getUserId().equals(userId)){
+            throw new CustomException(ChatStatus.ACCESS_DENIED);
+        }
+        if(chatMessage.isDeleted()){
+            return;
+        }
+        chatMessage.markDeleted();
     }
     @Override
     public EnterOrExitResponse enterchatRoom(Long userId, Long classRoomId){

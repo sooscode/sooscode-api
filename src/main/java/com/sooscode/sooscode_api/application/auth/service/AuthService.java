@@ -19,9 +19,9 @@ public interface AuthService {
     TokenResponse reissueAccessToken(String refreshToken);
 
     /**
-     * 특정 유저의 Refresh Token을 삭제
+     * 로그아웃 - RT 삭제 + AT 블랙리스트 등록
      */
-    void deleteRefreshToken(Long userId);
+    void logout(Long userId, String accessToken);
 
     /**
      * 새로운 유저를 회원가입 처리하고 기본 정보 반환

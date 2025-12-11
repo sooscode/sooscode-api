@@ -31,6 +31,11 @@ public enum AuthStatus implements StatusCode {
     ERROR_WHILE_EMAIL_SENDING(HttpStatus.BAD_REQUEST, "AUTH_009", "이메일 전송에 실패했습니다."),
 
     /**
+     * AT 토큰
+     */
+    ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "AUTH-004", "액세스 토큰이 만료되었습니다."),
+
+    /**
      * Refresh Token 관련
      */
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "AUTH_010", "리프레시 토큰을 찾을 수 없습니다."),

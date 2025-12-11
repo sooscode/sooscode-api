@@ -71,7 +71,6 @@ public class SnapshotController {
         Page<SnapShotResponse> snapShotResponses =
                 snapshotService.readAllSnapshots(userId, classId, pageable);
 
-        pageReadEffectiveness(snapShotResponses);
         return ApiResponse.ok(SnapshotStatus.READ_OK,snapShotResponses);
 
     }
@@ -216,11 +215,5 @@ public class SnapshotController {
             throw new CustomException(SnapshotStatus.LIST_EMPTY);
         }
     }
-    private void pageReadEffectiveness(Page result) {
-        if (result == null || result.isEmpty()) {
-            throw new CustomException(SnapshotStatus.LIST_EMPTY);
-        }
-    }
-
 
 }
