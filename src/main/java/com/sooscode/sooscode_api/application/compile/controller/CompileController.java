@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -41,8 +43,13 @@ public class CompileController {
          * - 현재 HTTP 스레드에서는 SecurityContext가 존재함 (인증된 상태).
          */
         try {
+            String code = new  String(
+                    Base64.getDecoder().decode(request.getCode()),
+                    StandardCharsets.UTF_8
+            );
+
             CompletableFuture<CompileResultResponse> resultFuture =
-                    compileService.runCode(request.getCode());
+                    compileService.runCode(code);
             log.info("===> Future 생성 완료");
 
             /**

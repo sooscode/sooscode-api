@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 public class CompileRunRequest {
 
     private String jobId;
-    @NotBlank(message = "코드는 필수입니다.")
-    @Size(max = 10000, message = "코드는 10,000자를 넘을 수 없습니다.")
     private String code;
     private String callbackUrl;
 }
