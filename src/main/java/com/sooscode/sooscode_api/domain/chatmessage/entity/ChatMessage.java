@@ -38,6 +38,10 @@ public class ChatMessage {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean deleted = false;
+
+
     // ChatMessage 엔티티 내부
     public static ChatMessage of(User user, ClassRoom classRoom, String content) {
         return ChatMessage.builder()
@@ -45,6 +49,11 @@ public class ChatMessage {
                 .classRoom(classRoom)
                 .content(content)
                 .build();
+    }
+
+    public void markDeleted() {
+        this.deleted = true;
+        this.content = "삭제된 메시지입니다.";
     }
 
 }

@@ -1,9 +1,6 @@
 package com.sooscode.sooscode_api.application.chat.controller;
 
-import com.sooscode.sooscode_api.application.chat.dto.ChatMessageResponse;
-import com.sooscode.sooscode_api.application.chat.dto.ChatMessageRequest;
-import com.sooscode.sooscode_api.application.chat.dto.ChatMessageType;
-import com.sooscode.sooscode_api.application.chat.dto.EnterOrExitResponse;
+import com.sooscode.sooscode_api.application.chat.dto.*;
 import com.sooscode.sooscode_api.application.chat.service.ChatMessageService;
 import com.sooscode.sooscode_api.domain.chatmessage.entity.ChatMessage;
 import com.sooscode.sooscode_api.global.api.exception.CustomException;
@@ -119,6 +116,32 @@ public class ChatMessageController {
 
         return ApiResponse.ok(ChatStatus.EXIT_OK, exit);
     }
+    @MessageMapping("/chat/{classId}/delete")
+    @SendTo("/topic/chat/{classId}")
+    public ResponseEntity<ApiResponse<ChatDeleteResponse>> deleteChat(
+            @DestinationVariable Long classId,
+            ChatDeleteRequest request,
+            StompHeaderAccessor accessor
+    ){
+        String sessionId = accessor.getSessionId();
+        Long uesrId = sessionRegistry.getUserId(sessionId);
+
+        userEffectiveness(sessionId, uesrId);
+        classEffectiveness(classId);
+
+        chatMessageService.deleteMessage(classId, request.getChatId(),  uesrId);
+
+        ChatDeleteResponse response =   new ChatDeleteResponse(
+                request.getChatId(),
+                classId,
+                ChatMessageType.DELETE
+        );
+
+        return ApiResponse.ok(ChatStatus.DELETE_OK,response);
+
+    }
+
+
     private void classEffectiveness(Long classId){
         if (classId == null) {
             throw new CustomException(ClassStatus.CLASS_NOT_FOUND);
