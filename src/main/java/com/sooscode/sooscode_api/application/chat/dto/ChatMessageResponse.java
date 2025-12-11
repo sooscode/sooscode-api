@@ -14,6 +14,7 @@ public class ChatMessageResponse {
     private String email;
     private String name;
     private String content;
+    private ChatMessageType type;
     private LocalDateTime createdAt;
 
 
@@ -26,6 +27,7 @@ public class ChatMessageResponse {
                 message.getUser() != null ? message.getUser().getEmail() : null,
                 message.getUser() != null ? message.getUser().getName() : null,
                 message.getContent(),
+                ChatMessageType.CHAT,
                 message.getCreatedAt()
         );
     }
@@ -34,7 +36,8 @@ public class ChatMessageResponse {
             Long userId,
             String email,
             String name,
-            String content
+            String content,
+            ChatMessageType type
     ) {
         return new ChatMessageResponse(
                 null,
@@ -43,6 +46,7 @@ public class ChatMessageResponse {
                 email,
                 name,
                 content,
+                type, // enter 또는 exit
                 LocalDateTime.now()
         );
     }

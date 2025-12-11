@@ -2,6 +2,7 @@ package com.sooscode.sooscode_api.application.chat.controller;
 
 import com.sooscode.sooscode_api.application.chat.dto.ChatMessageResponse;
 import com.sooscode.sooscode_api.application.chat.dto.ChatMessageRequest;
+import com.sooscode.sooscode_api.application.chat.dto.ChatMessageType;
 import com.sooscode.sooscode_api.application.chat.dto.EnterOrExitResponse;
 import com.sooscode.sooscode_api.application.chat.service.ChatMessageService;
 import com.sooscode.sooscode_api.domain.chatmessage.entity.ChatMessage;
@@ -86,7 +87,9 @@ public class ChatMessageController {
                 userId,
                 response.getEmail(),
                 response.getName(),
-                response.getName() + "님이 입장하셨습니다."
+                response.getName() + "님이 입장하셨습니다.",
+                ChatMessageType.ENTER
+
         );
 
         return ApiResponse.ok(ChatStatus.ENTER_OK, enter);
@@ -110,7 +113,8 @@ public class ChatMessageController {
                 userId,
                 response.getEmail(),
                 response.getName(),
-                response.getName() + "님이 퇴장하셨습니다."
+                response.getName() + "님이 퇴장하셨습니다.",
+                ChatMessageType.EXIT
         );
 
         return ApiResponse.ok(ChatStatus.EXIT_OK, exit);
