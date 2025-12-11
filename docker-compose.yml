@@ -1,0 +1,16 @@
+name: sooscode
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: soos-redis
+    ports:
+      - "127.0.0.1:6379:6379"
+    env_file:
+      - .env
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:

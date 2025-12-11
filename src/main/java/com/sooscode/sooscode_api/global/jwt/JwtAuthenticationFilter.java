@@ -2,6 +2,7 @@ package com.sooscode.sooscode_api.global.jwt;
 
 import com.sooscode.sooscode_api.global.security.CustomUserDetails;
 import com.sooscode.sooscode_api.global.security.CustomUserDetailsService;
+import com.sooscode.sooscode_api.infra.redis.TokenRedisService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -24,6 +25,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
+    private final TokenRedisService tokenRedisService;  // 추가
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -35,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = extractAccessToken(request);
 
         // 2) 토큰 검증(토큰이 null인지? / 토큰이 만료되었는지?)
-        if (token != null && jwtUtil.validateToken(token)) {
+        if (token != null && jwtUtil.validateToken(token) && !tokenRedisService.isBlacklisted(token)) {
 
             // 3) email 추출
             String email = jwtUtil.getEmailFromToken(token);
