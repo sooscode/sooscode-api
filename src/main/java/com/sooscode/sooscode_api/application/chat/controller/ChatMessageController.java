@@ -41,8 +41,8 @@ public class ChatMessageController {
      * 클라이언트 → SEND /app/code/{classId}
      * 서버 → /topic/code/{classId} 로 브로드캐스트
      */
-    @MessageMapping("/chat/{classId}")
-    @SendTo("/topic/chat/{classId}")
+    @MessageMapping("/class/{classId}/chat")
+    @SendTo("/topic/class/{classId}/chat")
     public ResponseEntity<ApiResponse<ChatMessageResponse>> chatMessage(
             @DestinationVariable Long classId,
             ChatMessageRequest request,
@@ -68,7 +68,7 @@ public class ChatMessageController {
         return  ApiResponse.ok(ChatStatus.READ_OK,response);
     }
     @MessageMapping("/chat/{classId}/enter")
-    @SendTo("/topic/chat/{classId}")
+    @SendTo("/topic/class/{classId}/chat")
     public ResponseEntity<ApiResponse<ChatMessageResponse>> enterChat(
             @DestinationVariable Long classId,
             StompHeaderAccessor accessor
@@ -98,7 +98,7 @@ public class ChatMessageController {
         return ApiResponse.ok(ChatStatus.ENTER_OK, enter);
     }
     @MessageMapping("/chat/{classId}/exit")
-    @SendTo("/topic/chat/{classId}")
+    @SendTo("/topic/class/{classId}/chat")
     public ResponseEntity<ApiResponse<ChatMessageResponse>> exitChat(
             @DestinationVariable Long classId,
             StompHeaderAccessor accessor
@@ -127,7 +127,7 @@ public class ChatMessageController {
         return ApiResponse.ok(ChatStatus.EXIT_OK, exit);
     }
     @MessageMapping("/chat/{classId}/delete")
-    @SendTo("/topic/chat/{classId}")
+    @SendTo("/topic/class/{classId}/chat")
     public ResponseEntity<ApiResponse<ChatDeleteResponse>> deleteChat(
             @DestinationVariable Long classId,
             ChatDeleteRequest request,

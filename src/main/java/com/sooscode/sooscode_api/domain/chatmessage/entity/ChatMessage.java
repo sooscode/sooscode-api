@@ -43,6 +43,8 @@ public class ChatMessage {
     @Column(name = "is_deleted", nullable = false)
     private boolean deleted = false;
 
+
+
     //  답장 대상(부모 메시지)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reply_chat_id")

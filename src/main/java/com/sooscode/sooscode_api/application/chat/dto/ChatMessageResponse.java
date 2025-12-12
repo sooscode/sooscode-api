@@ -19,6 +19,8 @@ public class ChatMessageResponse {
     private Long replyToChatId;
     private String replyToName;
     private String replyToContent;
+    private boolean deleted;
+
 
 
 
@@ -32,10 +34,10 @@ public class ChatMessageResponse {
                 message.getContent(),
                 ChatMessageType.CHAT,
                 message.getCreatedAt(),
-
                 message.getReply() != null ? message.getReply().getChatId() : null,
                 message.getReply() != null && message.getReply().getUser() != null ? message.getReply().getUser().getName() : null,
-                message.getReply() != null ? message.getReply().getContent() : null
+                message.getReply() != null ? message.getReply().getContent() : null,
+                message.isDeleted()
         );
     }
     public static ChatMessageResponse system( // 입퇴장용
@@ -57,7 +59,8 @@ public class ChatMessageResponse {
                 LocalDateTime.now(),
                 null,
                 null,
-                null
+                null,
+                false
         );
     }
 
