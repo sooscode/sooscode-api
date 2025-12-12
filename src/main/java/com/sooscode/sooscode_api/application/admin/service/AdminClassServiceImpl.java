@@ -16,6 +16,10 @@ import com.sooscode.sooscode_api.global.api.status.AdminStatus;
 import com.sooscode.sooscode_api.global.api.status.ClassRoomStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -360,6 +364,50 @@ public class AdminClassServiceImpl implements AdminClassService {
                 .successCount(successCount)
                 .failureCount(failureCount)
                 .results(results)
+                .build();
+    }
+
+    @Override
+    public AdminClassResponse.PageResponse getClassList(AdminClassRequest.SearchFilter filter, int page, int size) {
+        // 정렬 조건 생성
+        Sort.Direction direction = filter.getSortDirection().equalsIgnoreCase("ASC")
+                ? Sort.Direction.ASC
+                : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, filter.getSortBy());
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        // 페이지 조회
+        Page<ClassRoom> classPage = classroomRepository.findByKeywordAndStatusAndDateRange(
+                filter.getKeyword(),
+                filter.getStatus(),
+                filter.getStartDate(),
+                filter.getEndDate(),
+                pageable
+        );
+
+        // ClassItem으로 변환
+        List<AdminClassResponse.ClassItem> content = classPage.getContent().stream()
+                .map(classRoom -> {
+                    Integer studentCount = classParticipantRepository
+                            .findByClassRoom_ClassId(classRoom.getClassId()).size();
+                    String thumbnail = null;
+                    String instructorName = classRoom.getUser() != null
+                            ? classRoom.getUser().getName()
+                            : null;
+
+                    return AdminClassResponse.ClassItem.from(
+                            classRoom, thumbnail, instructorName, studentCount
+                    );
+                })
+                .toList();
+
+        // 응답 생성
+        return AdminClassResponse.PageResponse.builder()
+                .content(content)
+                .currentPage(classPage.getNumber())
+                .totalPages(classPage.getTotalPages())
+                .totalElements(classPage.getTotalElements())
+                .size(classPage.getSize())
                 .build();
     }
 }

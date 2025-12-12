@@ -107,20 +107,6 @@ public class AdminUserResponse {
     }
 
     /**
-     * 페이지네이션 응답
-     */
-    @Data
-    @Builder
-    public static class PageResponse {
-        private List<ListItem> content;
-        private int page;
-        private int size;
-        private long totalElements;
-        private int totalPages;
-        private boolean last;
-    }
-
-    /**
      * 일괄 생성 결과
      */
     @Data

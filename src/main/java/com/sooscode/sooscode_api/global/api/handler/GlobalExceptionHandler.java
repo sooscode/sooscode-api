@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.reactive.resource.NoResourceFoundException;
 
 /**
  * 전역 예외 처리 핸들러
@@ -43,6 +44,16 @@ public class GlobalExceptionHandler {
         log.error("[ValidationException] 메시지: {}", errorMessage);
 
         return ApiResponse.fail(GlobalStatus.VALIDATION_FAILED, errorMessage);
+    }
+
+    /**
+     * 컨트롤러에 존재하지 않는 요청
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNoResource(
+            NoResourceFoundException e
+    ) {
+        return ApiResponse.fail(GlobalStatus.BAD_REQUEST);
     }
 
     /**

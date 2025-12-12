@@ -70,17 +70,11 @@ public class AdminClassRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SearchFilter {
-
         private String keyword; // 제목 또는 강사명 검색
-
         private ClassStatus status; // UPCOMING, ONGOING, FINISHED
-
         private LocalDate startDate; // 기간 필터 (시작)
-
         private LocalDate endDate; // 기간 필터 (종료)
-
         private String sortBy = "createdAt"; // 정렬 기준: createdAt, participantCount, duration
-
         private String sortDirection = "DESC"; // ASC or DESC
     }
 }

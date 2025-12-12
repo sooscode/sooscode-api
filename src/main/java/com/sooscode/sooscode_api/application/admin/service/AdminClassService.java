@@ -81,9 +81,19 @@ public interface AdminClassService {
      * 참여 학생 목록 조회
      * 특정 클래스에 배정된 학생 목록을 조회합니다.
      *
-     * @param classId 클래스 ID
      * @return 참여 학생 목록
      * @throws CustomException CLASS_NOT_FOUND - 클래스를 찾을 수 없는 경우
      */
     //AdminClassResponse.StudentListResponse getStudentList(Long classId);
+
+    /**
+     * 클래스 목록 조회 (페이지네이션 + 필터링)
+     * 검색 키워드(제목, 강사명), 상태, 날짜 범위로 필터링하고 정렬하여 페이지 단위로 조회
+     *
+     * @param filter 검색 필터 (keyword: 제목/강사명 검색, status: 클래스 상태, startDate/endDate: 날짜 범위, sortBy/sortDirection: 정렬 조건)
+     * @param page 페이지 번호 (0부터 시작)
+     * @param size 페이지당 항목 수
+     * @return 페이지네이션된 클래스 목록 (content, currentPage, totalPages, totalElements, size)
+     */
+    AdminClassResponse.PageResponse getClassList(AdminClassRequest.SearchFilter filter, int page, int size);
 }
