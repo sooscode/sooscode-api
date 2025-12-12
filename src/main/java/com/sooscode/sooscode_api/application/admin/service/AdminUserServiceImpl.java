@@ -1,5 +1,6 @@
 package com.sooscode.sooscode_api.application.admin.service;
 
+import com.sooscode.sooscode_api.application.admin.dto.AdminPageResponse;
 import com.sooscode.sooscode_api.application.admin.dto.AdminUserRequest;
 import com.sooscode.sooscode_api.application.admin.dto.AdminUserResponse;
 import com.sooscode.sooscode_api.domain.user.entity.User;
@@ -59,11 +60,6 @@ public class AdminUserServiceImpl implements AdminUserService {
 
         // 응답 DTO 생성
         return AdminUserResponse.InstructorCreated.from(saved, temporaryPassword);
-    }
-
-    @Override
-    public AdminUserResponse.PageResponse getUserList(AdminUserRequest.SearchFilter filter, int page, int size) {
-        return null;
     }
 
     @Override

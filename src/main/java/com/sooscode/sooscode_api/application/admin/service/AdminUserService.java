@@ -35,11 +35,11 @@ public interface AdminUserService {
      * @param size 페이지 크기
      * @return 페이지네이션된 사용자 목록
      */
-    AdminUserResponse.PageResponse getUserList(
-            AdminUserRequest.SearchFilter filter,
-            int page,
-            int size
-    );
+//    AdminUserResponse.PageResponse getUserList(
+//            AdminUserRequest.SearchFilter filter,
+//            int page,
+//            int size
+//    );
 
     /**
      * 사용자 상세 정보 조회

@@ -73,4 +73,14 @@ public class AdminClassResponse {
         private int failureCount;      // 실패한 학생 수
         private List<StudentOperationResult> results;  // 각 학생별 결과
     }
+
+    @Getter
+    @Builder
+    public static class PageResponse {
+        private List<ClassItem> content;
+        private int currentPage;
+        private int totalPages;
+        private long totalElements;
+        private int size;
+    }
 }

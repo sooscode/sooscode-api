@@ -3,12 +3,16 @@ package com.sooscode.sooscode_api.application.admin.controller;
 import com.sooscode.sooscode_api.application.admin.dto.AdminClassRequest;
 import com.sooscode.sooscode_api.application.admin.dto.AdminClassResponse;
 import com.sooscode.sooscode_api.application.admin.service.AdminClassService;
+import com.sooscode.sooscode_api.domain.classroom.enums.ClassStatus;
 import com.sooscode.sooscode_api.global.api.response.ApiResponse;
 import com.sooscode.sooscode_api.global.api.status.AdminStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 import static com.sooscode.sooscode_api.global.utils.ClassValidator.*;
 
@@ -123,35 +127,32 @@ public class AdminClassController {
     }
 
     /**
-     * 학생 일괄 취소
-     * POST /api/admin/classes/{classId}/students/delete
-     */
-
-    /**
      * 클래스 목록 조회 (페이지네이션 + 필터링)
      * GET /api/admin/classes?page=0&size=10&keyword=java&status=ONGOING
      */
-//    @GetMapping
-//    public ResponseEntity<AdminClassResponse.PageResponse> getClassList(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size,
-//            @RequestParam(required = false) String keyword,
-//            @RequestParam(required = false) String status,
-//            @RequestParam(required = false) String startDate,
-//            @RequestParam(required = false) String endDate,
-//            @RequestParam(defaultValue = "createdAt") String sortBy,
-//            @RequestParam(defaultValue = "DESC") String sortDirection
-//    ) {
-//        log.info("관리자 클래스 목록 조회: page={}, size={}, keyword={}", page, size, keyword);
-//
-//        // 필터 객체 생성
-//        AdminClassRequest.SearchFilter filter = new AdminClassRequest.SearchFilter();
-//        filter.setKeyword(keyword);
-//        // status, startDate, endDate 파싱 로직 추가 필요
-//        filter.setSortBy(sortBy);
-//        filter.setSortDirection(sortDirection);
-//
-//        AdminClassResponse.PageResponse response = adminClassService.getClassList(filter, page, size);
-//        return ResponseEntity.ok(response);
-//    }
+    @GetMapping
+    public ResponseEntity<ApiResponse<AdminClassResponse.PageResponse>> getClassList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) ClassStatus status,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDirection
+    ) {
+        log.info("관리자 클래스 목록 조회: page={}, size={}, keyword={}", page, size, keyword);
+
+        // 필터 객체 생성
+        AdminClassRequest.SearchFilter filter = new AdminClassRequest.SearchFilter();
+        filter.setKeyword(keyword);
+        filter.setStatus(status);
+        filter.setStartDate(startDate);
+        filter.setEndDate(endDate);
+        filter.setSortBy(sortBy);
+        filter.setSortDirection(sortDirection);
+
+        AdminClassResponse.PageResponse response = adminClassService.getClassList(filter, page, size);
+        return ApiResponse.ok(AdminStatus.OK, response);
+    }
 }
