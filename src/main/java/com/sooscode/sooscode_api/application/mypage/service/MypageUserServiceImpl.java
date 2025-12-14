@@ -20,6 +20,7 @@ import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MypageUserServiceImpl implements MypageUserService {
 
     private final UserRepository userRepository;
@@ -92,7 +93,7 @@ public class MypageUserServiceImpl implements MypageUserService {
     @Override
     public void deleteUser(User user) {
         user.setStatus(com.sooscode.sooscode_api.domain.user.enums.UserStatus.INACTIVE);
-        userRepository.save(user);
+        userRepository.delete(user);
     }
 
 
@@ -147,14 +148,14 @@ public class MypageUserServiceImpl implements MypageUserService {
     /**
      * 프로필 이미지 조회
      */
-//    public String getProfileImage(Long userId) {
-//
-//        User user = getUser(userId);
-//
-//        if (user.getFile() == null) {
-//            return null; // 기본 이미지 사용
-//        }
-//
-//        return user.getFile().getUrl();
-//    }
+    public String getProfileImage(Long userId) {
+
+        User user = getUser(userId);
+
+        if (user.getFile() == null) {
+            return null; // 기본 이미지 사용
+        }
+
+        return user.getFile().getUrl();
+    }
 }
