@@ -1,6 +1,7 @@
 package com.sooscode.sooscode_api.application.code.controller;
 
 import com.sooscode.sooscode_api.application.code.dto.CodeShareDto;
+import com.sooscode.sooscode_api.application.code.service.AutoSaveService;
 import com.sooscode.sooscode_api.global.websocket.WebSocketSessionRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Controller;
 public class CodeController {
 
     private final WebSocketSessionRegistry sessionRegistry;
+    private final AutoSaveService autoSaveService;
 
     /**
      * 코드 공유 메시지 처리
@@ -46,6 +48,9 @@ public class CodeController {
                 classId, userId, dto.getLanguage(),
                 dto.getCode() != null ? dto.getCode().length() : 0
         );
+
+        // 여기서 자동 저장
+        autoSaveService.autoSave(dto);
 
         return dto;
     }

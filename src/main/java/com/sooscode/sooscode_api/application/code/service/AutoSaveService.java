@@ -1,5 +1,6 @@
 package com.sooscode.sooscode_api.application.code.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sooscode.sooscode_api.application.code.dto.AutoSaveDto;
 import com.sooscode.sooscode_api.application.code.dto.CodeShareDto;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 public class AutoSaveService {
 
     private final RedisTemplate<String, Object> redisTemplate;
+    private final ObjectMapper objectMapper;
 
     // Redis 키 생성: auto-save:{classId}:{userId}
     private String generateKey(Long classId, Long userId) {
@@ -47,13 +49,11 @@ public class AutoSaveService {
 
         Object value = redisTemplate.opsForValue().get(key);
 
-        if (value instanceof AutoSaveDto) {
-            log.info("AUTO-SAVE LOADED — classId={}, userId={}", classId, userId);
-            return (AutoSaveDto) value;
-        }
+        if (value == null) return null;
 
-        log.info("AUTO-SAVE NOT FOUND — classId={}, userId={}", classId, userId);
-        return null;
+        AutoSaveDto dto = objectMapper.convertValue(value, AutoSaveDto.class);
+
+        return dto;
     }
 
 
