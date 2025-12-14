@@ -3,12 +3,10 @@ package com.sooscode.sooscode_api.application.code.controller;
 import com.sooscode.sooscode_api.application.code.dto.AutoSaveDto;
 import com.sooscode.sooscode_api.application.code.service.AutoSaveService;
 import com.sooscode.sooscode_api.global.security.CustomUserDetails;
-import com.sooscode.sooscode_api.global.websocket.WebSocketSessionRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class AutoSaveController {
 
-    private final WebSocketSessionRegistry sessionRegistry;
     private final AutoSaveService autoSaveService;
 
     /**
@@ -31,10 +28,8 @@ public class AutoSaveController {
         log.info("AUTO-SAVE LOAD userDetails={}", user);
 
         if (user == null) {
-            log.warn("❌ userDetails is NULL (REST 인증 안 됨)");
             return ResponseEntity.noContent().build();
         }
-
 
         Long userId = user.getUser().getUserId();
         log.info("AUTO-SAVE LOAD userId={}", userId);
@@ -47,6 +42,4 @@ public class AutoSaveController {
 
         return ResponseEntity.ok(autoSaved);
     }
-
-
 }
