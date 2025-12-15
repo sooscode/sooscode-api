@@ -17,11 +17,13 @@ import com.sooscode.sooscode_api.global.api.status.ClassRoomStatus;
 import com.sooscode.sooscode_api.global.api.status.UserStatus;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -116,12 +118,16 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         String zsetKey = "ws:class:" + classId + ":chat:ids";
 
         // 1) 시간순 chatId 목록
-        Set<Object> chatIds = redisTemplate.opsForZSet().range(zsetKey, 0, -1);
-        if (chatIds == null || chatIds.isEmpty()) return List.of();
+        Set<Object> chatIdsRaw = redisTemplate.opsForZSet().range(zsetKey, 0, -1);
+        if (chatIdsRaw == null || chatIdsRaw.isEmpty()) return List.of();
+
+        List<Long> chatIds = chatIdsRaw.stream()
+                .map(String::valueOf)
+                .map(Long::valueOf)
+                .toList();
 
         // 2) msg key 목록
         List<String> keys = chatIds.stream()
-                .map(String::valueOf)
                 .map(id -> "ws:chat:" + id)
                 .toList();
 
@@ -130,12 +136,42 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         if (raws == null) return List.of();
 
         // 4) (A방법 핵심) Map/Object -> DTO 복원
-        return raws.stream()
+        List<ChatMessageResponse> messages = raws.stream()
                 .filter(Objects::nonNull)
                 .map(raw -> objectMapper.convertValue(raw, ChatMessageResponse.class))
                 .toList();
-    }
 
+        // ============================
+        // 🔽 여기부터 공감(reaction) 붙이기
+        // ============================
+
+        // 5) Redis pipeline으로 reactionCount 조회 (SCARD)
+        List<Object> counts = redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
+            var ser = redisTemplate.getStringSerializer();
+            for (Long chatId : chatIds) {
+                byte[] key = ser.serialize("ws:chat:" + chatId + ":reactions");
+                connection.setCommands().sCard(key);
+            }
+            return null;
+        });
+
+        // 6) reactionCount 주입 (toBuilder 사용)
+        List<ChatMessageResponse> result = new ArrayList<>(messages.size());
+
+        for (int i = 0; i < messages.size(); i++) {
+            Number cntNum = (Number) counts.get(i);
+            int reactionCount = cntNum == null ? 0 : cntNum.intValue();
+
+            result.add(
+                    messages.get(i)
+                            .toBuilder()
+                            .reactionCount(reactionCount)
+                            .build()
+            );
+        }
+
+        return result;
+    }
     @Transactional
     @Override
     public void deleteMessage(Long classId, Long chatId, Long userId) {

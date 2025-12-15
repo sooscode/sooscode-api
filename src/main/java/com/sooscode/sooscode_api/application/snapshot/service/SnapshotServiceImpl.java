@@ -176,7 +176,7 @@ public class SnapshotServiceImpl implements SnapshotService {
 
     }
     @Override
-    public  Page<SnapshotTitleResponse> readSnapshotByLanguageAndDate(Long userId, Long classId, SnapshotLanguage language, LocalDateTime start, LocalDateTime end, Pageable pageable){
+    public Page<SnapshotTitleResponse> readSnapshotByLanguageAndDate(Long userId, Long classId, SnapshotLanguage language, LocalDateTime start, LocalDateTime end, Pageable pageable){
         Page<CodeSnapshot> page = codeSnapshotRepository
                 .findByUser_UserIdAndClassRoom_ClassIdAndLanguageAndCreatedAtBetween(
                         userId, classId, language, start, end, pageable
@@ -189,5 +189,25 @@ public class SnapshotServiceImpl implements SnapshotService {
                 s.getCreatedAt()
         ));
 
+    }
+    @Override
+    public Page<SnapshotTitleResponse> searchSnapshotTitles(
+            Long userId,
+            Long classId,
+            SnapshotLanguage language,
+            String title,
+            LocalDateTime start,
+            LocalDateTime end,
+            Pageable pageable
+    ){
+        return codeSnapshotRepository.searchSnapshots(
+                userId,
+                classId,
+                language,
+                title,
+                start,
+                end,
+                pageable
+        );
     }
 }

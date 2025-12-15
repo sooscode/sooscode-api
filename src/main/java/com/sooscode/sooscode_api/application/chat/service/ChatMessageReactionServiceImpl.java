@@ -4,22 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sooscode.sooscode_api.application.chat.dto.ChatMessageResponse;
 import com.sooscode.sooscode_api.application.chat.dto.ChatMessageType;
 import com.sooscode.sooscode_api.application.chat.dto.ChatReactionMessage;
-import com.sooscode.sooscode_api.domain.chatmessage.entity.ChatMessage;
-import com.sooscode.sooscode_api.domain.chatmessage.entity.ChatMessageReaction;
-import com.sooscode.sooscode_api.domain.chatmessage.repository.ChatMessageReactionRepository;
-import com.sooscode.sooscode_api.domain.chatmessage.repository.ChatMessageRepository;
-import com.sooscode.sooscode_api.domain.user.entity.User;
+import com.sooscode.sooscode_api.application.chat.dto.ChatReactionUserResponse;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
 import com.sooscode.sooscode_api.global.api.exception.CustomException;
 import com.sooscode.sooscode_api.global.api.status.ChatStatus;
-import com.sooscode.sooscode_api.global.api.status.UserStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +23,7 @@ public class ChatMessageReactionServiceImpl implements ChatMessageReactionServic
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper; // chatKey에서 classId 뽑을 때
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final  UserRepository userRepository;
 
     @Override
     @Transactional
@@ -77,6 +73,24 @@ public class ChatMessageReactionServiceImpl implements ChatMessageReactionServic
 
         return count;
     }
+    public List<ChatReactionUserResponse> getReactionUsers(Long chatId){
+        Set<Object> members = redisTemplate.opsForSet().members(reactionKey(chatId));
+        if (members == null || members.isEmpty()) return List.of();
+
+        List<Long> userIds = members.stream()
+                .map(String::valueOf)
+                .map(Long::valueOf)
+                .toList();
+
+        return userRepository.findAllById(userIds).stream()
+                .map(u -> new ChatReactionUserResponse(u.getUserId(), u.getName()))
+                .toList();
+    }
+    public boolean reactedByMe(Long userId, Long chatId){
+        return Boolean.TRUE.equals(
+                redisTemplate.opsForSet().isMember(reactionKey(chatId), String.valueOf(userId))
+        );
+    }
 
     private String chatKey(Long chatId) {
         return "ws:chat:" + chatId;
@@ -85,4 +99,5 @@ public class ChatMessageReactionServiceImpl implements ChatMessageReactionServic
     private String reactionKey(Long chatId) {
         return "ws:chat:" + chatId + ":reactions";
     }
+
 }

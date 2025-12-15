@@ -7,6 +7,7 @@ import com.sooscode.sooscode_api.application.snapshot.dto.SnapshotTitleResponse;
 import com.sooscode.sooscode_api.application.snapshot.service.SnapshotService;
 import com.sooscode.sooscode_api.global.api.exception.CustomException;
 import com.sooscode.sooscode_api.global.api.response.ApiResponse;
+import com.sooscode.sooscode_api.global.api.status.ClassRoomStatus;
 import com.sooscode.sooscode_api.global.api.status.SnapshotStatus;
 import com.sooscode.sooscode_api.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -281,6 +282,49 @@ public class SnapshotController {
 
         return ApiResponse.ok(SnapshotStatus.READ_OK, responses);
     }
+    @GetMapping("/read/title/language/date")
+    public ResponseEntity<ApiResponse<Page<SnapshotTitleResponse>>> searchByLanguageOrDateOrtitle(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam Long classId,
+            @RequestParam(required = false) String language,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String day,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+
+    ){
+        Long userId = customUserDetails.getUser().getUserId();
+        SnapshotLanguage snapshotLanguage = null;
+        if (language != null && !language.isBlank()) {
+            try {
+                snapshotLanguage = SnapshotLanguage.valueOf(language.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new CustomException(SnapshotStatus.LANGUAGE_EMPTY);
+            }
+        }
+
+        LocalDateTime start = null;
+        LocalDateTime end = null;
+
+        if (day != null && !day.isBlank()) {
+            LocalDate localDate = LocalDate.parse(day);
+            start = localDate.atStartOfDay();
+            end = localDate.atTime(LocalTime.MAX);
+        } else if (startDate != null && endDate != null) {
+            start = LocalDate.parse(startDate).atStartOfDay();
+            end = LocalDate.parse(endDate).atTime(LocalTime.MAX);
+        }
+
+        Page<SnapshotTitleResponse> response =
+                snapshotService.searchSnapshotTitles(
+                        userId, classId, snapshotLanguage, title, start, end, pageable
+                );
+        return ApiResponse.ok(SnapshotStatus.READ_OK, response);
+
+    }
+
+
     @PostMapping("/delete")
     public ResponseEntity<ApiResponse<Void>> deleteSnapshot(
             @AuthenticationPrincipal CustomUserDetails userDetails,

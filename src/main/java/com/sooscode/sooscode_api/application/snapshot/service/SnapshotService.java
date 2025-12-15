@@ -36,5 +36,16 @@ public interface SnapshotService {
     void deleteSnapshot(Long userId, Long classId, Long snapshotId);
     // 언어 + 날짜별 조회
     Page<SnapshotTitleResponse> readSnapshotByLanguageAndDate(Long userId, Long classId, SnapshotLanguage language, LocalDateTime start, LocalDateTime end, Pageable pageable);
+    // 제목 or 언어 or 날짜로 검색
+    Page<SnapshotTitleResponse> searchSnapshotTitles(
+            Long userId,
+            Long classId,
+            SnapshotLanguage language,
+            String title,
+            LocalDateTime start,
+            LocalDateTime end,
+            Pageable pageable
+    );
+
 
 }

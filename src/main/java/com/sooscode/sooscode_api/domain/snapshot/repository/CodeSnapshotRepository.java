@@ -6,6 +6,8 @@ import com.sooscode.sooscode_api.domain.snapshot.entity.CodeSnapshot;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -34,4 +36,31 @@ public interface CodeSnapshotRepository extends JpaRepository<CodeSnapshot, Long
     Page<CodeSnapshot> findByUser_UserIdAndClassRoom_ClassIdAndLanguageAndCreatedAtBetween(Long userId, Long classId, SnapshotLanguage language, LocalDateTime start, LocalDateTime end, Pageable pageable);
     // codeSnapshotId로 조회
     Optional<CodeSnapshot> findByCodeSnapshotIdAndUser_UserIdAndClassRoom_ClassId(Long codeSnapshotId, Long userUserId, Long classRoomClassId);
+    // 제목 or 언어 or 날짜로 검색
+    @Query("""
+    SELECT new com.sooscode.sooscode_api.application.snapshot.dto.SnapshotTitleResponse(
+        s.codeSnapshotId,
+        s.title,
+        s.language,
+        s.createdAt
+    )
+    FROM CodeSnapshot s
+    WHERE (:userId IS NULL OR s.user.userId = :userId)
+      AND (:classId IS NULL OR s.classRoom.classId = :classId)
+      AND (:language IS NULL OR s.language = :language)
+      AND (:keyword IS NULL OR :keyword = '' OR LOWER(s.title) LIKE LOWER(CONCAT('%', :keyword, '%')))
+      AND (:start IS NULL OR s.createdAt >= :start)
+      AND (:end IS NULL OR s.createdAt <= :end)
+    ORDER BY s.createdAt DESC
+""")
+    Page<SnapshotTitleResponse> searchSnapshots(
+            @Param("userId") Long userId,
+            @Param("classId") Long classId,
+            @Param("language") SnapshotLanguage language,
+            @Param("keyword") String keyword,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            Pageable pageable
+    );
+
 }

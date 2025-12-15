@@ -2,11 +2,13 @@ package com.sooscode.sooscode_api.application.chat.dto;
 
 import com.sooscode.sooscode_api.domain.chatmessage.entity.ChatMessage;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
+@Builder(toBuilder = true)
 public class ChatMessageResponse {
     private Long chatId;
     private Long classId;

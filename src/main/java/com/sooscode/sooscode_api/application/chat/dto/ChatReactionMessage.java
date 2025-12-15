@@ -11,4 +11,5 @@ public class ChatReactionMessage {
     private int reactionCount;
     private Long classId;
     private ChatMessageType type;
+
 }
