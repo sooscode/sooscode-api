@@ -99,14 +99,8 @@ public class LivekitServiceImpl implements LivekitService {
         Map<String, Object> grant = new HashMap<>();
         grant.put("room", request.getRoomName());
         grant.put("roomJoin", true);
-
-        if ("teacher".equals(request.getRole())) {
-            grant.put("canPublish", true);
-            grant.put("canSubscribe", true);
-        } else {
-            grant.put("canPublish", false);
-            grant.put("canSubscribe", true);
-        }
+        grant.put("canPublish", true);
+        grant.put("canSubscribe", true);
 
         SecretKey key = Keys.hmacShaKeyFor(apiSecret.getBytes(StandardCharsets.UTF_8));
 

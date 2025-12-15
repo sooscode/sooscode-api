@@ -29,13 +29,13 @@ import java.util.Map;
 public class LivekitController {
     private final LivekitService livekitService;
 
-    @Value("${livekit.url}")   // WebRTC 접속 URL (wss://)
+    @Value("${LIVEKIT_URL}")
     private String wsUrl;
 
-    @Value("${livekit.api-key}")
+    @Value("${LIVEKIT_API_KEY}")
     private String apiKey;
 
-    @Value("${livekit.api-secret}")
+    @Value("${LIVEKIT_API_SECRET}")
     private String apiSecret;
 
 //    @PostMapping("/token")
