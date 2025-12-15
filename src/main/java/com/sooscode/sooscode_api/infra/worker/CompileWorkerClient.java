@@ -49,8 +49,8 @@ public class CompileWorkerClient {
      */
     private RestTemplate createRestTemplate() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(70000); //7초
-        factory.setReadTimeout(150000);    // 15초
+        factory.setConnectTimeout(7000);
+        factory.setReadTimeout(15000);
         return new RestTemplate(factory);
     }
 }

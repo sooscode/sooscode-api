@@ -19,7 +19,7 @@ public class CompileFutureStore {
     private final Map<String, CompletableFuture<CompileResultResponse>> futureMap = new ConcurrentHashMap<>();
 
     // 최대 대기 시간 (15초)
-    private static final long TIMEOUT_SECONDS = 1500;
+    private static final long TIMEOUT_SECONDS = 15;
 
     /**
      * 새로운 Job에 대한 비동기 대기 객체를 생성하고 저장합니다.

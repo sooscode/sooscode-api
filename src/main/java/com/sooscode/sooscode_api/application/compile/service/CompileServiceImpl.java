@@ -3,6 +3,7 @@ package com.sooscode.sooscode_api.application.compile.service;
 import com.sooscode.sooscode_api.application.compile.dto.CompileResultResponse;
 import com.sooscode.sooscode_api.global.api.exception.CustomException;
 import com.sooscode.sooscode_api.global.api.status.CompileStatus;
+import com.sooscode.sooscode_api.global.guard.RequestCooldown;
 import com.sooscode.sooscode_api.global.utils.CodeValidator;
 import com.sooscode.sooscode_api.infra.worker.CodeBlacklistFilter;
 import com.sooscode.sooscode_api.infra.worker.CompileFutureStore;
@@ -25,6 +26,7 @@ public class CompileServiceImpl implements CompileService {
     private String backendUrl;
 
     @Override
+    @RequestCooldown(seconds = 3)
     public CompletableFuture<CompileResultResponse> runCode(String code) {
 
         // 유효성 검사

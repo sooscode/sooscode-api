@@ -25,7 +25,11 @@ public enum CompileStatus implements StatusCode {
     // 컴파일 오류
     COMPILE_FAILED(HttpStatus.BAD_REQUEST,"COMPILE_007","컴파일 오류가 발생했습니다"),
     //코드 실행중 오류
-    RUNTIME_ERROR(HttpStatus.BAD_REQUEST,"COMPILE_008","코드 실행 중 오류가 발생했습니다");
+    RUNTIME_ERROR(HttpStatus.BAD_REQUEST,"COMPILE_008","코드 실행 중 오류가 발생했습니다"),
+    //코드 실행중 재요청시
+    ALREADY_PROCESSING(HttpStatus.CONFLICT, "COMPILE_009","이미 컴파일이 진행 중입니다."),
+    //짧은시간 내 너무 잦은 요청 시
+    TOO_MANY_REQUESTS(HttpStatus.TOO_MANY_REQUESTS, "COMPILE_010", "요청이 너무 빠릅니다. 잠시 후 다시 시도하세요.");
 
 
     private final HttpStatus httpStatus;
