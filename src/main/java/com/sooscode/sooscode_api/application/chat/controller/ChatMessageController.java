@@ -66,7 +66,7 @@ public class ChatMessageController {
         return ApiResponse.ok(ChatStatus.READ_OK, response);
     }
 
-    @MessageMapping("/chat/{classId}/enter")
+/*    @MessageMapping("/chat/{classId}/enter")
     @SendTo("/topic/class/{classId}/chat")
     public ResponseEntity<ApiResponse<ChatMessageResponse>> enterChat(
             @DestinationVariable Long classId,
@@ -124,7 +124,7 @@ public class ChatMessageController {
         );
 
         return ApiResponse.ok(ChatStatus.EXIT_OK, exit);
-    }
+    }*/
     @MessageMapping("/chat/{classId}/delete")
     @SendTo("/topic/class/{classId}/chat")
     public ResponseEntity<ApiResponse<ChatDeleteResponse>> deleteChat(
