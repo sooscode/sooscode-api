@@ -2,6 +2,7 @@ package com.sooscode.sooscode_api.application.admin.service;
 
 import com.sooscode.sooscode_api.application.admin.dto.AdminClassRequest;
 import com.sooscode.sooscode_api.application.admin.dto.AdminClassResponse;
+import com.sooscode.sooscode_api.application.admin.dto.AdminPageResponse;
 import com.sooscode.sooscode_api.global.api.exception.CustomException;
 
 public interface AdminClassService {
@@ -84,7 +85,7 @@ public interface AdminClassService {
      * @return 참여 학생 목록
      * @throws CustomException CLASS_NOT_FOUND - 클래스를 찾을 수 없는 경우
      */
-    //AdminClassResponse.StudentListResponse getStudentList(Long classId);
+    AdminPageResponse<AdminClassResponse.ClassStudentsResponse> getClassStudentsList(Long classId, AdminClassRequest.SearchFilter filter, int page, int pageSize);
 
     /**
      * 클래스 목록 조회 (페이지네이션 + 필터링)
@@ -95,5 +96,5 @@ public interface AdminClassService {
      * @param size 페이지당 항목 수
      * @return 페이지네이션된 클래스 목록 (content, currentPage, totalPages, totalElements, size)
      */
-    AdminClassResponse.PageResponse getClassList(AdminClassRequest.SearchFilter filter, int page, int size);
+    AdminPageResponse<AdminClassResponse.ClassItem> getClassList(AdminClassRequest.SearchFilter filter, int page, int size);
 }

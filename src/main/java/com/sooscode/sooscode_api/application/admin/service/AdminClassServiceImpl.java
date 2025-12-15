@@ -2,6 +2,7 @@ package com.sooscode.sooscode_api.application.admin.service;
 
 import com.sooscode.sooscode_api.application.admin.dto.AdminClassRequest;
 import com.sooscode.sooscode_api.application.admin.dto.AdminClassResponse;
+import com.sooscode.sooscode_api.application.admin.dto.AdminPageResponse;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassParticipant;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
 import com.sooscode.sooscode_api.domain.classroom.enums.ClassMode;
@@ -361,7 +362,43 @@ public class AdminClassServiceImpl implements AdminClassService {
     }
 
     @Override
-    public AdminClassResponse.PageResponse getClassList(AdminClassRequest.SearchFilter filter, int page, int size) {
+    public AdminPageResponse<AdminClassResponse.ClassStudentsResponse> getClassStudentsList(
+            Long classId,
+            AdminClassRequest.SearchFilter filter,
+            int page,
+            int pageSize) {
+
+        // 클래스 존재 확인
+        ClassRoom classRoom = classroomRepository.findById(classId)
+                .orElseThrow(() -> new CustomException(ClassRoomStatus.CLASS_NOT_FOUND));
+
+        // 정렬 조건 생성
+        Sort.Direction direction = filter.getSortDirection().equalsIgnoreCase("ASC")
+                ? Sort.Direction.ASC
+                : Sort.Direction.DESC;
+
+        // createdAt으로 정렬 (등록일시 기준)
+        Sort sort = Sort.by(direction, "createdAt");
+        Pageable pageable = PageRequest.of(page, pageSize, sort);
+
+        // 학생 목록 조회 (페이징)
+        Page<ClassParticipant> participantPage = classParticipantRepository
+                .findByClassIdWithKeyword(classId, filter.getKeyword(), pageable);
+
+        // DTO 변환
+        Page<AdminClassResponse.ClassStudentsResponse> responsePage = participantPage
+                .map(AdminClassResponse.ClassStudentsResponse::from);
+
+        // AdminPageResponse로 변환하여 반환
+        return AdminPageResponse.from(responsePage);
+    }
+
+    @Override
+    public AdminPageResponse<AdminClassResponse.ClassItem> getClassList(
+            AdminClassRequest.SearchFilter filter,
+            int page,
+            int size) {
+
         // 정렬 조건 생성
         Sort.Direction direction = filter.getSortDirection().equalsIgnoreCase("ASC")
                 ? Sort.Direction.ASC
@@ -378,28 +415,24 @@ public class AdminClassServiceImpl implements AdminClassService {
         );
 
         // ClassItem으로 변환
-        List<AdminClassResponse.ClassItem> content = classPage.getContent().stream()
-                .map(classRoom -> {
-                    Integer studentCount = classParticipantRepository
-                            .findByClassRoom_ClassId(classRoom.getClassId()).size();
-                    String thumbnail = null;
-                    String instructorName = classRoom.getUser() != null
-                            ? classRoom.getUser().getName()
-                            : null;
+        Page<AdminClassResponse.ClassItem> itemPage = classPage.map(classRoom -> {
+            Integer studentCount = classParticipantRepository
+                    .findByClassRoom_ClassId(classRoom.getClassId())
+                    .size();
 
-                    return AdminClassResponse.ClassItem.from(
-                            classRoom, thumbnail, instructorName, studentCount
-                    );
-                })
-                .toList();
+            String thumbnail = null; // TODO: 썸네일 로직 구현
+            String instructorName = classRoom.getUser() != null
+                    ? classRoom.getUser().getName()
+                    : null;
 
-        // 응답 생성
-        return AdminClassResponse.PageResponse.builder()
-                .content(content)
-                .currentPage(classPage.getNumber())
-                .totalPages(classPage.getTotalPages())
-                .totalElements(classPage.getTotalElements())
-                .size(classPage.getSize())
-                .build();
+            return AdminClassResponse.ClassItem.from(
+                    classRoom,
+                    thumbnail,
+                    instructorName,
+                    studentCount
+            );
+        });
+
+        return AdminPageResponse.from(itemPage);
     }
 }

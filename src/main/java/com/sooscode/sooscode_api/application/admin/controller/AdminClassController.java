@@ -2,6 +2,7 @@ package com.sooscode.sooscode_api.application.admin.controller;
 
 import com.sooscode.sooscode_api.application.admin.dto.AdminClassRequest;
 import com.sooscode.sooscode_api.application.admin.dto.AdminClassResponse;
+import com.sooscode.sooscode_api.application.admin.dto.AdminPageResponse;
 import com.sooscode.sooscode_api.application.admin.service.AdminClassService;
 import com.sooscode.sooscode_api.global.api.response.ApiResponse;
 import com.sooscode.sooscode_api.global.api.status.AdminStatus;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import static com.sooscode.sooscode_api.global.utils.ClassValidator.*;
 
@@ -95,9 +97,9 @@ public class AdminClassController {
 
     /**
      * 학생 배정
-     * POST /api/admin/classes/{classId}/students
+     * POST /api/admin/classes/{classId}/students/assign
      */
-    @PostMapping("/{classId}/students")
+    @PostMapping("/{classId}/students/assign")
     public ResponseEntity<ApiResponse<AdminClassResponse.StudentOperationResponse>> assignStudents(
             @PathVariable Long classId,
             @RequestBody AdminClassRequest.Students request
@@ -130,12 +132,14 @@ public class AdminClassController {
      * GET /api/admin/classes?page=0&size=10&keyword=java&status=ONGOING
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<AdminClassResponse.PageResponse>> getClassList(
+    public ResponseEntity<ApiResponse<AdminPageResponse<AdminClassResponse.ClassItem>>> getClassList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) LocalTime startTime,
+            @RequestParam(required = false) LocalTime endTime,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "DESC") String sortDirection
     ) {
@@ -149,7 +153,34 @@ public class AdminClassController {
         filter.setSortBy(sortBy);
         filter.setSortDirection(sortDirection);
 
-        AdminClassResponse.PageResponse response = adminClassService.getClassList(filter, page, size);
+        AdminPageResponse<AdminClassResponse.ClassItem> response = adminClassService.getClassList(filter, page, size);
+        return ApiResponse.ok(AdminStatus.OK, response);
+    }
+
+    /**
+     * 클래스 학생 목록 조회 (페이지네이션)
+     * GET /api/admin/classes/{classId}/students?keyword={이름, 이메일}
+     */
+    @GetMapping("/{classId}/students")
+    public ResponseEntity<ApiResponse<AdminPageResponse<AdminClassResponse.ClassStudentsResponse>>> getClassroomStudentsList(
+            @PathVariable Long classId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDirection
+    ) {
+
+        // 필터 객체 생성
+        AdminClassRequest.SearchFilter filter = new AdminClassRequest.SearchFilter();
+        filter.setKeyword(keyword);
+        filter.setStartDate(null);
+        filter.setEndDate(null);
+        filter.setSortBy(sortBy);
+        filter.setSortDirection(sortDirection);
+
+        AdminPageResponse<AdminClassResponse.ClassStudentsResponse> response =
+                adminClassService.getClassStudentsList(classId, filter, page, size);
         return ApiResponse.ok(AdminStatus.OK, response);
     }
 }

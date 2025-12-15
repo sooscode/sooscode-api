@@ -1,9 +1,12 @@
 package com.sooscode.sooscode_api.application.admin.dto;
 
+import com.sooscode.sooscode_api.domain.classroom.entity.ClassParticipant;
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
+import com.sooscode.sooscode_api.domain.user.entity.User;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -70,13 +73,27 @@ public class AdminClassResponse {
         private List<StudentOperationResult> results;  // 각 학생별 결과
     }
 
-    @Getter
+    /**
+     * 클래스 학생 정보
+     */
+    @Data
     @Builder
-    public static class PageResponse {
-        private List<ClassItem> content;
-        private int currentPage;
-        private int totalPages;
-        private long totalElements;
-        private int size;
+    public static class ClassStudentsResponse {
+        private Long userId;
+        private String name;
+        private String email;
+        private String profileImage;
+        private LocalDateTime enrolledAt;  // 등록일시
+
+        public static ClassStudentsResponse from(ClassParticipant participant) {
+            User user = participant.getUser();
+            return ClassStudentsResponse.builder()
+                    .userId(user.getUserId())
+                    .name(user.getName())
+                    .email(user.getEmail())
+                    .profileImage(user.getProfileImage())
+                    .enrolledAt(participant.getCreatedAt())
+                    .build();
+        }
     }
 }
