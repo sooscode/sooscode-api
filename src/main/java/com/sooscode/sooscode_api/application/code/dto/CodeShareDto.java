@@ -10,5 +10,6 @@ public class CodeShareDto {
     private String userName;   // 선택 옵션
     private String language;   // Java, Python 등
     private String code;       // 전송된 코드 내용
-    private String output;
+    private String output;     // 결과
+    private boolean isInstructor; // 강사인지 학생인지
 }
