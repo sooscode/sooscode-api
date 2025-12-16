@@ -35,27 +35,29 @@ public class SnapshotController {
 
     @PostMapping("/")
     public ResponseEntity<ApiResponse<Void>> save(
-            @RequestBody SnapshotRequest dto,
+            @RequestBody SnapshotRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         Long userId = userDetails.getUser().getUserId();
 
-        writeEffectiveness(dto.getTitle(), dto.getContent());
-
-        snapshotService.saveCodeSnapshot(dto, userId);
+        writeEffectiveness(request.getTitle(), request.getContent());
+        classEffectiveness(request.getClassId());
+        languageEffectiveness(request.getLanguage());
+        snapshotService.saveCodeSnapshot(request, userId);
         return ApiResponse.ok(SnapshotStatus.OK);
     }
     @PostMapping("/update")
     public ResponseEntity<ApiResponse<Void>> update(
-            @RequestBody SnapshotRequest dto,
+            @RequestBody SnapshotRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam Long  snapshotId
+            @RequestParam Long snapshotId
     ){
         Long LoginuserId = userDetails.getUser().getUserId();
 
-        writeEffectiveness(dto.getTitle(), dto.getContent());
-
-        snapshotService.updateCodeSnapshot(dto,LoginuserId, snapshotId);
+        writeEffectiveness(request.getTitle(), request.getContent());
+        classEffectiveness(request.getClassId());
+        languageEffectiveness(request.getLanguage());
+        snapshotService.updateCodeSnapshot(request,LoginuserId, snapshotId);
         return ApiResponse.ok(SnapshotStatus.UPDATE_OK);
 
 
@@ -68,7 +70,7 @@ public class SnapshotController {
             @RequestParam Long  snapshotId
     ){
         Long userId = userDetails.getUser().getUserId();
-
+        classEffectiveness(classId);
         SnapShotResponse  snapShotResponse =  snapshotService.readSnapshot(userId, classId, snapshotId);
         return ApiResponse.ok(SnapshotStatus.READ_OK, snapShotResponse);
     }
@@ -78,15 +80,14 @@ public class SnapshotController {
             @RequestParam Long classId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "3") int size) {
+
         Long userId = userDetails.getUser().getUserId();
-
+        classEffectiveness(classId);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-
         Page<SnapShotResponse> snapShotResponses =
                 snapshotService.readAllSnapshots(userId, classId, pageable);
 
         return ApiResponse.ok(SnapshotStatus.READ_OK,snapShotResponses);
-
     }
     @GetMapping("/read/title")
     public ResponseEntity<ApiResponse<List<SnapShotResponse>>> searchByTitle(
@@ -303,6 +304,7 @@ public class SnapshotController {
                 throw new CustomException(SnapshotStatus.LANGUAGE_EMPTY);
             }
         }
+        classEffectiveness(classId);
 
         LocalDateTime start = null;
         LocalDateTime end = null;
@@ -336,7 +338,17 @@ public class SnapshotController {
         return ApiResponse.ok(SnapshotStatus.DELETE_OK);
     }
 
+    private void classEffectiveness(Long classId){
+        if(classId==null){
+            throw new CustomException(ClassRoomStatus.CLASS_NOT_FOUND);
+        }
+    }
+    private void languageEffectiveness(SnapshotLanguage language) {
+        if (language == null) {
+            throw new CustomException(SnapshotStatus.LANGUAGE_EMPTY);
 
+        }
+    }
 
     private void writeEffectiveness(String title,String content) {
         if (title == null || title.trim().isEmpty()) {
