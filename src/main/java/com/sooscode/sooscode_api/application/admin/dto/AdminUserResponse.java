@@ -1,5 +1,6 @@
 package com.sooscode.sooscode_api.application.admin.dto;
 
+import com.sooscode.sooscode_api.domain.classroom.entity.ClassParticipant;
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.enums.UserRole;
 import com.sooscode.sooscode_api.domain.user.enums.UserStatus;
@@ -136,6 +137,27 @@ public class AdminUserResponse {
             private boolean success;
             private String temporaryPassword; // 성공 시 임시 비밀번호
             private String errorMessage; // 실패 시 에러 메시지
+        }
+    }
+
+    /**
+     * 유저가 수강 중인 클래스 정보
+     */
+    @Data
+    @Builder
+    public static class EnrolledClass {
+        private Long classId;              // 클래스 ID
+        private String className;          // 클래스 이름
+        private String instructorName;     // 강사 이름
+        private LocalDateTime enrolledAt;  // 참가자 등록 시간
+
+        public static EnrolledClass from(ClassParticipant participant) {
+            return EnrolledClass.builder()
+                    .classId(participant.getClassRoom().getClassId())
+                    .className(participant.getClassRoom().getTitle())
+                    .instructorName(participant.getClassRoom().getUser().getName())
+                    .enrolledAt(participant.getCreatedAt())
+                    .build();
         }
     }
 }

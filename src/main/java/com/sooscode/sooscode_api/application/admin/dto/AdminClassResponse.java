@@ -96,4 +96,23 @@ public class AdminClassResponse {
                     .build();
         }
     }
+
+    /**
+     * 사용자 검색 아이템 (강사/학생 검색용)
+     */
+    @Data
+    @Builder
+    public static class UserSearchItem {
+        private Long userId;
+        private String name;
+        private String email;
+
+        public static UserSearchItem from(User user) {
+            return UserSearchItem.builder()
+                    .userId(user.getUserId())
+                    .name(user.getName())
+                    .email(user.getEmail())
+                    .build();
+        }
+    }
 }

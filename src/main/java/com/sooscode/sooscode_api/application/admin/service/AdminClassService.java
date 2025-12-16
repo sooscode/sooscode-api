@@ -5,6 +5,8 @@ import com.sooscode.sooscode_api.application.admin.dto.AdminClassResponse;
 import com.sooscode.sooscode_api.application.admin.dto.AdminPageResponse;
 import com.sooscode.sooscode_api.global.api.exception.CustomException;
 
+import java.util.List;
+
 public interface AdminClassService {
 
     /**
@@ -97,4 +99,42 @@ public interface AdminClassService {
      * @return 페이지네이션된 클래스 목록 (content, currentPage, totalPages, totalElements, size)
      */
     AdminPageResponse<AdminClassResponse.ClassItem> getClassList(AdminClassRequest.SearchFilter filter, int page, int size);
+
+    /**
+     * 강사 검색
+     * 이름 또는 이메일로 활성 상태의 강사 목록 조회
+     *
+     * @param keyword 검색 키워드 (이름 또는 이메일)
+     * @return 강사 목록 (userId, name, email)
+     */
+    List<AdminClassResponse.UserSearchItem> searchInstructors(String keyword);
+
+    /**
+     * 클래스에 속하지 않은 학생 검색
+     * 특정 클래스에 참여하지 않은 활성 상태의 학생 목록 조회
+     *
+     * @param classId 클래스 ID
+     * @param keyword 검색 키워드 (이름 또는 이메일)
+     * @return 학생 목록 (userId, name, email)
+     */
+    List<AdminClassResponse.UserSearchItem> searchAvailableStudents(Long classId, String keyword);
+
+    /**
+     * 클래스 정보 및 수강생 목록 엑셀 다운로드
+     * 클래스 기본 정보와 수강생 명단을 엑셀 파일로 생성
+     *
+     * @param classId 클래스 ID
+     * @return 엑셀 파일 바이트 배열
+     * @throws CustomException CLASS_NOT_FOUND - 클래스를 찾을 수 없는 경우
+     */
+    byte[] exportClassToExcel(Long classId);
+
+    /**
+     * 전체 클래스 목록 엑셀 다운로드
+     * 필터 조건에 맞는 클래스 목록을 엑셀 파일로 생성
+     *
+     * @param filter 검색 필터
+     * @return 엑셀 파일 바이트 배열
+     */
+    byte[] exportClassListToExcel(AdminClassRequest.SearchFilter filter);
 }

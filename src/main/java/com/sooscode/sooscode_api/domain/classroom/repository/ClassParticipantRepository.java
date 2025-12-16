@@ -19,7 +19,7 @@ public interface ClassParticipantRepository extends JpaRepository<ClassParticipa
     // classId와 userId를 조합해서 Participant를 찾아서 반환
     Optional<ClassParticipant> findByClassRoom_ClassIdAndUser_UserId(Long classId, Long userId);
 
-    // class에 참가하고있는 user를 조회
+    // user가 참가하고있는 class를 조회
     List<ClassParticipant> findByUser_UserId(Long userId);
 
     // class에 참가하고 있는 학생 수 조회
@@ -41,6 +41,17 @@ public interface ClassParticipantRepository extends JpaRepository<ClassParticipa
             Pageable pageable
     );
 
+    /**
+     * 특정 유저가 참가 중인 클래스 목록 조회 (ClassRoom과 강사 정보 JOIN)
+     * N+1 문제 방지를 위해 FETCH JOIN 사용
+     */
+    @Query("SELECT cp FROM ClassParticipant cp " +
+            "JOIN FETCH cp.classRoom c " +
+            "JOIN FETCH c.user u " +
+            "WHERE cp.user.userId = :userId " +
+            "ORDER BY cp.createdAt DESC")
+    List<ClassParticipant> findByUserIdWithClassAndInstructor(@Param("userId") Long userId);
+  
     // mypage 진입시 클래스 리스팅
     Page<ClassParticipant> findByUser_UserId(Long userId, Pageable pageable);
 }

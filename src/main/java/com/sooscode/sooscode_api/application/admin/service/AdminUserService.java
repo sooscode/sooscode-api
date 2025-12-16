@@ -107,7 +107,7 @@ public interface AdminUserService {
      * @throws CustomException FILE_TYPE_NOT_ALLOWED - CSV 파일이 아닌 경우
      * @throws CustomException BAD_REQUEST - CSV 형식이 올바르지 않은 경우
      */
-    AdminUserResponse.CreateResult bulkCreateUsers(AdminUserRequest.BulkCreate request);
+    byte[] bulkCreateUsers(AdminUserRequest.BulkCreate request);
 
     /**
      * 사용자 데이터 엑셀 다운로드
@@ -117,5 +117,20 @@ public interface AdminUserService {
      * @return 엑셀 파일 바이트 배열
      */
     byte[] exportUsersToExcel(AdminUserRequest.SearchFilter filter);
+
+    /**
+     * 일괄 생성용 엑셀 템플릿 생성
+     */
+    byte[] generateExcelTemplate();
+
+    /**
+     * 특정 유저가 수강 중인 클래스 목록 조회
+     * 유저의 수강 이력과 클래스 정보를 제공
+     *
+     * @param userId 조회할 사용자 ID
+     * @return 사용자가 수강 중인 클래스 목록
+     * @throws CustomException USER_NOT_FOUND - 사용자를 찾을 수 없는 경우
+     */
+    List<AdminUserResponse.EnrolledClass> getUserEnrolledClasses(Long userId);
 
 }

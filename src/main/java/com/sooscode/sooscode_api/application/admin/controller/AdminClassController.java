@@ -9,11 +9,17 @@ import com.sooscode.sooscode_api.global.api.status.AdminStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static com.sooscode.sooscode_api.global.utils.ClassValidator.*;
 
@@ -182,5 +188,95 @@ public class AdminClassController {
         AdminPageResponse<AdminClassResponse.ClassStudentsResponse> response =
                 adminClassService.getClassStudentsList(classId, filter, page, size);
         return ApiResponse.ok(AdminStatus.OK, response);
+    }
+
+    /**
+     * 강사 검색
+     * GET /api/admin/classes/instructors?keyword={name, email}
+     */
+    @GetMapping("/instructors")
+    public ResponseEntity<ApiResponse<List<AdminClassResponse.UserSearchItem>>> searchInstructors(
+            @RequestParam(required = false) String keyword
+    ) {
+        log.info("강사 검색 요청: keyword={}", keyword);
+        List<AdminClassResponse.UserSearchItem> instructors = adminClassService.searchInstructors(keyword);
+        return ApiResponse.ok(AdminStatus.OK, instructors);
+    }
+
+    /**
+     * 클래스에 속하지 않은 학생 검색
+     * GET /api/admin/classes/{classId}/students/available?keyword={name, email}
+     */
+    @GetMapping("/{classId}/students/available")
+    public ResponseEntity<ApiResponse<List<AdminClassResponse.UserSearchItem>>> searchAvailableStudents(
+            @PathVariable Long classId,
+            @RequestParam(required = false) String keyword
+    ) {
+        log.info("클래스 미참여 학생 검색 요청: classId={}, keyword={}", classId, keyword);
+        List<AdminClassResponse.UserSearchItem> students = adminClassService.searchAvailableStudents(classId, keyword);
+        return ApiResponse.ok(AdminStatus.OK, students);
+    }
+
+
+    /**
+     * 클래스 정보 및 수강생 목록 엑셀 다운로드
+     * GET /api/admin/classes/{classId}/export
+     */
+    @GetMapping("/{classId}/export")
+    public ResponseEntity<byte[]> exportClassToExcel(@PathVariable Long classId) {
+        log.info("클래스 엑셀 다운로드 요청: classId={}", classId);
+
+        byte[] excelData = adminClassService.exportClassToExcel(classId);
+
+        // 파일명 생성 (클래스ID_날짜)
+        String filename = "class_" + classId + "_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + ".xlsx";
+        String encodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", encodedFilename);
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"; filename*=UTF-8''" + encodedFilename);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(excelData);
+    }
+
+    /**
+     * 전체 클래스 목록 엑셀 다운로드
+     * GET /api/admin/classes/export
+     */
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> exportClassListToExcel(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDirection
+    ) {
+        log.info("클래스 목록 엑셀 다운로드 요청");
+
+        // 필터 객체 생성
+        AdminClassRequest.SearchFilter filter = new AdminClassRequest.SearchFilter();
+        filter.setKeyword(keyword);
+        filter.setStartDate(startDate);
+        filter.setEndDate(endDate);
+        filter.setSortBy(sortBy);
+        filter.setSortDirection(sortDirection);
+
+        byte[] excelData = adminClassService.exportClassListToExcel(filter);
+
+        // 파일명 생성
+        String filename = "classes_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + ".xlsx";
+        String encodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", encodedFilename);
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"; filename*=UTF-8''" + encodedFilename);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(excelData);
     }
 }

@@ -62,6 +62,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     // 시간
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    // Apache POI (엑셀 파일 생성)
+    implementation 'org.apache.poi:poi-ooxml:5.2.5'
 }
 
 tasks.named('test') {
