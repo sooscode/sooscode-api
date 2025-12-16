@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  * - 비즈니스 로직은 ClassSocketService에서 처리
  *
  * Redis 키 구조:
- * - ws:session:{sessionId}      → Hash (userId, classId)
+ * - ws:session:{sessionId}      → Hash (userId, classId, isInstructor)
  * - ws:user:{userId}:session    → String (sessionId) - 중복 접속 체크용
  * - ws:class:{classId}:members  → Set (userId 목록)
  */
@@ -52,6 +52,25 @@ public class WebSocketSessionRegistry {
     }
 
     /**
+     * 새 세션 등록 (역할 포함) 오버로딩
+     */
+    public void registerSession(String sessionId, Long userId, boolean isInstructor) {
+        String sessionKey = SESSION_KEY_PREFIX + sessionId;
+        redisTemplate.opsForHash().put(sessionKey, "userId", userId);
+        redisTemplate.opsForHash().put(sessionKey, "isInstructor", isInstructor);
+        redisTemplate.expire(sessionKey, SESSION_TTL_HOURS, TimeUnit.HOURS);
+
+        // 유저 → 세션 매핑 (중복 접속 체크용)
+        String userSessionKey = USER_SESSION_KEY_PREFIX + userId + USER_SESSION_KEY_SUFFIX;
+        redisTemplate.opsForValue().set(userSessionKey, sessionId);
+
+        log.debug("Session registered: sessionId={}, userId={}, isInstructor={}",
+                sessionId, userId, isInstructor);
+    }
+
+
+
+    /**
      * 세션 삭제
      */
     public void removeSession(String sessionId) {
@@ -77,6 +96,34 @@ public class WebSocketSessionRegistry {
         Object value = redisTemplate.opsForHash().get(sessionKey, "classId");
         return value != null ? value.toString() : null;
     }
+
+    /**
+     * 강사 여부 확인
+     */
+    public boolean isInstructor(String sessionId) {
+        String sessionKey = SESSION_KEY_PREFIX + sessionId;
+        Object value = redisTemplate.opsForHash().get(sessionKey, "isInstructor");
+        if (value == null) {
+            return false;
+        }
+        // Boolean 또는 String으로 저장될 수 있으므로 두 경우 모두 처리
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        return Boolean.parseBoolean(value.toString());
+    }
+
+    /**
+     * 역할 설정 (나중에 설정하는 경우)
+     */
+    public void setRole(String sessionId, boolean isInstructor) {
+        String sessionKey = SESSION_KEY_PREFIX + sessionId;
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(sessionKey))) {
+            redisTemplate.opsForHash().put(sessionKey, "isInstructor", isInstructor);
+            log.debug("Role updated: sessionId={}, isInstructor={}", sessionId, isInstructor);
+        }
+    }
+
 
 
     // ==================== 중복 접속 관리 ====================
@@ -154,3 +201,4 @@ public class WebSocketSessionRegistry {
         log.debug("Class members cleared: classId={}", classId);
     }
 }
+

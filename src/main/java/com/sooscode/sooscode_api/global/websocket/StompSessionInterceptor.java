@@ -69,6 +69,10 @@ public class StompSessionInterceptor implements ChannelInterceptor {
         Long userId = userDetails.getUser().getUserId();
         String sessionId = accessor.getSessionId();
 
+        // ✅ 방법 1: URL 파라미터에서 역할 정보 추출 (프론트에서 전달)
+        boolean isInstructor = extractRoleFromHeaders(accessor);
+
+
         // 중복 접속 체크 및 기존 세션 정리
         String oldSessionId = sessionRegistry.getExistingSessionId(userId);
 
@@ -77,9 +81,80 @@ public class StompSessionInterceptor implements ChannelInterceptor {
         }
 
         // 새 세션 등록
-        sessionRegistry.registerSession(sessionId, userId);
-        log.info("WS CONNECT — sessionId={}, userId={}", sessionId, userId);
+//        sessionRegistry.registerSession(sessionId, userId);
+//        log.info("WS CONNECT — sessionId={}, userId={}", sessionId, userId);
+
+        // ✅ 역할 정보 포함하여 새 세션 등록
+        sessionRegistry.registerSession(sessionId, userId, isInstructor);
+        log.info("WS CONNECT — sessionId={}, userId={}, isInstructor={}",
+                sessionId, userId, isInstructor);
     }
+
+    /**
+     * 여기부터
+     */
+
+
+    /**
+     * URL 파라미터에서 역할 정보 추출
+     * 프론트엔드에서 연결 시 { isInstructor: true/false } 헤더 전달 필요
+     */
+    private boolean extractRoleFromHeaders(StompHeaderAccessor accessor) {
+        // STOMP 헤더에서 추출
+        String roleHeader = accessor.getFirstNativeHeader("isInstructor");
+
+        if (roleHeader != null) {
+            boolean isInstructor = Boolean.parseBoolean(roleHeader);
+            log.debug("헤더에서 역할 추출: isInstructor={}", isInstructor);
+            return isInstructor;
+        }
+
+        log.warn("역할 정보 없음, 기본값(학생) 사용");
+        return false; // 기본값: 학생
+    }
+
+    /**
+     * CustomUserDetails에서 역할 판단 (대안 방법)
+     * 프로젝트 구조에 맞게 수정 필요
+     */
+    private boolean determineRoleFromUserDetails(CustomUserDetails userDetails) {
+        try {
+            // 방법 1: Authority를 통한 판단
+            boolean hasInstructorRole = userDetails.getAuthorities().stream()
+                    .anyMatch(auth -> {
+                        String authority = auth.getAuthority();
+                        return "ROLE_INSTRUCTOR".equals(authority)
+                                || "INSTRUCTOR".equals(authority)
+                                || "TEACHER".equals(authority)
+                                || "ROLE_TEACHER".equals(authority);
+                    });
+
+            if (hasInstructorRole) {
+                log.debug("Authority에서 강사 역할 확인");
+                return true;
+            }
+
+            // 방법 2: User 엔티티에서 직접 확인 (있는 경우)
+            // String role = userDetails.getUser().getRole();
+            // if ("INSTRUCTOR".equals(role)) {
+            //     log.debug("User 엔티티에서 강사 역할 확인");
+            //     return true;
+            // }
+
+            log.debug("학생 역할로 판단");
+            return false;
+
+        } catch (Exception e) {
+            log.error("역할 판단 중 오류 발생", e);
+            return false; // 오류 시 기본값: 학생
+        }
+    }
+
+
+
+    /**
+     * 여기까지 추가
+     */
 
 
     /**
@@ -149,7 +224,6 @@ public class StompSessionInterceptor implements ChannelInterceptor {
         sessionRegistry.removeSession(sessionId);
         log.info("WS DISCONNECT — sessionId={}, userId={}", sessionId, userId);
     }
-
 
     /**
      * 채팅 채널인지 확인
