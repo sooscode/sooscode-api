@@ -21,8 +21,10 @@ public class MypageClassDetailResponse {
     private LocalDate endDate;
     private LocalTime startTime;
     private LocalTime endTime;
+    private String thumbnailUrl;
 
-    public static MypageClassDetailResponse from(ClassRoom classRoom) {
+    public static MypageClassDetailResponse from(ClassRoom classRoom,
+                                                 String thumbnailUrl) {
         return MypageClassDetailResponse.builder()
                 .classId(classRoom.getClassId())
                 .title(classRoom.getTitle())
@@ -32,6 +34,7 @@ public class MypageClassDetailResponse {
                 .endDate(classRoom.getEndDate())
                 .startTime(classRoom.getStartTime())
                 .endTime(classRoom.getEndTime())
+                .thumbnailUrl(thumbnailUrl)
                 .build();
     }
 }

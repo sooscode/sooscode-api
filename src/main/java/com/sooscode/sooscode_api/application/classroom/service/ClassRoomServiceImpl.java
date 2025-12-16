@@ -4,12 +4,16 @@ import com.sooscode.sooscode_api.application.classroom.dto.ClassRoomDetailRespon
 import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
 import com.sooscode.sooscode_api.domain.classroom.repository.ClassParticipantRepository;
 import com.sooscode.sooscode_api.domain.classroom.repository.ClassRoomRepository;
+import com.sooscode.sooscode_api.domain.file.entity.SooFile;
 import com.sooscode.sooscode_api.global.api.exception.CustomException;
 import com.sooscode.sooscode_api.global.api.status.ClassRoomStatus;
+import com.sooscode.sooscode_api.infra.file.service.S3FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 @Service
@@ -19,6 +23,7 @@ public class ClassRoomServiceImpl implements ClassRoomService {
 
     private final ClassRoomRepository classRoomRepository;
     private final ClassParticipantRepository classParticipantRepository;
+    private final S3FileService s3FileService;
 
     @Override
     public ClassRoomDetailResponse getClassRoomDetail(Long classId, Long userId) {
@@ -62,4 +67,31 @@ public class ClassRoomServiceImpl implements ClassRoomService {
             throw new CustomException(ClassRoomStatus.CLASS_ALREADY_ENDED);
         }
     }
+    // 효상 - 썸네일 업로드 TEST
+    @Transactional
+    @Override
+    public void updateThumbnail(Long classId, Long userId, MultipartFile thumbnail) throws IOException {
+
+        ClassRoom classRoom = classRoomRepository.findById(classId)
+                .orElseThrow(() -> new CustomException(ClassRoomStatus.CLASS_ALREADY_ENDED));
+
+        // 소유자 검증
+        if (!classRoom.getUser().getUserId().equals(userId)) {
+            throw new CustomException(ClassRoomStatus.CLASS_ALREADY_ENDED);
+        }
+
+        // 기존 썸네일
+        SooFile oldFile = classRoom.getFile();
+
+        if (thumbnail != null && !thumbnail.isEmpty()) {
+
+            if (oldFile != null) {
+                s3FileService.deleteFile(oldFile);
+            }
+
+            SooFile newFile = s3FileService.uploadThumbnail(thumbnail);
+            classRoom.setFile(newFile);
+        }
+    }
+
 }

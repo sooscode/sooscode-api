@@ -1,12 +1,17 @@
 package com.sooscode.sooscode_api.application.mypage.controller;
 
+import com.sooscode.sooscode_api.application.classroom.service.ClassRoomService;
 import com.sooscode.sooscode_api.application.mypage.dto.MypageUserUpdatePasswordRequest;
 import com.sooscode.sooscode_api.application.mypage.dto.MypageUserUpdateProfileRequest;
 import com.sooscode.sooscode_api.application.mypage.dto.MypageUserUpdateResponse;
+import com.sooscode.sooscode_api.application.mypage.service.MypageClassService;
 import com.sooscode.sooscode_api.application.mypage.service.MypageUserService;
 import com.sooscode.sooscode_api.domain.user.entity.User;
+import com.sooscode.sooscode_api.domain.user.enums.UserRole;
+import com.sooscode.sooscode_api.global.api.exception.CustomException;
 import com.sooscode.sooscode_api.global.api.response.ApiResponse;
 import com.sooscode.sooscode_api.global.api.status.GlobalStatus;
+import com.sooscode.sooscode_api.global.api.status.UserStatus;
 import com.sooscode.sooscode_api.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +27,8 @@ import java.io.IOException;
 public class MypageUserController {
 
     private final MypageUserService mypageService;
+    private final ClassRoomService classRoomService;
+    private final MypageClassService mypageClassService;
 
     /**
      * 비밀번호 변경
@@ -95,4 +102,34 @@ public class MypageUserController {
 
         return ApiResponse.ok(GlobalStatus.OK);
     }
+
+    // 썸네일 등록
+    @PostMapping(
+            value = "/classroom/{classId}/thumbnail",
+            consumes = "multipart/form-data"
+    )
+    public ResponseEntity<ApiResponse<Void>> uploadClassRoomThumbnail(
+            @PathVariable Long classId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail
+    ) throws IOException {
+
+        UserRole userRole = userDetails.getUser().getRole();
+
+        // INSTRUCTOR / ADMIN 만 허용
+        if (userRole != UserRole.INSTRUCTOR && userRole != UserRole.ADMIN) {
+            throw new CustomException(UserStatus.SUSPENDED);
+        }
+
+        classRoomService.updateThumbnail(
+                classId,
+                userDetails.getUser().getUserId(),
+                thumbnail
+        );
+
+        return ApiResponse.ok(GlobalStatus.OK);
+    }
+
+
+
 }

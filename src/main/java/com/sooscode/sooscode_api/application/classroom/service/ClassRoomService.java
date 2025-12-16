@@ -2,6 +2,9 @@ package com.sooscode.sooscode_api.application.classroom.service;
 
 import com.sooscode.sooscode_api.application.classroom.dto.ClassRoomDetailResponse;
 import com.sooscode.sooscode_api.global.api.exception.CustomException;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 public interface ClassRoomService {
     /**
@@ -19,4 +22,6 @@ public interface ClassRoomService {
      * @throws CustomException CLASS_ACCESS_DENIED - 접속 권한이 없는 경우 (강사도 아니고 참가자도 아닌 경우)
      */
     ClassRoomDetailResponse getClassRoomDetail(Long classId, Long userId);
+
+    void updateThumbnail(Long classId, Long userId, MultipartFile thumbnail) throws IOException;
 }
