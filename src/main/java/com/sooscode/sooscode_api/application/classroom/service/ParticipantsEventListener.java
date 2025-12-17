@@ -1,7 +1,7 @@
-package com.sooscode.sooscode_api.application.code.service;
+package com.sooscode.sooscode_api.application.classroom.service;
 
-import com.sooscode.sooscode_api.application.code.dto.ParticipantInfo;
-import com.sooscode.sooscode_api.application.code.dto.ParticipantMessage;
+import com.sooscode.sooscode_api.application.classroom.dto.ParticipantInfo;
+import com.sooscode.sooscode_api.application.classroom.dto.ParticipantMessage;
 import com.sooscode.sooscode_api.global.websocket.ParticipantsChangedEvent;
 import com.sooscode.sooscode_api.global.websocket.WebSocketSessionRegistry;
 import lombok.RequiredArgsConstructor;

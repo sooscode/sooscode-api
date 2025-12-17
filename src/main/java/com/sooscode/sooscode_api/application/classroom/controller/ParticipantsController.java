@@ -1,7 +1,7 @@
 package com.sooscode.sooscode_api.application.code.controller;
 
-import com.sooscode.sooscode_api.application.code.dto.ParticipantMessage;
-import com.sooscode.sooscode_api.application.code.service.ParticipantsService;
+import com.sooscode.sooscode_api.application.classroom.dto.ParticipantMessage;
+import com.sooscode.sooscode_api.application.classroom.service.ParticipantsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;

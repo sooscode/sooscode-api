@@ -1,4 +1,4 @@
-package com.sooscode.sooscode_api.application.code.dto;
+package com.sooscode.sooscode_api.application.classroom.dto;
 
 import lombok.Builder;
 import lombok.Data;
@@ -8,6 +8,7 @@ import lombok.Data;
 public class ParticipantInfo {
     private Long userId;
     private String username;
-    private String role;     // INSTRUCTOR / STUDENT
+    private String userEmail;
+    private String role;        // INSTRUCTOR / STUDENT
     private boolean isOnline;
 }

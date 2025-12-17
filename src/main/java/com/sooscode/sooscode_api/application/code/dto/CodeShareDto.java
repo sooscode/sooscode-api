@@ -12,4 +12,7 @@ public class CodeShareDto {
     private String code;       // 전송된 코드 내용
     private String output;     // 결과
     private boolean isInstructor; // 강사인지 학생인지
+    private String type;          // INSTRUCTOR_EXAMPLE, STUDENT_EDIT, null
+    private String userEmail;     // 발신자 이메일
+    private String targetEmail;   // 편집 대상 학생 이메일
 }
