@@ -22,20 +22,20 @@ public class MypageMyclassesResponse {
         private LocalTime startTime;
         private LocalTime endTime;
 
-    public static MypageMyclassesResponse from(ClassRoom classRoom) {
+    public static MypageMyclassesResponse from(
+            ClassRoom classRoom,
+            String thumbnailUrl
+    ) {
         return MypageMyclassesResponse.builder()
                 .classId(classRoom.getClassId())
                 .title(classRoom.getTitle())
-                .teacherName(classRoom.getUser().getName()) // 구조에 따라 수정
-                .thumbnailUrl(
-                        classRoom.getFile() != null
-                                ? classRoom.getFile().getUrl()
-                                : "/images/default-thumbnail.png"
-                )
+                .teacherName(classRoom.getUser().getName())
+                .thumbnailUrl(thumbnailUrl)
                 .startDate(classRoom.getStartDate())
                 .endDate(classRoom.getEndDate())
                 .startTime(classRoom.getStartTime())
                 .endTime(classRoom.getEndTime())
                 .build();
     }
+
 }

@@ -11,6 +11,7 @@ import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
 import com.sooscode.sooscode_api.global.api.exception.CustomException;
 import com.sooscode.sooscode_api.global.api.status.ClassRoomStatus;
 import com.sooscode.sooscode_api.global.api.status.UserStatus;
+import com.sooscode.sooscode_api.infra.file.service.S3FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,7 @@ public class MypageClassServiceImpl implements MypageClassService {
     private final ClassRoomRepository classRoomRepository;
     private final ClassParticipantRepository classParticipantRepository;
     private final UserRepository userRepository;
+    private final S3FileService s3FileService;
 
     /**
      * Class의 정보를 조회
@@ -39,7 +41,15 @@ public class MypageClassServiceImpl implements MypageClassService {
         ClassRoom classRoom = classRoomRepository.findById(classId)
                 .orElseThrow(() -> new CustomException(ClassRoomStatus.CLASS_NOT_FOUND));
 
-        return MypageClassDetailResponse.from(classRoom);
+        String thumbnailUrl = null;
+
+        if (classRoom.getFile() != null) {
+            thumbnailUrl = s3FileService.getPublicUrl(
+                    classRoom.getFile().getFileId()
+            );
+        }
+
+        return MypageClassDetailResponse.from(classRoom,thumbnailUrl);
     }
 
 //    // 학생이 가지고있는 class의 list를 조회
@@ -76,28 +86,47 @@ public class MypageClassServiceImpl implements MypageClassService {
 //    }
     @Override
     public Page<MypageMyclassesResponse> getStudentClasses(Long userId, Pageable pageable) {
-        log.info("getStudentClasses Service");
 
         Page<ClassParticipant> pageResult =
                 classParticipantRepository.findByUser_UserId(userId, pageable);
 
-        return pageResult.map(cp ->
-                MypageMyclassesResponse.from(cp.getClassRoom())
-        );
+        return pageResult.map(cp -> {
+            ClassRoom classRoom = cp.getClassRoom();
+
+            String thumbnailUrl = null;
+            if (classRoom.getFile() != null) {
+                thumbnailUrl = s3FileService.getPublicUrl(
+                        classRoom.getFile().getFileId()
+                );
+            }
+
+            return MypageMyclassesResponse.from(classRoom, thumbnailUrl);
+        });
     }
+
 
     @Override
     public Page<MypageMyclassesResponse> getTeacherClasses(Long userId, Pageable pageable) {
-        log.info("getTeacherClasses Service");
 
-        User user = userRepository.findById(userId)
+        userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(UserStatus.NOT_FOUND));
 
         Page<ClassRoom> pageResult =
                 classRoomRepository.findByUser_UserId(userId, pageable);
 
-        return pageResult.map(MypageMyclassesResponse::from);
+        return pageResult.map(classRoom -> {
+
+            String thumbnailUrl = null;
+            if (classRoom.getFile() != null) {
+                thumbnailUrl = s3FileService.getPublicUrl(
+                        classRoom.getFile().getFileId()
+                );
+            }
+
+            return MypageMyclassesResponse.from(classRoom, thumbnailUrl);
+        });
     }
+
 
 
 }

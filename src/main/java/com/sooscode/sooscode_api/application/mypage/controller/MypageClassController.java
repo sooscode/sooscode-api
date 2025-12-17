@@ -72,32 +72,3 @@ public class MypageClassController {
         return ApiResponse.ok(GlobalStatus.OK, response);
     }
 }
-
-
-
-
-// 원본 classes
-//@GetMapping("/classes")
-//public ResponseEntity<ApiResponse<List<MypageMyclassesResponse>>> getClasses(
-//        @AuthenticationPrincipal CustomUserDetails userDetails) {
-//    log.info("Get My Classes Controller");
-//
-//    List<MypageMyclassesResponse> response;
-//    User user = userDetails.getUser();
-//
-//    UserRole userRole = user.getRole();
-//    Long userId = user.getUserId();
-//
-//    log.info("User Role : {}", userRole);
-//
-//    if(userRole.equals(UserRole.STUDENT)) {
-//        response = mypageClassService.getStudentClasses(userId);
-//    }else if(userRole.equals(UserRole.INSTRUCTOR)){
-//        response = mypageClassService.getTeacherClasses(userId);
-//    }else {
-//        throw new CustomException(UserStatus.SUSPENDED);
-//    }
-//
-//    return ApiResponse.ok(GlobalStatus.OK, response);
-//}
-//    }

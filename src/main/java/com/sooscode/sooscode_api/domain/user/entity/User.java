@@ -67,8 +67,13 @@ public class User {
      * 프로필 이미지
      */
     public String getProfileImage() {
-        if (this.file != null) {
-            return this.file.getUrl();
+        try {
+            if (this.file != null) {
+                return this.file.getUrl();
+            }
+        } catch (Exception e) {
+            // Lazy loading 실패 시 기본 이미지 반환
+            System.err.println("LazyInitializationException in getProfileImage: " + e.getMessage());
         }
         return "https://sooscode-s3file.s3.ap-northeast-2.amazonaws.com/profile.png";
     }
