@@ -51,6 +51,15 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         classRoomRepository.findById(request.getClassId())
                 .orElseThrow(() -> new CustomException(ClassRoomStatus.CLASS_NOT_FOUND));
 
+        String content = request.getContent();
+        if (content == null) throw new CustomException(ChatStatus.NOT_EMPTY);
+
+        final int MAX_LENGTH = 500;
+
+        if (content.length() > MAX_LENGTH) {
+            throw new CustomException(ChatStatus.CONTENT_TOO_LONG);
+        }
+
         // reply 정보(있으면) Redis에서 가져와서 채우기
         Long replyToChatId = request.getReplyToChatId();
         String replyToName = null;
