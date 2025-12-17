@@ -74,6 +74,7 @@ public class SecurityConfig {
 
         config.setAllowedOrigins(List.of(
                 "http://localhost:5173",
+                "https://sooscode.kro.kr",
                 "https://main.d2ezaukds7yg62.amplifyapp.com"
         ));
 
