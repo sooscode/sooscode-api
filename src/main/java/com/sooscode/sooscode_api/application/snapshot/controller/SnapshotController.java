@@ -1,10 +1,8 @@
 package com.sooscode.sooscode_api.application.snapshot.controller;
 
-import com.sooscode.sooscode_api.application.snapshot.dto.SnapShotResponse;
-import com.sooscode.sooscode_api.application.snapshot.dto.SnapshotLanguage;
-import com.sooscode.sooscode_api.application.snapshot.dto.SnapshotRequest;
-import com.sooscode.sooscode_api.application.snapshot.dto.SnapshotTitleResponse;
+import com.sooscode.sooscode_api.application.snapshot.dto.*;
 import com.sooscode.sooscode_api.application.snapshot.service.SnapshotService;
+import com.sooscode.sooscode_api.domain.snapshot.entity.CodeSnapshot;
 import com.sooscode.sooscode_api.global.api.exception.CustomException;
 import com.sooscode.sooscode_api.global.api.response.ApiResponse;
 import com.sooscode.sooscode_api.global.api.status.ClassRoomStatus;
@@ -34,7 +32,7 @@ public class SnapshotController {
     private final SnapshotService snapshotService;
 
     @PostMapping("/")
-    public ResponseEntity<ApiResponse<Void>> save(
+    public ResponseEntity<ApiResponse<SnapshotSaveResponse>> save(
             @RequestBody SnapshotRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
@@ -43,8 +41,13 @@ public class SnapshotController {
         writeEffectiveness(request.getTitle(), request.getContent());
         classEffectiveness(request.getClassId());
         languageEffectiveness(request.getLanguage());
-        snapshotService.saveCodeSnapshot(request, userId);
-        return ApiResponse.ok(SnapshotStatus.OK);
+        CodeSnapshot savedSnapshot =
+                snapshotService.saveCodeSnapshot(request, userId);
+
+        return ApiResponse.ok(
+                SnapshotStatus.OK,
+                SnapshotSaveResponse.from(savedSnapshot)
+        );
     }
     @PostMapping("/update")
     public ResponseEntity<ApiResponse<Void>> update(
