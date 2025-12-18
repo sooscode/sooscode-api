@@ -4,18 +4,15 @@ import com.sooscode.sooscode_api.application.admin.dto.AdminClassRequest;
 import com.sooscode.sooscode_api.application.admin.dto.AdminClassResponse;
 import com.sooscode.sooscode_api.application.admin.dto.AdminPageResponse;
 import com.sooscode.sooscode_api.application.admin.service.AdminClassService;
-import com.sooscode.sooscode_api.global.api.response.ApiResponse;
-import com.sooscode.sooscode_api.global.api.status.AdminStatus;
+import com.sooscode.sooscode_api.global.response.ApiResponse;
+import com.sooscode.sooscode_api.global.status.AdminStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -74,7 +71,7 @@ public class AdminClassController {
             @PathVariable Long classId,
             @RequestBody AdminClassRequest.Update request
     ) {
-        validateClass(
+        validateUpdate(
                 request.getTitle(),
                 request.getDescription(),
                 request.getInstructorId(),

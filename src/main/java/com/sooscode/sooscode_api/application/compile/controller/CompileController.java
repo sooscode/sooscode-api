@@ -3,9 +3,9 @@ package com.sooscode.sooscode_api.application.compile.controller;
 import com.sooscode.sooscode_api.application.compile.dto.CompileResultResponse;
 import com.sooscode.sooscode_api.application.compile.dto.CompileRunRequest;
 import com.sooscode.sooscode_api.application.compile.service.CompileService;
-import com.sooscode.sooscode_api.global.api.exception.CustomException;
-import com.sooscode.sooscode_api.global.api.response.ApiResponse;
-import com.sooscode.sooscode_api.global.api.status.CompileStatus;
+import com.sooscode.sooscode_api.global.exception.CustomException;
+import com.sooscode.sooscode_api.global.response.ApiResponse;
+import com.sooscode.sooscode_api.global.status.CompileStatus;
 import com.sooscode.sooscode_api.infra.worker.CompileFutureStore;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @RestController

@@ -4,7 +4,7 @@ import com.sooscode.sooscode_api.application.admin.dto.AdminPageResponse;
 import com.sooscode.sooscode_api.application.admin.dto.AdminUserRequest;
 import com.sooscode.sooscode_api.application.admin.dto.AdminUserResponse;
 import com.sooscode.sooscode_api.domain.user.enums.UserRole;
-import com.sooscode.sooscode_api.global.api.exception.CustomException;
+import com.sooscode.sooscode_api.global.exception.CustomException;
 
 import java.util.List;
 

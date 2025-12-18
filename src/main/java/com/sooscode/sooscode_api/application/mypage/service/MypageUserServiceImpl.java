@@ -6,11 +6,11 @@ import com.sooscode.sooscode_api.domain.classroom.repository.ClassParticipantRep
 import com.sooscode.sooscode_api.domain.file.entity.SooFile;
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
-import com.sooscode.sooscode_api.global.api.exception.CustomException;
-import com.sooscode.sooscode_api.global.api.status.AuthStatus;
-import com.sooscode.sooscode_api.global.api.status.UserStatus;
+import com.sooscode.sooscode_api.global.exception.CustomException;
+import com.sooscode.sooscode_api.global.status.AuthStatus;
+import com.sooscode.sooscode_api.global.status.UserStatus;
 import com.sooscode.sooscode_api.global.utils.UserValidator;
-import com.sooscode.sooscode_api.infra.file.service.S3FileService;
+import com.sooscode.sooscode_api.infra.s3.service.S3FileService;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

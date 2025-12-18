@@ -2,13 +2,11 @@ package com.sooscode.sooscode_api.application.auth.controller;
 
 import com.sooscode.sooscode_api.application.auth.service.GoogleAuthService;
 import com.sooscode.sooscode_api.application.auth.util.CookieUtil;
-import com.sooscode.sooscode_api.domain.user.entity.User;
-import com.sooscode.sooscode_api.global.api.exception.CustomException;
-import com.sooscode.sooscode_api.global.api.status.AuthStatus;
-import com.sooscode.sooscode_api.global.api.response.ApiResponse;
-import com.sooscode.sooscode_api.global.api.status.GlobalStatus;
-import com.sooscode.sooscode_api.global.jwt.JwtUtil;
-import com.sooscode.sooscode_api.global.security.CustomUserDetails;
+import com.sooscode.sooscode_api.global.exception.CustomException;
+import com.sooscode.sooscode_api.global.status.AuthStatus;
+import com.sooscode.sooscode_api.global.response.ApiResponse;
+import com.sooscode.sooscode_api.infra.security.jwt.JwtUtil;
+import com.sooscode.sooscode_api.infra.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

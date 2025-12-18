@@ -1,7 +1,7 @@
 package com.sooscode.sooscode_api.global.utils;
 
-import com.sooscode.sooscode_api.global.api.exception.CustomException;
-import com.sooscode.sooscode_api.global.api.status.AdminStatus;
+import com.sooscode.sooscode_api.global.exception.CustomException;
+import com.sooscode.sooscode_api.global.status.AdminStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;

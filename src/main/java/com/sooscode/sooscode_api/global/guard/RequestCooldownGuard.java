@@ -1,7 +1,7 @@
 package com.sooscode.sooscode_api.global.guard;
 
-import com.sooscode.sooscode_api.global.api.exception.CustomException;
-import com.sooscode.sooscode_api.global.api.status.CompileStatus;
+import com.sooscode.sooscode_api.global.exception.CustomException;
+import com.sooscode.sooscode_api.global.status.CompileStatus;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

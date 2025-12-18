@@ -7,12 +7,9 @@ import com.sooscode.sooscode_api.application.mypage.dto.MypageUserUpdateResponse
 import com.sooscode.sooscode_api.application.mypage.service.MypageClassService;
 import com.sooscode.sooscode_api.application.mypage.service.MypageUserService;
 import com.sooscode.sooscode_api.domain.user.entity.User;
-import com.sooscode.sooscode_api.domain.user.enums.UserRole;
-import com.sooscode.sooscode_api.global.api.exception.CustomException;
-import com.sooscode.sooscode_api.global.api.response.ApiResponse;
-import com.sooscode.sooscode_api.global.api.status.GlobalStatus;
-import com.sooscode.sooscode_api.global.api.status.UserStatus;
-import com.sooscode.sooscode_api.global.security.CustomUserDetails;
+import com.sooscode.sooscode_api.global.response.ApiResponse;
+import com.sooscode.sooscode_api.global.status.GlobalStatus;
+import com.sooscode.sooscode_api.infra.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +26,6 @@ import java.io.IOException;
 public class MypageUserController {
 
     private final MypageUserService mypageService;
-    private final ClassRoomService classRoomService;
     private final MypageClassService mypageClassService;
 
     /**
@@ -132,7 +128,7 @@ public class MypageUserController {
         log.info("[MypageUser] uploadClassRoomThumbnail 요청 - classId={}, userId={}",
                 classId, userDetails.getUser().getUserId());
 
-        classRoomService.updateThumbnail(
+        mypageClassService.updateThumbnail(
                 classId,
                 userDetails.getUser().getUserId(),
                 thumbnail

@@ -4,7 +4,6 @@ import com.sooscode.sooscode_api.domain.classroom.entity.ClassParticipant;
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.enums.UserRole;
 import com.sooscode.sooscode_api.domain.user.enums.UserStatus;
-import com.sooscode.sooscode_api.global.ActivityType;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -96,21 +95,18 @@ public class AdminUserResponse {
     @Builder
     public static class UserHistory {
         private LocalDateTime createAt;
-        private ActivityType activityType;
         private String ipAddress;
         private String userAgent;
         private String note;
 
         public static UserHistory of(
                 LocalDateTime createAt,
-                ActivityType activityType,
                 String ipAddress,
                 String userAgent,
                 String note
         ) {
             return UserHistory.builder()
                     .createAt(createAt)
-                    .activityType(activityType)
                     .ipAddress(ipAddress)
                     .userAgent(userAgent)
                     .note(note)

@@ -13,15 +13,15 @@ import com.sooscode.sooscode_api.domain.file.entity.SooFile;
 import com.sooscode.sooscode_api.domain.file.enums.FileType;
 import com.sooscode.sooscode_api.domain.file.repository.SooFileRepository;
 import com.sooscode.sooscode_api.domain.user.enums.UserRole;
-import com.sooscode.sooscode_api.infra.file.service.S3FileService;
+import com.sooscode.sooscode_api.infra.s3.service.S3FileService;
 
 import com.sooscode.sooscode_api.domain.user.entity.User;
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
 
-import com.sooscode.sooscode_api.global.api.exception.CustomException;
-import com.sooscode.sooscode_api.global.api.status.ClassRoomStatus;
-import com.sooscode.sooscode_api.global.api.status.FileStatus;
-import com.sooscode.sooscode_api.global.api.status.UserStatus;
+import com.sooscode.sooscode_api.global.exception.CustomException;
+import com.sooscode.sooscode_api.global.status.ClassRoomStatus;
+import com.sooscode.sooscode_api.global.status.FileStatus;
+import com.sooscode.sooscode_api.global.status.UserStatus;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;

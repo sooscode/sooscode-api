@@ -1,7 +1,7 @@
 package com.sooscode.sooscode_api.infra.worker;
 
-import com.sooscode.sooscode_api.global.api.exception.CustomException;
-import com.sooscode.sooscode_api.global.api.status.CompileStatus;
+import com.sooscode.sooscode_api.global.exception.CustomException;
+import com.sooscode.sooscode_api.global.status.CompileStatus;
 
 import java.util.List;
 import java.util.regex.Matcher;

@@ -1,8 +1,8 @@
 package com.sooscode.sooscode_api.application.compile.service;
 
 import com.sooscode.sooscode_api.application.compile.dto.CompileResultResponse;
-import com.sooscode.sooscode_api.global.api.exception.CustomException;
-import com.sooscode.sooscode_api.global.api.status.CompileStatus;
+import com.sooscode.sooscode_api.global.exception.CustomException;
+import com.sooscode.sooscode_api.global.status.CompileStatus;
 import com.sooscode.sooscode_api.global.guard.RequestCooldown;
 import com.sooscode.sooscode_api.global.utils.CodeValidator;
 import com.sooscode.sooscode_api.infra.worker.CodeBlacklistFilter;

@@ -1,7 +1,7 @@
 package com.sooscode.sooscode_api.application.file;
 
 import com.sooscode.sooscode_api.domain.file.entity.SooFile;
-import com.sooscode.sooscode_api.infra.file.service.S3FileService;
+import com.sooscode.sooscode_api.infra.s3.service.S3FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

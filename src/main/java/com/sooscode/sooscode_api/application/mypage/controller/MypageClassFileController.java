@@ -4,9 +4,9 @@ import com.sooscode.sooscode_api.application.mypage.dto.MypageClassFileResponse;
 import com.sooscode.sooscode_api.application.mypage.dto.MypageClassFileDeleteRequest;
 import com.sooscode.sooscode_api.application.mypage.dto.MypageClassFileUploadRequest;
 import com.sooscode.sooscode_api.application.mypage.service.MypageClassFileService;
-import com.sooscode.sooscode_api.global.api.response.ApiResponse;
-import com.sooscode.sooscode_api.global.api.status.GlobalStatus;
-import com.sooscode.sooscode_api.global.security.CustomUserDetails;
+import com.sooscode.sooscode_api.global.response.ApiResponse;
+import com.sooscode.sooscode_api.global.status.GlobalStatus;
+import com.sooscode.sooscode_api.infra.security.CustomUserDetails;
 
 import com.sooscode.sooscode_api.global.utils.FileValidator;
 import lombok.RequiredArgsConstructor;

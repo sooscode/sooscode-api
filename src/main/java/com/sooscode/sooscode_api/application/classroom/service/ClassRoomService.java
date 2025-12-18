@@ -1,10 +1,8 @@
 package com.sooscode.sooscode_api.application.classroom.service;
 
 import com.sooscode.sooscode_api.application.classroom.dto.ClassRoomDetailResponse;
-import com.sooscode.sooscode_api.global.api.exception.CustomException;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
+import com.sooscode.sooscode_api.domain.classroom.entity.ClassRoom;
+import com.sooscode.sooscode_api.global.exception.CustomException;
 
 public interface ClassRoomService {
     /**
@@ -23,5 +21,13 @@ public interface ClassRoomService {
      */
     ClassRoomDetailResponse getClassRoomDetail(Long classId, Long userId);
 
-    void updateThumbnail(Long classId, Long userId, MultipartFile thumbnail) throws IOException;
+    void endClass(Long classId);
+
+    void kickUser(Long classId, Long userId, String reason);
+
+    void sendSystemMessage(Long classId, String type, String content);
+
+    int getMemberCount(Long classId);
+
+    boolean isMemberConnected(Long classId, Long userId);
 }

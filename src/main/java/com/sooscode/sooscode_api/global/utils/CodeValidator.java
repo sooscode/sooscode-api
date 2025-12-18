@@ -1,8 +1,8 @@
 package com.sooscode.sooscode_api.global.utils;
 
-import com.sooscode.sooscode_api.global.api.exception.CustomException;
-import com.sooscode.sooscode_api.global.api.status.CodeValidStatus;
-import com.sooscode.sooscode_api.global.api.status.CompileStatus;
+import com.sooscode.sooscode_api.global.exception.CustomException;
+import com.sooscode.sooscode_api.global.status.CodeValidStatus;
+import com.sooscode.sooscode_api.global.status.CompileStatus;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;

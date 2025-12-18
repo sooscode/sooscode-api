@@ -1,7 +1,7 @@
 package com.sooscode.sooscode_api.global.utils;
 
-import com.sooscode.sooscode_api.global.api.exception.CustomException;
-import com.sooscode.sooscode_api.global.api.status.FileStatus;
+import com.sooscode.sooscode_api.global.exception.CustomException;
+import com.sooscode.sooscode_api.global.status.FileStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;

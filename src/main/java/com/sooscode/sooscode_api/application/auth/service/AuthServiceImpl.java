@@ -11,9 +11,9 @@ import com.sooscode.sooscode_api.domain.user.enums.UserStatus;
 import com.sooscode.sooscode_api.domain.user.repository.EmailCodeRepository;
 // import com.sooscode.sooscode_api.domain.user.repository.RefreshTokenRepository;  // 제거
 import com.sooscode.sooscode_api.domain.user.repository.UserRepository;
-import com.sooscode.sooscode_api.global.api.exception.CustomException;
-import com.sooscode.sooscode_api.global.api.status.AuthStatus;
-import com.sooscode.sooscode_api.global.jwt.JwtUtil;
+import com.sooscode.sooscode_api.global.exception.CustomException;
+import com.sooscode.sooscode_api.global.status.AuthStatus;
+import com.sooscode.sooscode_api.infra.security.jwt.JwtUtil;
 import com.sooscode.sooscode_api.global.utils.UserValidator;
 import com.sooscode.sooscode_api.infra.redis.TokenRedisService;  // 추가
 import jakarta.mail.internet.MimeMessage;
@@ -29,11 +29,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 
-import static com.sooscode.sooscode_api.global.api.status.AuthStatus.ERROR_WHILE_EMAIL_SENDING;
+import static com.sooscode.sooscode_api.global.status.AuthStatus.ERROR_WHILE_EMAIL_SENDING;
 
 @RequiredArgsConstructor
 @Service

@@ -1,7 +1,7 @@
 package com.sooscode.sooscode_api.global.utils;
 
-import com.sooscode.sooscode_api.global.api.exception.CustomException;
-import com.sooscode.sooscode_api.global.api.status.ValidStatus;
+import com.sooscode.sooscode_api.global.exception.CustomException;
+import com.sooscode.sooscode_api.global.status.ValidStatus;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -118,7 +118,7 @@ public class ClassValidator {
      * - 시작 시간, 종료 시간 필수
      * - 종료 시간은 시작 시간 이후여야 함
      * - 최소 30분 이상
-     * - 최대 12시간 이하
+     * - 최대 20시간 이하
      *
      * @param startTime 강의 시작 시간
      * @param endTime 강의 종료 시간
@@ -148,7 +148,7 @@ public class ClassValidator {
         }
 
         // 최대 12시간
-        if (duration.toHours() > 12) {
+        if (duration.toHours() > 20) {
             throw new CustomException(ValidStatus.CLASS_DURATION_TOO_LONG);
         }
     }
@@ -243,6 +243,8 @@ public class ClassValidator {
     public static void validateUpdate(
             String title,
             String description,
+            Long instructorId,
+            Boolean isOnline,
             LocalDate startDate,
             LocalDate endDate,
             LocalTime startTime,
@@ -250,6 +252,8 @@ public class ClassValidator {
     ) {
         validateTitle(title);
         validateDescription(description);
+        validateInstructorId(instructorId);
+        validateIsOnline(isOnline);
         validateClassDatesForUpdate(startDate, endDate);
         validateClassTimes(startTime, endTime);
     }

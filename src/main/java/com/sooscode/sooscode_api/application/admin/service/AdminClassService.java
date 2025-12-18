@@ -3,7 +3,7 @@ package com.sooscode.sooscode_api.application.admin.service;
 import com.sooscode.sooscode_api.application.admin.dto.AdminClassRequest;
 import com.sooscode.sooscode_api.application.admin.dto.AdminClassResponse;
 import com.sooscode.sooscode_api.application.admin.dto.AdminPageResponse;
-import com.sooscode.sooscode_api.global.api.exception.CustomException;
+import com.sooscode.sooscode_api.global.exception.CustomException;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
 package com.sooscode.sooscode_api.global.utils;
 
 import com.sooscode.sooscode_api.domain.user.enums.UserRole;
-import com.sooscode.sooscode_api.global.api.exception.CustomException;
-import com.sooscode.sooscode_api.global.api.status.ValidStatus;
+import com.sooscode.sooscode_api.global.exception.CustomException;
+import com.sooscode.sooscode_api.global.status.ValidStatus;
 
 import java.util.regex.Pattern;
 
