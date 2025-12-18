@@ -1,33 +1,66 @@
-Sooscode API Server
-Sooscode 플랫폼의 핵심 비즈니스 로직을 담당하는 메인 백엔드 서버입니다.
+# SoosCode API Server
 
-사용자 인증, 강의실 관리, 실시간 채팅 및 코드 동기화, 그리고 컴파일 워커와의 오케스트레이션을 담당합니다.
+SoosCode 플랫폼의 **핵심 비즈니스 로직을 담당하는 메인 백엔드 서버**입니다.  
+사용자 인증, 실시간 협업(채팅/코드), 화상 강의(LiveKit), 그리고 컴파일 워커와의 오케스트레이션을 담당합니다.
 
-Spring Boot 3.x 기반의 MSA(Microservices Architecture) 지향 구조로 설계되었으며,
+MSA(Microservices Architecture) 구조의 허브 역할을 수행하며,  
+ WebSocket, Redis를 활용해 고성능 실시간 처리를 지원합니다.
 
-안정적인 데이터 처리와 WebSocket 기반의 실시간 협업 환경을 제공합니다.
+---
 
-전체 아키텍처 (Architecture)
-API 서버는 클라이언트와 다양한 인프라/마이크로서비스 사이의 중계 및 처리 역할을 수행합니다.
+## 핵심 특징
 
-코드 스니펫
+- **강력한 보안 인증 (Security)**
+  - JWT (Access/Refresh) + OAuth2 (Google) 하이브리드 인증
+  - Redis 기반 Refresh Token 관리 및 로그아웃 시 Blacklist 처리
 
-graph TD
-    Client[Client (React)] -->|HTTP/REST| API[API Server]
-    Client -->|WebSocket/STOMP| API
-    
-    subgraph Infrastructure
-        API -->|Data Persist| MySQL[(MySQL)]
-        API -->|Auth & Cache| Redis[(Redis)]
-        API -->|File Storage| S3[AWS S3]
-    end
-    
-    subgraph External Services
-        API -->|Compile Request| Worker[Compile Worker]
-        Worker -->|Result Callback| API
-        API -->|Token Issuance| LiveKit[LiveKit Server]
-        API -->|OAuth2| Google[Google Auth]
-    end
+- **실시간 협업 환경 (Real-time)**
+  - STOMP 프로토콜 기반의 채팅 및 코드 에디터 동기화
+  - 강의실별 채널(`topic`) 구독/발행 구조로 데이터 브로드캐스팅
 
-    기술 스택 (Tech Stack)CategoryTechnologyDescriptionFrameworkSpring Boot 3.2Java 17 기반의 백엔드 프레임워크DatabaseMySQL 8.0사용자, 강의실, 채팅 이력 등 영구 데이터 저장Cache & SessionRedisJWT Refresh Token 관리 (Blacklist), 세션 캐싱Real-timeWebSocket (STOMP)실시간 채팅, 동시 편집(코드 동기화), 알림SecuritySpring SecurityJWT + OAuth2 (Google) 기반 인증/인가Media ServerLiveKit실시간 화상/음성 강의 기능을 위한 토큰 발급 및 제어StorageAWS S3프로필 이미지, 강의 자료 파일 업로드✨ 핵심 기능 (Key Features)1. 보안 인증 시스템 (Security & Auth)JWT (Json Web Token): Access Token(Stateless)과 Refresh Token(Redis 저장)을 이용한 이중 토큰 구조.OAuth 2.0: Google 소셜 로그인 지원.Redis Blacklist: 로그아웃 시 남은 유효기간 동안 Access Token을 블랙리스트 처리하여 보안 강화.2. 실시간 협업 (Real-time Collaboration)WebSocket + STOMP: /ws 엔드포인트를 통해 연결, /sub, /pub 구조로 메시지 브로커 활용.Code Synchronization: 강의실 내 참여자 간 코드 에디터 상태 실시간 동기화.Presence: 사용자 입장/퇴장 및 타이핑 상태 실시간 감지.3. 컴파일 오케스트레이션 (Compile Orchestration)Delegation: 클라이언트의 코드 실행 요청을 받아 유효성을 검증하고 Worker 서버로 위임.Async Callback Handling: Worker로부터 비동기적으로 실행 결과를 수신(CompletableFuture)하여 클라이언트에게 응답.4. 화상 강의 (LiveKit Integration)Token Generation: LiveKit 서버 접속을 위한 보안 토큰 동적 생성 및 발급.Webhook Handling: LiveKit 서버의 이벤트(방 생성, 종료 등)를 수신하여 강의실 상태 동기화.🔄 주요 처리 흐름 (Process Flow)1. 로그인 프로세스 (Login)클라이언트 로그인 요청 (Email/PW or Google)AuthService에서 검증 및 JWT 발급 (Access + Refresh)Refresh Token은 Redis에 저장 (TTL 설정)Access Token은 쿠키/헤더로 반환2. 코드 실행 프로세스 (Code Execution)Request: 사용자가 코드 실행 요청 (POST /api/compile/run)Validation: 코드 내 악성 키워드(System.exit 등) 및 길이 검증.Delegation: CompileWorkerClient를 통해 Worker 서버로 HTTP 요청 전송.Waiting: CompileFutureStore에 jobId를 키로 하는 Future 객체 생성 후 대기 (Timeout 설정).Callback: Worker가 실행 완료 후 /api/compile/callback/{jobId} 호출.Response: 대기 중이던 Future가 완료되며 클라이언트에게 최종 결과 반환.📂 디렉토리 구조 (Directory Structure)도메인형 구조를 채택하여 관련 로직을 응집도 있게 관리합니다.src/main/java/com/sooscode/sooscode_api
+- **화상 강의 연동 (LiveKit)**
+  - LiveKit Token 동적 발급 및 룸 관리
+  - Webhook 이벤트를 수신하여 강의실 상태 자동 동기화
 
+- **컴파일 오케스트레이션**
+  - 클라이언트 요청을 검증(Validation) 후 워커 서버로 실행 위임
+  - `CompletableFuture`를 사용한 비동기 콜백 처리 구조
+---
+
+## 처리 흐름 (Process Flow)
+
+### 1. 인증 및 로그인 (Auth Flow)
+1. **Request**: 클라이언트가 이메일/비밀번호 또는 구글 소셜 로그인 요청 (`/api/auth/login`).
+2. **Verification**: `AuthService`에서 계정 정보 검증 및 활성화 상태 확인.
+3. **Token Issue**: Access Token(Stateless)과 Refresh Token 생성.
+4. **Caching**: Refresh Token을 **Redis**에 저장 (TTL 설정)하여 관리.
+5. **Response**: Access Token을 반환하고 쿠키 또는 헤더에 설정.
+
+### 2. 강의실 입장 및 소켓 연결 (Classroom Entry)
+1. **Join Request**: 사용자가 강의실 입장 요청 (`/api/class/{id}`).
+2. **Validation**: `ClassRoomService`에서 강의 시간, 참여 권한, 강사 여부 등을 검증.
+3. **Socket Connection**: 검증 통과 시 `/ws` 엔드포인트로 WebSocket 연결 시도.
+4. **Interceptor**: `StompSessionInterceptor`가 헤더의 Access Token을 가로채 유효성 재검증.
+5. **Subscribe**: 인증 성공 시 해당 강의실의 토픽(`/topic/class/{id}`) 구독 시작.
+
+### 3. 실시간 채팅 및 코드 동기화 (Real-time Interaction)
+1. **Publish**: 클라이언트가 메시지 또는 코드 변경 사항 전송 (`/app/chat/send` 등).
+2. **Handling**: `ChatMessageController`가 메시지를 수신하여 DB 저장(채팅) 또는 로직 처리.
+3. **Broadcast**: `SimpMessagingTemplate`을 통해 해당 강의실 구독자 전원에게 메시지 발행 (`/topic/class/{id}`).
+4. **Update**: 구독 중인 클라이언트들이 실시간으로 화면 업데이트.
+
+### 4. 화상 강의 연결 (LiveKit Flow)
+1. **Token Request**: 클라이언트가 화상 강의 접속 요청 (`/api/livekit/token`).
+2. **Generation**: `LivekitTokenService`가 LiveKit SDK를 사용해 사용자 식별 정보가 담긴 **JWT Token** 생성.
+3. **Connect**: 클라이언트가 해당 토큰으로 LiveKit Media Server에 직접 연결.
+4. **Webhook**: LiveKit 서버의 이벤트(참여자 입장, 방 종료 등)가 API 서버로 전송되어 강의실 상태 업데이트.
+
+### 5. 코드 실행 (Compile Pipeline)
+1. **Request**: 클라이언트가 코드 실행 요청 (`/api/compile/run`, Base64 코드 포함).
+2. **Validation**: `CodeValidator` 및 `BlacklistFilter`를 통해 악성 코드(System.exit 등) 차단.
+3. **Async Wait**: `CompileFutureStore`에 `jobId`를 키로 하는 `CompletableFuture` 생성 후 대기 상태 전환.
+4. **Delegation**: `CompileWorkerClient`를 통해 Worker 서버로 HTTP 실행 요청 전송.
+5. **Callback**: Worker가 실행 완료 후 결과값을 `/api/compile/callback/{jobId}`로 전송.
+6. **Completion**: 대기 중이던 Future가 완료(complete)되며 클라이언트에게 최종 결과 응답.
+
+---
